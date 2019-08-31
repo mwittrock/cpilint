@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--
+        Why is the FileAppender wrapped in a SiftingAppender? The FileAppender always
+        creates a log file, even when no messages are logged. It should support lazy
+        file creation, but it doesn't (not yet, anyway). Wrapping the FileAppender in
+        a SiftingAppender is a workaround for this problem. Workaround sounds better
+        than kludge, doesn't it? Anyway, check out this feature request for more details:
+        https://jira.qos.ch/browse/LOGBACK-202
+    -->
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>does-not-exist</key>
+            <defaultValue>does-not-matter</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+                <file>cpilint.log</file>
+                <append>false</append>
+                <immediateFlush>true</immediateFlush>
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+    <!--
+        The log level is set to OFF here, and then programmatically raised to
+        DEBUG if the -debug option is provided on the command line.
+    -->
+    <root level="OFF">
+        <appender-ref ref="SIFT"/>
+    </root>
+</configuration>

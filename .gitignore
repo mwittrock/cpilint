@@ -1,0 +1,15 @@
+# Ignore Ant's build directory
+
+build/
+
+# Ignore the library dependencies directory
+
+lib/
+
+# Ignore Ant's release directory
+
+release/
+
+# Ignore Ant's temporary directory
+
+temp/

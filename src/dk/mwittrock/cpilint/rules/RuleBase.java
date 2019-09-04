@@ -1,5 +1,7 @@
 package dk.mwittrock.cpilint.rules;
 
+import java.util.Objects;
+
 import dk.mwittrock.cpilint.consumers.IssueConsumer;
 
 abstract class RuleBase implements Rule {
@@ -8,7 +10,7 @@ abstract class RuleBase implements Rule {
 
 	@Override
 	public void startTesting(IssueConsumer consumer) {
-		this.consumer = consumer;
+		this.consumer = Objects.requireNonNull(consumer, "consumer must not be null");
 	}
 
 	@Override

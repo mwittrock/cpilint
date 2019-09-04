@@ -41,7 +41,7 @@
 		<delete dir="${dependencies.dir}"/>
 	</target>
 
-    <target name="dependencies" description="Retrieve dependencies with Ivy">
+    <target name="dependencies" description="Retrieves dependencies with Ivy">
         <ivy:retrieve conf="compile" pattern="${compile.dependencies.dir}/[artifact]-[revision].[ext]"/>
 		<ivy:retrieve conf="runtime" pattern="${runtime.dependencies.dir}/[artifact]-[revision].[ext]"/>
     </target>
@@ -73,6 +73,7 @@
             <fileset dir="." includes="ivy.xml"/>
 			<fileset dir="." includes="LICENSE.txt"/>
 			<fileset dir="." includes="README.md"/>
+			<fileset dir="." includes="BUILDING.md"/>
 		</zip>
 		<!-- Create a release archive. -->
 		<zip destfile="${release.dir}/${release.archive}">

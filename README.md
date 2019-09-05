@@ -4,7 +4,7 @@ Welcome to the CPILint GitHub repository!
 
 ## What is CPILint?
 
-CPILint is a command-line tool for SAP Cloud Platform integration, that lets you automate the governance of your integration flows. With CPILint, you create executable development guidelines, by setting up a number of rules, that you want your integration flows to comply with.
+CPILint is a command-line tool for SAP Cloud Platform Integration, that lets you automate the governance of your integration flows. With CPILint, you create executable development guidelines, by setting up a number of rules, that you want your integration flows to comply with.
 
 The tool ships with a number of built-in rules, that enable you to, for instance, disallow the use of certain adapters, check that only your organization’s sanctioned mapping tools and scripting languages are being used, and ensure that security best practices are being followed.
 

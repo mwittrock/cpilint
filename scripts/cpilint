@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# *****************************************************
+# * If the CPILINT_HOME variable is not set, assume   *
+# * that the home directory is the parent of the      *
+# * directory containing this script.                 *
+# *****************************************************
+
+if [ -z "$CPILINT_HOME" ]; then
+   home="$(dirname "$(dirname "$(readlink -fm "$0")")")"
+else
+   home=$CPILINT_HOME
+fi
+
+# *****************************************************
+# * Build CPILint's class path. All required library  *
+# * files are in the lib directory, and the Logback   *
+# * configuration file is in the logback directory.   *
+# *****************************************************
+
+cpilint_cp="$home/lib/*:$home/logback"
+
+# *****************************************************
+# * Use the JAVA_HOME variable to locate the java     *
+# * command. If that variable is undefined, assume    *
+# * that the command is in the current user's path.   *
+# *****************************************************
+
+if [ -z "$JAVA_HOME" ]; then
+   javacmd=java
+else
+   javacmd="$JAVA_HOME/bin/java"
+fi
+
+# *****************************************************
+# * If the -debug option was provided on the command  *
+# * line, enable assertions.                          *
+# *****************************************************
+
+for arg in "$@"
+do
+   if [ "${arg,,}" = "-debug" ]; then
+      asserts=" -ea"
+      break
+   fi
+done
+
+# *****************************************************
+# * Launch CPILint!                                   *
+# *****************************************************
+
+"$javacmd"$asserts -classpath "$cpilint_cp" dk.mwittrock.cpilint.CliClient $*

@@ -1,0 +1,7 @@
+# Default behavior
+
+* text=auto
+
+# Make sure that the Bash launch script has the correct line endings (i.e. LF)
+
+scripts/cpilint text eol=lf

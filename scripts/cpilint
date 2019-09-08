@@ -7,9 +7,14 @@
 # *****************************************************
 
 if [ -z "$CPILINT_HOME" ]; then
-   home="$(dirname "$(dirname "$(readlink -fm "$0")")")"
+   slink=$(readlink "$0")
+   if [ -z "$slink" ]; then
+      home="$(dirname "$(dirname "$0")")"
+   else
+      home="$(dirname "$(dirname "$slink")")"
+   fi
 else
-   home=$CPILINT_HOME
+   home="$CPILINT_HOME"
 fi
 
 # *****************************************************
@@ -39,7 +44,7 @@ fi
 
 for arg in "$@"
 do
-   if [ "${arg,,}" = "-debug" ]; then
+   if [ "$arg" = "-debug" ]; then
       asserts=" -ea"
       break
    fi

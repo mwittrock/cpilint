@@ -5,3 +5,7 @@
 # Make sure that the Bash launch script has the correct line endings (i.e. LF)
 
 scripts/cpilint text eol=lf
+
+# Make sure that the Windows launch script has the correct line endings (i.e. CRLF)
+
+scripts/cpilint.bat text eol=crlf

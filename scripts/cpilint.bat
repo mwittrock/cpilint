@@ -23,10 +23,16 @@ rem *****************************************************
 rem * Use the JAVA_HOME environment variable to locate  *
 rem * java.exe. If that variable is undefined, assume   *
 rem * that java.exe is in the current user's PATH.      *
+rem *                                                   *
+rem * Set CPILINT_JAVA_HOME, if you want to overwrite   *
+rem * the standard Java JDK. Set the variable to a JDK- *
+rem * root path. E.g.: C:\Programs\Java\jdk-11.0.4      *
 rem *****************************************************
 
+set CPILINT_JAVA_HOME=
 set JAVACMD=java.exe
 if defined JAVA_HOME set JAVACMD=%JAVA_HOME%\bin\java.exe
+if defined CPILINT_JAVA_HOME set JAVACMD=%CPILINT_JAVA_HOME%\bin\java.exe
 
 rem *****************************************************
 rem * If the -debug option was provided on the command  *

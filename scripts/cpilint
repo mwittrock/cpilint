@@ -26,15 +26,19 @@ fi
 cpilint_cp="$home/lib/*:$home/logback"
 
 # *****************************************************
-# * Use the JAVA_HOME variable to locate the java     *
-# * command. If that variable is undefined, assume    *
-# * that the command is in the current user's path.   *
+# * Use the CPILINT_JAVA_HOME variable to locate the  *
+# * java command. If that variable is undefined, use  *
+# * the JAVA_HOME variable instead. If that is also   *
+# * undefined, assume that the command is in the      *
+# * current user's path.                              *
 # *****************************************************
 
-if [ -z "$JAVA_HOME" ]; then
-   javacmd=java
-else
+if [ ! -z "$CPILINT_JAVA_HOME" ]; then
+   javacmd="$CPILINT_JAVA_HOME/bin/java"
+elif [ ! -z "$JAVA_HOME" ]; then
    javacmd="$JAVA_HOME/bin/java"
+else
+   javacmd=java
 fi
 
 # *****************************************************

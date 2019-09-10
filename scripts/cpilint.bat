@@ -20,13 +20,16 @@ rem *****************************************************
 set CPILINT_CP=%HOME%\lib\*;%HOME%\logback
 
 rem *****************************************************
-rem * Use the JAVA_HOME environment variable to locate  *
-rem * java.exe. If that variable is undefined, assume   *
-rem * that java.exe is in the current user's PATH.      *
+rem * Use the CPILINT_JAVA_HOME environment variable to *
+rem * locate java.exe. If that variable is undefined,   *
+rem * use the JAVA_HOME environment variable instead.   *
+rem * If that is also undefined, assume that java.exe   *
+rem * is in the current user's PATH.                    *
 rem *****************************************************
 
 set JAVACMD=java.exe
 if defined JAVA_HOME set JAVACMD=%JAVA_HOME%\bin\java.exe
+if defined CPILINT_JAVA_HOME set JAVACMD=%CPILINT_JAVA_HOME%\bin\java.exe
 
 rem *****************************************************
 rem * If the -debug option was provided on the command  *

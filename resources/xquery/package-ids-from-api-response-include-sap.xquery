@@ -1,6 +1,6 @@
 (:
-    Please note that this version of the query skips read-only packages AND packages
-    where the vendor is SAP. 
+    This version of the query only skips read-only packages; it includes
+    packages where the vendor is SAP.
 :)
 
 xquery version "3.1";

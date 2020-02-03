@@ -10,6 +10,6 @@ declare namespace m = "http://schemas.microsoft.com/ado/2007/08/dataservices/met
 declare namespace d ="http://schemas.microsoft.com/ado/2007/08/dataservices";
 
 for $package in /feed/entry
-let $packageId := string($package/content/m:properties/d:TechnicalName)
+let $packageId := string($package/content/m:properties/d:Id)
 where $package/content/m:properties/d:Mode = 'EDIT_ALLOWED'
 return $packageId

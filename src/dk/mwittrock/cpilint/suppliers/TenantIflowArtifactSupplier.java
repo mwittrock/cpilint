@@ -38,8 +38,7 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 
 	private static final String MESSAGE_NOT_AUTHENTICATED = "Wrong username, password or both";
 	private static final String MESSAGE_NOT_AUTHORIZED = "User was authenticated but lacks authorizations";
-	private static final String PUBLIC_ODATA_API_BASE_PATH = "/api/v1/";
-	private static final String PRIVATE_ODATA_API_BASE_PATH = "/itspaces/odata/1.0/workspace.svc/";
+	private static final String ODATA_API_BASE_PATH = "/api/v1/";
 	private static final String URI_SCHEME = "https";
 	private static final String EXPECTED_IFLOW_ARTIFACT_RESPONSE_TYPE = "application/zip";
 	private static final String CONTENT_TYPE_RESPONSE_HEADER = "content-type";
@@ -160,27 +159,33 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 	
 	private URI iflowArtifactUriFromIflowArtifactId(String iflowArtifactId) {
 		StringBuilder pathBuilder = new StringBuilder();
-		pathBuilder.append(PUBLIC_ODATA_API_BASE_PATH);
+		pathBuilder.append(ODATA_API_BASE_PATH);
 		pathBuilder.append("IntegrationDesigntimeArtifacts(Id='");
 		pathBuilder.append(iflowArtifactId);
 		pathBuilder.append("',Version='active')/$value");
-		return tenantUriFromPath(pathBuilder.toString());
+		URI iflowArtifactUri = tenantUriFromPath(pathBuilder.toString());
+		logger.debug("Iflow artifact URI generated: {}", iflowArtifactUri);
+		return iflowArtifactUri;
 	}
 
 	private URI contentPackagesUri() {
 		StringBuilder pathBuilder = new StringBuilder();
-		pathBuilder.append(PRIVATE_ODATA_API_BASE_PATH);
-		pathBuilder.append("ContentPackages");
-		return tenantUriFromPath(pathBuilder.toString()); 
+		pathBuilder.append(ODATA_API_BASE_PATH);
+		pathBuilder.append("IntegrationPackages");
+		URI contentPackagesUri = tenantUriFromPath(pathBuilder.toString());
+		logger.debug("Content packages URI generated: {}", contentPackagesUri);
+		return contentPackagesUri;
 	}
 	
 	private URI artifactsUriFromPackageId(String packageId) {
 		StringBuilder pathBuilder = new StringBuilder();
-		pathBuilder.append(PRIVATE_ODATA_API_BASE_PATH);
-		pathBuilder.append("ContentPackages('");
+		pathBuilder.append(ODATA_API_BASE_PATH);
+		pathBuilder.append("IntegrationPackages('");
 		pathBuilder.append(packageId);
-		pathBuilder.append("')/Artifacts");
-		return tenantUriFromPath(pathBuilder.toString());
+		pathBuilder.append("')/IntegrationDesigntimeArtifacts");
+		URI artifactsUri = tenantUriFromPath(pathBuilder.toString());
+		logger.debug("Artifacts URI generated: {}", artifactsUri);
+		return artifactsUri;
 	}
 
 	private String basicAuthHeaderValue() {
@@ -213,7 +218,6 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 	private InputStream retrieveIflowArtifact(String iflowArtifactId) {
 		logger.debug("Retrieving iflow artifact: {}", iflowArtifactId);
 		URI uri = iflowArtifactUriFromIflowArtifactId(iflowArtifactId);
-		logger.debug("Generated URI for iflow artifact: {}", uri);
 		HttpResponse<InputStream> response = httpGetRequest(uri);
 		if (response.statusCode() == HTTP_BAD_REQUEST_STATUS_CODE) {
 			/*

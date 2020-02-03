@@ -5,6 +5,5 @@ declare namespace m = "http://schemas.microsoft.com/ado/2007/08/dataservices/met
 declare namespace d ="http://schemas.microsoft.com/ado/2007/08/dataservices";
 
 for $artifact in /feed/entry
-let $iflowId := string($artifact/m:properties/d:Name)
-where $artifact/m:properties/d:Type = 'IFlow'
+let $iflowId := string($artifact/m:properties/d:Id)
 return $iflowId

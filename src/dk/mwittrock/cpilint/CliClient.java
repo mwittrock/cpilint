@@ -135,6 +135,11 @@ public final class CliClient {
 		List<String> cliArgs = new ArrayList<>(Arrays.asList(args));
 		int pwdPos = cliArgs.indexOf("-" + CLI_OPTION_PASSWORD);
 		if (pwdPos != -1 && pwdPos < cliArgs.size() - 1) {
+			/*
+			 * The password option is present and it's not the last argument. We'll
+			 * assume that the argument following it is the password, and therefore
+			 * blank it out with asterisks, preventing it from being written to the log.
+			 */
 			cliArgs.set(pwdPos + 1, "*******");
 		}
 		logger.debug("Command line arguments provided: {}", cliArgs.stream().map(a -> "'" + a + "'").collect(Collectors.joining(" ")));

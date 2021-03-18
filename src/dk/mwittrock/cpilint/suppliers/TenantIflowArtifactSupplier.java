@@ -27,10 +27,12 @@ import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.ZipArchiveIflowArtifact;
 import dk.mwittrock.cpilint.util.JarResourceUtil;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
@@ -268,7 +270,7 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 	}
 
 	private Set<String> retrieveIflowArtifactIdsFromTenant() throws SaxonApiException {
-		logger.info("Retrieving all artifact IDs from tenant");
+		logger.info("Retrieving artifact IDs from tenant");
 		Set<String> iflowArtifactIds = new HashSet<>();
 		// An XQueryEvaluator object can be safely reused within a single thread.
 		XQueryEvaluator evaluator = createXqueryEvaluator("iflow-artifact-ids-from-api-response.xquery");
@@ -283,10 +285,12 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 		 *  Which XQuery query to execute depends on whether we want to skip
 		 *  SAP packages or not.
 		 */
-		logger.info("Retrieving all package IDs from tenant");
+		logger.info("Retrieving package IDs from tenant");
 		logger.debug(skipSapPackages ? "SAP packages will be skipped" : "SAP packages will be included");
-		String xqueryFile = skipSapPackages ? "package-ids-from-api-response.xquery" : "package-ids-from-api-response-include-sap.xquery";
-		XQueryEvaluator evaluator = createXqueryEvaluator(xqueryFile);
+		XQueryEvaluator evaluator = createXqueryEvaluator("package-ids-from-api-response.xquery");
+		if (skipSapPackages) {
+			evaluator.setExternalVariable(new QName("skipSapPackages"), new XdmAtomicValue(true));
+		}
 		Set<String> packages = getApiResponseAndEvaluateXquery(contentPackagesUri(), evaluator);
 		logger.debug("{} package IDs retrieved: {}", packages.size(), packages.stream().collect(Collectors.joining(",")));
 		return packages;

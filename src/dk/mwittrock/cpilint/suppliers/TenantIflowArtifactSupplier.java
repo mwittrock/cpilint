@@ -164,7 +164,7 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 		pathBuilder.append(iflowArtifactId);
 		pathBuilder.append("',Version='active')/$value");
 		URI iflowArtifactUri = tenantUriFromPath(pathBuilder.toString());
-		logger.debug("Iflow artifact URI generated: {}", iflowArtifactUri);
+		logger.debug("Iflow artifact URI generated for ID {}: {}", iflowArtifactId, iflowArtifactUri);
 		return iflowArtifactUri;
 	}
 
@@ -184,7 +184,7 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 		pathBuilder.append(packageId);
 		pathBuilder.append("')/IntegrationDesigntimeArtifacts");
 		URI artifactsUri = tenantUriFromPath(pathBuilder.toString());
-		logger.debug("Artifacts URI generated: {}", artifactsUri);
+		logger.debug("Artifacts URI generated for package {}: {}", packageId, artifactsUri);
 		return artifactsUri;
 	}
 
@@ -299,7 +299,7 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 			.stream()
 			.filter(i -> !skipIflowArtifactIds.contains(i))
 			.collect(Collectors.toSet());
-		logger.debug("{} iflow artifacts IDs retrieved from package {}: {}", 
+		logger.debug("{} iflow artifact IDs retrieved from package {}: {}", 
 				filteredIds.size(),
 				packageId,
 				filteredIds.stream().collect(Collectors.joining(",")));

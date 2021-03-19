@@ -196,12 +196,8 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 	
 	private HttpResponse<InputStream> httpGetRequest(URI uri) {
 		/*
-		 * Why do we always send basic authentication credentials? The private
-		 * OData API does not return 401 and a challenge if credentials are 
-		 * missing, and the Java 11 HTTP client does not send basic authentication
-		 * credentials unless so challenged. Setting an Authenticator therefore
-		 * only worked with the public API, and for now we're stuck with both the
-		 * public and the private OData API.
+		 * Preemptively set the Authorization header, since we know in advance
+		 * that basic authentication is required.
 		 */
         HttpRequest request = HttpRequest.newBuilder()
            	.uri(uri)

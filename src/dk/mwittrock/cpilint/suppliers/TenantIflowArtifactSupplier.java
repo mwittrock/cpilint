@@ -281,10 +281,6 @@ public final class TenantIflowArtifactSupplier implements IflowArtifactSupplier 
 	}
 	
 	private Set<String> retrievePackageIdsFromTenant() throws SaxonApiException {
-		/*
-		 *  Which XQuery query to execute depends on whether we want to skip
-		 *  SAP packages or not.
-		 */
 		logger.info("Retrieving package IDs from tenant");
 		logger.debug(skipSapPackages ? "SAP packages will be skipped" : "SAP packages will be included");
 		XQueryEvaluator evaluator = createXqueryEvaluator("package-ids-from-api-response.xquery");

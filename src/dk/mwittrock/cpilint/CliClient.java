@@ -47,9 +47,9 @@ public final class CliClient {
 	private static final String COMMAND_LINE_ERROR_MESSAGE = "There is a problem with your command line arguments. Please run cpilint -help for usage information.";
 	private static final String CLI_OPTION_HELP = "help";
 	private static final String CLI_OPTION_VERSION = "version";
-	private static final String CLI_OPTION_SKIP_IDS = "skip-ids";
+	private static final String CLI_OPTION_SKIP_IFLOWS = "skip-iflows";
 	private static final String CLI_OPTION_SKIP_SAP_PACKAGES = "skip-sap-packages";
-	private static final String CLI_OPTION_RETRIEVE_IDS = "retrieve-ids";
+	private static final String CLI_OPTION_IFLOWS = "iflows";
 	private static final String CLI_OPTION_PASSWORD = "password";
 	private static final String CLI_OPTION_USERNAME = "username";
 	private static final String CLI_OPTION_TMN_HOST = "tmn-host";
@@ -292,7 +292,7 @@ public final class CliClient {
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
 		// TODO: A duplicate iflow ID should just be ignored, but right now it throws an exception.
-		Set<String> fetchIflowArtifactIds = Set.of(cl.getOptionValues(CLI_OPTION_RETRIEVE_IDS));
+		Set<String> fetchIflowArtifactIds = Set.of(cl.getOptionValues(CLI_OPTION_IFLOWS));
 		return new TenantSingleArtifactsSupplier(api, fetchIflowArtifactIds);
 	}
 
@@ -302,7 +302,7 @@ public final class CliClient {
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
-		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IDS) ? Set.of(cl.getOptionValues(CLI_OPTION_SKIP_IDS)) : Collections.emptySet();
+		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? Set.of(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS)) : Collections.emptySet();
 		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipIflowArtifactIds);
 	}
 	
@@ -361,18 +361,18 @@ public final class CliClient {
 		System.out.println("cpilint -rules <file> -directory <dir>");
 		System.out.println();
 		System.out.println("To apply rules to individual iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] -retrieve-ids <id> ...");
+		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] -iflows <id> ...");
 		System.out.println();
 		System.out.println("To apply rules to all iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-ids <id> ...]");
+		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-iflows <id> ...]");
 		System.out.println();
 		System.out.println("Apply the optional -skip-sap-packages option if you want to skip all SAP packages.");
 		System.out.println();
-		System.out.println("Apply the optional -skip-ids <id> ... option if you want to skip certain iflow artifacts.");
+		System.out.println("Apply the optional -skip-iflows <id> ... option if you want to skip certain iflow artifacts.");
 		System.out.println();
 		System.out.println("If the tenant password is not provided, you will be prompted for it.");
 		System.out.println();
-		System.out.println("To remove the ASCII art logo from the test output, add the -boring option.");
+		System.out.println("To remove the ASCII art logo from CPILint's output, add the -boring option.");
 		System.out.println();
 		System.out.println("To create a debug log file, add the -debug option.");
 	}
@@ -467,13 +467,13 @@ public final class CliClient {
             .argName(CLI_OPTION_PASSWORD)
             .desc("Tenant user password")
             .build());
-        // Add the option to specify which iflow artifact IDs to retrieve from the tenant.
+        // Add the option to specify which iflow artifact IDs to inspect.
         options.addOption(Option.builder()
-        	.longOpt(CLI_OPTION_RETRIEVE_IDS)
+        	.longOpt(CLI_OPTION_IFLOWS)
             .required(false)
             .hasArgs()
             .argName("id")
-            .desc("Retrieve these iflow artifact IDs")
+            .desc("Inspect these iflow artifact IDs")
             .build());
         // Add the option to skip SAP packages when retrieving all iflow artifacts from the tenant.
         options.addOption(Option.builder()
@@ -482,9 +482,9 @@ public final class CliClient {
             .hasArg(false)
             .desc("Skip SAP packages")
             .build());
-        // Add the option to skip certain iflow artifact IDs when retrieving all iflow artifacts from the tenant.
+        // Add the option to skip certain iflow artifact IDs when inspecting iflow artifacts.
         options.addOption(Option.builder()
-        	.longOpt(CLI_OPTION_SKIP_IDS)
+        	.longOpt(CLI_OPTION_SKIP_IFLOWS)
             .required(false)
             .hasArgs()
             .argName("id")
@@ -560,7 +560,7 @@ public final class CliClient {
     	 * + rules
     	 * + tenant-host
     	 * + username
-    	 * + retrieve-ids
+    	 * + iflows
     	 * 
     	 * The following options are optional in this mode:
     	 * 
@@ -568,11 +568,11 @@ public final class CliClient {
     	 * + boring
     	 * + debug
     	 * 
-    	 * The -retrieve-ids option must have at least one argument.
+    	 * The -iflows option must have at least one argument.
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_RETRIEVE_IDS);
+    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
-    	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_RETRIEVE_IDS).length >= 1; 
+    	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_IFLOWS).length >= 1;
     }
 
     private static boolean tenantSupplierMultiMode(CommandLine cl) {
@@ -587,15 +587,15 @@ public final class CliClient {
     	 * 
     	 * + password
     	 * + skip-sap-packages
-    	 * + skip-ids
+    	 * + skip-iflows
     	 * + boring
     	 * + debug
     	 * 
-    	 * if the -skip-ids option is present, it must have at least one argument.
+    	 * if the -skip-iflows option is present, it must have at least one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IDS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
-    	return checkOptions(cl, mandatory, optional) && !(cl.hasOption(CLI_OPTION_SKIP_IDS) && cl.getOptionValues(CLI_OPTION_SKIP_IDS).length == 0);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	return checkOptions(cl, mandatory, optional) && !(cl.hasOption(CLI_OPTION_SKIP_IFLOWS) && cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS).length == 0);
     }
     
     private static boolean checkOptions(CommandLine cl, Collection<String> mandatory, Collection<String> optional) {

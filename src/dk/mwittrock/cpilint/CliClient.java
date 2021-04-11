@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
+import dk.mwittrock.cpilint.api.CloudIntegrationApi;
+import dk.mwittrock.cpilint.api.CloudIntegrationOdataApi;
 import dk.mwittrock.cpilint.consumers.ConsoleIssueConsumer;
 import dk.mwittrock.cpilint.consumers.IssueConsumer;
 import dk.mwittrock.cpilint.rules.Rule;
@@ -31,7 +33,8 @@ import dk.mwittrock.cpilint.suppliers.DirectoryIflowArtifactSupplier;
 import dk.mwittrock.cpilint.suppliers.FileIflowArtifactSupplier;
 import dk.mwittrock.cpilint.suppliers.IflowArtifactSupplier;
 import dk.mwittrock.cpilint.suppliers.IflowArtifactSupplierError;
-import dk.mwittrock.cpilint.suppliers.TenantIflowArtifactSupplier;
+import dk.mwittrock.cpilint.suppliers.TenantAllArtifactsSupplier;
+import dk.mwittrock.cpilint.suppliers.TenantSingleArtifactsSupplier;
 
 public final class CliClient {
 	
@@ -117,7 +120,7 @@ public final class CliClient {
 			exitWithErrorMessage("An error occurred: " + e.getMessage());
 		}
 		logger.info("Iflow artifacts supplied: {}", supplier.artifactsSupplied());
-		logger.info("Issues consumed: {}", consumer.issuesConsumed());
+		logger.info("Issues found: {}", consumer.issuesConsumed());
 		if (consumer.issuesConsumed() > 0) {
 			System.out.println();
 		}
@@ -287,17 +290,20 @@ public final class CliClient {
 		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
+		// TODO: A duplicate iflow ID should just be ignored, but right now it throws an exception.
 		Set<String> fetchIflowArtifactIds = Set.of(cl.getOptionValues(CLI_OPTION_RETRIEVE_IDS));
-		return new TenantIflowArtifactSupplier(tmnHost, username, password, fetchIflowArtifactIds);
+		return new TenantSingleArtifactsSupplier(api, fetchIflowArtifactIds);
 	}
 
 	private static IflowArtifactSupplier tenantSupplierMultiFromCommandLine(CommandLine cl) {
 		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IDS) ? Set.of(cl.getOptionValues(CLI_OPTION_SKIP_IDS)) : Collections.emptySet();
-		return new TenantIflowArtifactSupplier(tmnHost, username, password, skipSapPackages, skipIflowArtifactIds);
+		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipIflowArtifactIds);
 	}
 	
 	private static char[] promptForPassword(String username) {
@@ -608,6 +614,7 @@ public final class CliClient {
     }
     
     private static void exitWithErrorMessage(String errorMessage) {
+    	// TODO: Log the error message and the exit code.
     	System.err.println(errorMessage);
 		System.exit(EXIT_STATUS_ERRORS);
     }

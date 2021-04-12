@@ -10,6 +10,6 @@ public interface CloudIntegrationApi {
 	
 	public Set<String> getIntegrationPackageIds(boolean skipSapPackages);
 	
-	public Set<String> getIflowArtifactIdsFromPackage(String packageId);
+	public Set<String> getIflowArtifactIdsFromPackage(String packageId, boolean skipDrafts);
 	
 }

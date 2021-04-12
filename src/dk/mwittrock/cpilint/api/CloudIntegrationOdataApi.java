@@ -118,13 +118,15 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 	}
 
 	@Override
-	public Set<String> getIflowArtifactIdsFromPackage(String packageId) {
+	public Set<String> getIflowArtifactIdsFromPackage(String packageId, boolean skipDrafts) {
 		Objects.requireNonNull(packageId, "packageId must not be null");
 		if (packageId.isBlank()) {
 			throw new IllegalArgumentException("packageId must not be blank");
 		}
 		logger.info("Retrieving iflow artifact IDs from package {}", packageId);
+		logger.debug(skipDrafts ? "Draft iflows will be skipped" : "Draft iflows will be included");
 		XQueryEvaluator evaluator = createXqueryEvaluator("iflow-artifact-ids-from-api-response.xquery");
+		evaluator.setExternalVariable(new QName("skipDrafts"), new XdmAtomicValue(skipDrafts));
 		Set<String> iflowArtifactIds = getApiResponseAndEvaluateXquery(iflowArtifactsUriFromPackageId(packageId), evaluator);
 		logger.debug("{} iflow artifact IDs retrieved from package {}: {}", iflowArtifactIds.size(), packageId, iflowArtifactIds.stream().collect(Collectors.joining(",")));
 		return iflowArtifactIds;

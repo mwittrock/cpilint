@@ -49,6 +49,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_VERSION = "version";
 	private static final String CLI_OPTION_SKIP_IFLOWS = "skip-iflows";
 	private static final String CLI_OPTION_SKIP_SAP_PACKAGES = "skip-sap-packages";
+	private static final String CLI_OPTION_SKIP_DRAFTS = "skip-drafts";
 	private static final String CLI_OPTION_IFLOWS = "iflows";
 	private static final String CLI_OPTION_PASSWORD = "password";
 	private static final String CLI_OPTION_USERNAME = "username";
@@ -302,8 +303,9 @@ public final class CliClient {
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
+		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? Set.of(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS)) : Collections.emptySet();
-		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipIflowArtifactIds);
+		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipDrafts, skipIflowArtifactIds);
 	}
 	
 	private static char[] promptForPassword(String username) {
@@ -364,11 +366,13 @@ public final class CliClient {
 		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] -iflows <id> ...");
 		System.out.println();
 		System.out.println("To apply rules to all iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-iflows <id> ...]");
+		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-drafts] [-skip-iflows <id> ...]");
 		System.out.println();
-		System.out.println("Apply the optional -skip-sap-packages option if you want to skip all SAP packages.");
+		System.out.println("Apply the optional -skip-sap-packages option to skip SAP packages.");
 		System.out.println();
-		System.out.println("Apply the optional -skip-iflows <id> ... option if you want to skip certain iflow artifacts.");
+		System.out.println("Apply the optional -skip-drafts option to skip draft iflow artifacts.");
+		System.out.println();
+		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflow artifacts.");
 		System.out.println();
 		System.out.println("If the tenant password is not provided, you will be prompted for it.");
 		System.out.println();
@@ -490,6 +494,13 @@ public final class CliClient {
             .argName("id")
             .desc("Skip these iflow artifact IDs")
             .build());
+        // Add the option to skip draft iflow artifacts.
+        options.addOption(Option.builder()
+        	.longOpt(CLI_OPTION_SKIP_DRAFTS)
+        	.required(false)
+            .hasArg(false)
+            .desc("Skip draft iflow artifacts")
+            .build());
         // Add the debug option.
         options.addOption(Option.builder()
         	.longOpt(CLI_OPTION_DEBUG)
@@ -588,13 +599,14 @@ public final class CliClient {
     	 * + password
     	 * + skip-sap-packages
     	 * + skip-iflows
+    	 * + skip-drafts
     	 * + boring
     	 * + debug
     	 * 
     	 * if the -skip-iflows option is present, it must have at least one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
     	return checkOptions(cl, mandatory, optional) && !(cl.hasOption(CLI_OPTION_SKIP_IFLOWS) && cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS).length == 0);
     }
     

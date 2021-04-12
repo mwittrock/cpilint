@@ -15,11 +15,13 @@ public final class TenantAllArtifactsSupplier extends IteratingApiSupplierBase {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TenantAllArtifactsSupplier.class);
 	private boolean skipSapPackages;
+	private boolean skipDrafts;
 	private Set<String> skipIflowArtifactIds;
 	
-	public TenantAllArtifactsSupplier(CloudIntegrationApi api, boolean skipSapPackages, Set<String> skipIflowArtifactIds) {
+	public TenantAllArtifactsSupplier(CloudIntegrationApi api, boolean skipSapPackages, boolean skipDrafts, Set<String> skipIflowArtifactIds) {
 		super(api);
 		this.skipSapPackages = skipSapPackages;
+		this.skipDrafts = skipDrafts;
 		/*
 		 * It's okay for skipIflowArtifactIds to reference an empty Set, but
 		 * it must not be null.
@@ -33,12 +35,12 @@ public final class TenantAllArtifactsSupplier extends IteratingApiSupplierBase {
 		/*
 		 * Fetch all iflow artifact IDs from the tenant by first fetching
 		 * all packages (possibly skipping SAP packages) and then fetching
-		 * all iflow artifacts from every package.
+		 * all iflow artifacts from every package (possibly skipping drafts).
 		 */
 		Set<String> iflowArtifactIds = new HashSet<>();
 		try {
 			for (String packageId : api.getIntegrationPackageIds(skipSapPackages)) {
-				iflowArtifactIds.addAll(api.getIflowArtifactIdsFromPackage(packageId));
+				iflowArtifactIds.addAll(api.getIflowArtifactIdsFromPackage(packageId, skipDrafts));
 			}
 		} catch (CloudIntegrationApiError e) {
 			throw new IflowArtifactSupplierError("API error", e);

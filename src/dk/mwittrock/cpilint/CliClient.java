@@ -626,7 +626,7 @@ public final class CliClient {
     }
     
     private static void exitWithErrorMessage(String errorMessage) {
-    	// TODO: Log the error message and the exit code.
+    	logger.info("Exiting CliClient with error status {} and message: {}", EXIT_STATUS_ERRORS, errorMessage);
     	System.err.println(errorMessage);
 		System.exit(EXIT_STATUS_ERRORS);
     }

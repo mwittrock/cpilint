@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -292,8 +293,7 @@ public final class CliClient {
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
-		// TODO: A duplicate iflow ID should just be ignored, but right now it throws an exception.
-		Set<String> fetchIflowArtifactIds = Set.of(cl.getOptionValues(CLI_OPTION_IFLOWS));
+		Set<String> fetchIflowArtifactIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_IFLOWS)));
 		return new TenantSingleArtifactsSupplier(api, fetchIflowArtifactIds);
 	}
 
@@ -304,7 +304,7 @@ public final class CliClient {
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
-		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? Set.of(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS)) : Collections.emptySet();
+		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
 		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipDrafts, skipIflowArtifactIds);
 	}
 	

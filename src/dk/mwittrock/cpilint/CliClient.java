@@ -50,6 +50,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_VERSION = "version";
 	private static final String CLI_OPTION_SKIP_IFLOWS = "skip-iflows";
 	private static final String CLI_OPTION_SKIP_SAP_PACKAGES = "skip-sap-packages";
+	private static final String CLI_OPTION_SKIP_PACKAGES = "skip-packages";
 	private static final String CLI_OPTION_SKIP_DRAFTS = "skip-drafts";
 	private static final String CLI_OPTION_IFLOWS = "iflows";
 	private static final String CLI_OPTION_PASSWORD = "password";
@@ -305,7 +306,8 @@ public final class CliClient {
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
-		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipDrafts, skipIflowArtifactIds);
+		Set<String> skipPackageIds = cl.hasOption(CLI_OPTION_SKIP_PACKAGES) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_PACKAGES))) : Collections.emptySet();
+		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipDrafts, skipIflowArtifactIds, skipPackageIds);
 	}
 	
 	private static char[] promptForPassword(String username) {
@@ -366,13 +368,15 @@ public final class CliClient {
 		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] -iflows <id> ...");
 		System.out.println();
 		System.out.println("To apply rules to all iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-drafts] [-skip-iflows <id> ...]");
+		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-drafts] [-skip-iflows <id> ...] [-skip-packages <id> ...]");
 		System.out.println();
 		System.out.println("Apply the optional -skip-sap-packages option to skip SAP packages.");
 		System.out.println();
 		System.out.println("Apply the optional -skip-drafts option to skip draft iflow artifacts.");
 		System.out.println();
 		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflow artifacts.");
+		System.out.println();
+		System.out.println("Apply the optional -skip-packages <id> ... option to skip certain packages.");
 		System.out.println();
 		System.out.println("If the tenant password is not provided, you will be prompted for it.");
 		System.out.println();
@@ -494,6 +498,14 @@ public final class CliClient {
             .argName("id")
             .desc("Skip these iflow artifact IDs")
             .build());
+        // Add the option to skip certain packages when inspecting all iflows in a tenant.
+        options.addOption(Option.builder()
+        	.longOpt(CLI_OPTION_SKIP_PACKAGES)
+            .required(false)
+            .hasArgs()
+            .argName("id")
+            .desc("Skip these packages")
+            .build());
         // Add the option to skip draft iflow artifacts.
         options.addOption(Option.builder()
         	.longOpt(CLI_OPTION_SKIP_DRAFTS)
@@ -583,7 +595,7 @@ public final class CliClient {
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
-    	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_IFLOWS).length >= 1;
+    	return checkOptions(cl, mandatory, optional);
     }
 
     private static boolean tenantSupplierMultiMode(CommandLine cl) {
@@ -599,6 +611,7 @@ public final class CliClient {
     	 * + password
     	 * + skip-sap-packages
     	 * + skip-iflows
+    	 * + skip-packages
     	 * + skip-drafts
     	 * + boring
     	 * + debug
@@ -606,8 +619,8 @@ public final class CliClient {
     	 * if the -skip-iflows option is present, it must have at least one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
-    	return checkOptions(cl, mandatory, optional) && !(cl.hasOption(CLI_OPTION_SKIP_IFLOWS) && cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS).length == 0);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	return checkOptions(cl, mandatory, optional);
     }
     
     private static boolean checkOptions(CommandLine cl, Collection<String> mandatory, Collection<String> optional) {

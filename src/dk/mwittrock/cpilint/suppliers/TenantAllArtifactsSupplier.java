@@ -17,8 +17,9 @@ public final class TenantAllArtifactsSupplier extends IteratingApiSupplierBase {
 	private boolean skipSapPackages;
 	private boolean skipDrafts;
 	private Set<String> skipIflowArtifactIds;
+	private Set<String> skipPackageIds;
 	
-	public TenantAllArtifactsSupplier(CloudIntegrationApi api, boolean skipSapPackages, boolean skipDrafts, Set<String> skipIflowArtifactIds) {
+	public TenantAllArtifactsSupplier(CloudIntegrationApi api, boolean skipSapPackages, boolean skipDrafts, Set<String> skipIflowArtifactIds, Set<String> skipPackageIds) {
 		super(api);
 		this.skipSapPackages = skipSapPackages;
 		this.skipDrafts = skipDrafts;
@@ -28,38 +29,68 @@ public final class TenantAllArtifactsSupplier extends IteratingApiSupplierBase {
 		 */
 		Objects.requireNonNull(skipIflowArtifactIds, "skipIflowArtifactIds must not be null");
 		this.skipIflowArtifactIds = new HashSet<>(skipIflowArtifactIds);
+		/*
+		 * It's okay for skipPackageIds to reference an empty Set, but
+		 * it must not be null.
+		 */
+		Objects.requireNonNull(skipPackageIds, "skipPackageIds must not be null");
+		this.skipPackageIds = new HashSet<>(skipPackageIds);
 	}
 	
 	@Override
 	public void setup() {
 		/*
-		 * Fetch all iflow artifact IDs from the tenant by first fetching
-		 * all packages (possibly skipping SAP packages) and then fetching
-		 * all iflow artifacts from every package (possibly skipping drafts).
+		 * Fetch all packages from the tenant (possibly skipping SAP packages)
+		 * and filter out all packages, that are to be skipped (if any).
 		 */
-		Set<String> iflowArtifactIds = new HashSet<>();
+		Set<String> packageIds;
 		try {
-			for (String packageId : api.getIntegrationPackageIds(skipSapPackages)) {
-				iflowArtifactIds.addAll(api.getIflowArtifactIdsFromPackage(packageId, skipDrafts));
-			}
+			packageIds = api.getIntegrationPackageIds(skipSapPackages);
 		} catch (CloudIntegrationApiError e) {
-			throw new IflowArtifactSupplierError("API error", e);
+			throw new IflowArtifactSupplierError("API error when fetching package IDs", e);
+		}
+		Set<String> filteredPackageIds = packageIds
+			.stream()
+			.filter(p -> !skipPackageIds.contains(p))
+			.collect(Collectors.toSet());
+		/*
+		 * Log the packages that were skipped (if any).
+		 */
+		if (filteredPackageIds.size() < packageIds.size()) {
+			logger.debug("The following package IDs were skipped: {}",
+				packageIds.stream().filter(p -> !filteredPackageIds.contains(p)).collect(Collectors.joining(",")));
 		}
 		/*
-		 * Now filter out all iflow artifact IDs that are to be skipped (if any).
+		 * Now fetch all iflow artifact IDs from all remaining packages
+		 * (possibly skipping drafts), and filter out all iflow artifact
+		 * IDs, that are to be skipped (if any). 
 		 */
-		Set<String> filteredIds = iflowArtifactIds
+		Set<String> iflowIds = new HashSet<>();
+		try {
+			for (String packageId : filteredPackageIds) {
+				iflowIds.addAll(api.getIflowArtifactIdsFromPackage(packageId, skipDrafts));
+			}
+		} catch (CloudIntegrationApiError e) {
+			throw new IflowArtifactSupplierError("API error when fetching iflow IDs", e);
+		}
+		Set<String> filteredIflowIds = iflowIds
 			.stream()
 			.filter(i -> !skipIflowArtifactIds.contains(i))
 			.collect(Collectors.toSet());
 		/*
-		 * If iflow artifact IDs were actually skipped, the log should reflect that.
+		 * Log the iflows that were skipped (if any).
 		 */
-		if (filteredIds.size() < iflowArtifactIds.size()) {
-			logger.debug("The following iflow artifact IDs were skipped: {}",
-				iflowArtifactIds.stream().filter(i -> !filteredIds.contains(i)).collect(Collectors.joining(",")));
+		if (filteredIflowIds.size() < iflowIds.size()) {
+			logger.debug("The following iflow IDs were skipped: {}",
+				iflowIds.stream().filter(i -> !filteredIflowIds.contains(i)).collect(Collectors.joining(",")));
 		}
-		iflowArtifactIdIterator = filteredIds.iterator();
+		/*
+		 * If there are no iflows left at this point, log that fact.
+		 */
+		if (filteredIflowIds.isEmpty()) {
+			logger.info("Please note that after filtering, there are no iflows left");
+		}
+		iflowArtifactIdIterator = filteredIflowIds.iterator();
 	}
 	
 	@Override

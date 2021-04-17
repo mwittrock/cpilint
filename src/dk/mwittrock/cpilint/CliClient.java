@@ -177,18 +177,23 @@ public final class CliClient {
 	}
 
 	private static String resultMessage(IflowArtifactSupplier supplier, IssueConsumer consumer) {
-		// TODO: Handle the special case where zero iflows were inspected.
 		int artifactsSupplied = supplier.artifactsSupplied();
 		int issuesConsumed = consumer.issuesConsumed();
-		return String.format("Inspection of %d iflow %s resulted in %d %s found.",
-			artifactsSupplied,
-			artifactSingularPlural(artifactsSupplied),
-			issuesConsumed,
-			issueSingularPlural(issuesConsumed));
+		String message;
+		if (artifactsSupplied == 0) {
+			message = "No iflows were inspected.";
+		} else {
+			message = String.format("Inspecting %d %s resulted in %d %s found.",
+				artifactsSupplied,
+				iflowSingularPlural(artifactsSupplied),
+				issuesConsumed,
+				issueSingularPlural(issuesConsumed));
+		}
+		return message;
 	}
 	
-	private static String artifactSingularPlural(int count) {
-		return count == 1 ? "artifact" : "artifacts";
+	private static String iflowSingularPlural(int count) {
+		return count == 1 ? "iflow" : "iflows";
 	}
 	
 	private static String issueSingularPlural(int count) {

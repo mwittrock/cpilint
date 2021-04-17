@@ -8,7 +8,7 @@ public interface CloudIntegrationApi {
 	
 	public IflowArtifact getIflowArtifact(String iflowArtifactId);
 	
-	public Set<String> getIntegrationPackageIds(boolean skipSapPackages);
+	public Set<String> getEditableIntegrationPackageIds(boolean skipSapPackages);
 	
 	public Set<String> getIflowArtifactIdsFromPackage(String packageId, boolean skipDrafts);
 	

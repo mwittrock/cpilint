@@ -35,6 +35,7 @@ import dk.mwittrock.cpilint.suppliers.FileIflowArtifactSupplier;
 import dk.mwittrock.cpilint.suppliers.IflowArtifactSupplier;
 import dk.mwittrock.cpilint.suppliers.IflowArtifactSupplierError;
 import dk.mwittrock.cpilint.suppliers.TenantAllArtifactsSupplier;
+import dk.mwittrock.cpilint.suppliers.TenantIndividualPackagesSupplier;
 import dk.mwittrock.cpilint.suppliers.TenantSingleArtifactsSupplier;
 
 public final class CliClient {
@@ -53,6 +54,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_SKIP_PACKAGES = "skip-packages";
 	private static final String CLI_OPTION_SKIP_DRAFTS = "skip-drafts";
 	private static final String CLI_OPTION_IFLOWS = "iflows";
+	private static final String CLI_OPTION_PACKAGES = "packages";
 	private static final String CLI_OPTION_PASSWORD = "password";
 	private static final String CLI_OPTION_USERNAME = "username";
 	private static final String CLI_OPTION_TMN_HOST = "tmn-host";
@@ -68,7 +70,8 @@ public final class CliClient {
 		FILE_SUPPLIER_MODE,
 		DIRECTORY_SUPPLIER_MODE,
 		TENANT_SUPPLIER_SINGLE_MODE,
-		TENANT_SUPPLIER_MULTI_MODE
+		TENANT_SUPPLIER_MULTI_MODE,
+		TENANT_SUPPLIER_PACKAGES_MODE
 	}
 	
 	private CliClient() {
@@ -164,6 +167,8 @@ public final class CliClient {
 			mode = RunMode.TENANT_SUPPLIER_SINGLE_MODE;
 		} else if (tenantSupplierMultiMode(cl)) {
 			mode = RunMode.TENANT_SUPPLIER_MULTI_MODE;
+		} else if (tenantSupplierPackagesMode(cl)) {
+			mode = RunMode.TENANT_SUPPLIER_PACKAGES_MODE;
 		} else {
 			logger.error("Could not determine run mode from command line arguments");
 			exitWithErrorMessage(COMMAND_LINE_ERROR_MESSAGE);
@@ -172,6 +177,7 @@ public final class CliClient {
 	}
 
 	private static String resultMessage(IflowArtifactSupplier supplier, IssueConsumer consumer) {
+		// TODO: Handle the special case where zero iflows were inspected.
 		int artifactsSupplied = supplier.artifactsSupplied();
 		int issuesConsumed = consumer.issuesConsumed();
 		return String.format("Inspection of %d iflow %s resulted in %d %s found.",
@@ -241,6 +247,8 @@ public final class CliClient {
 			supplier = tenantSupplierSingleFromCommandLine(cl);
 		} else if (mode == RunMode.TENANT_SUPPLIER_MULTI_MODE) {
 			supplier = tenantSupplierMultiFromCommandLine(cl);
+		} else if (mode == RunMode.TENANT_SUPPLIER_PACKAGES_MODE) {
+			supplier = tenantSupplierPackagesFromCommandLine(cl);
 		} else {
 			/*
 			 * Given that the command line arguments ought to be valid,
@@ -310,6 +318,17 @@ public final class CliClient {
 		return new TenantAllArtifactsSupplier(api, skipSapPackages, skipDrafts, skipIflowArtifactIds, skipPackageIds);
 	}
 	
+	private static IflowArtifactSupplier tenantSupplierPackagesFromCommandLine(CommandLine cl) {
+		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
+		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
+		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
+		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
+		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
+		Set<String> packageIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_PACKAGES)));
+		return new TenantIndividualPackagesSupplier(api, skipDrafts, packageIds, skipIflowArtifactIds);
+	}
+	
 	private static char[] promptForPassword(String username) {
 		logger.info("Interactively prompting for tenant password");
 		Console console = System.console();
@@ -353,32 +372,35 @@ public final class CliClient {
 		printVersionBanner();
 		System.out.println();
 		System.out.println("To see the current version number:");
-		System.out.println("cpilint -version");
+		System.out.println(">cpilint -version");
 		System.out.println();
 		System.out.println("To see usage information (this message):");
-		System.out.println("cpilint -help");
+		System.out.println(">cpilint -help");
 		System.out.println();
-		System.out.println("To apply rules to individual iflow artifact files:");
-		System.out.println("cpilint -rules <file> -files <file> ...");
+		System.out.println("To inspect individual iflow files on the local machine:");
+		System.out.println(">cpilint -rules <file> -files <file> ...");
 		System.out.println();
-		System.out.println("To apply rules to all iflow artifact files in a directory:");
-		System.out.println("cpilint -rules <file> -directory <dir>");
+		System.out.println("To inspect all iflow files in a directory on the local machine:");
+		System.out.println(">cpilint -rules <file> -directory <dir>");
 		System.out.println();
-		System.out.println("To apply rules to individual iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] -iflows <id> ...");
-		System.out.println();
-		System.out.println("To apply rules to all iflow artifacts in your tenant:");
-		System.out.println("cpilint -rules <file> -tmn-host <host> -username <user> [-password <password>] [-skip-sap-packages] [-skip-drafts] [-skip-iflows <id> ...] [-skip-packages <id> ...]");
+		System.out.println("To inspect all iflows in your tenant:");
+		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user>");
 		System.out.println();
 		System.out.println("Apply the optional -skip-sap-packages option to skip SAP packages.");
-		System.out.println();
-		System.out.println("Apply the optional -skip-drafts option to skip draft iflow artifacts.");
-		System.out.println();
-		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflow artifacts.");
-		System.out.println();
 		System.out.println("Apply the optional -skip-packages <id> ... option to skip certain packages.");
+		System.out.println("Apply the optional -skip-drafts option to skip draft iflows.");
+		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
 		System.out.println();
-		System.out.println("If the tenant password is not provided, you will be prompted for it.");
+		System.out.println("To inspect the iflows in individual packages in your tenant:");
+		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user> -packages <id> ...");
+		System.out.println();
+		System.out.println("Apply the optional -skip-drafts option to skip draft iflows.");
+		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
+		System.out.println();
+		System.out.println("To inspect individual iflows in your tenant:");
+		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user> -iflows <id> ...");
+		System.out.println();
+		System.out.println("You can provide your tenant password with the optional -password <password> option. If you don't, you will be prompted for it.");
 		System.out.println();
 		System.out.println("To remove the ASCII art logo from CPILint's output, add the -boring option.");
 		System.out.println();
@@ -483,6 +505,14 @@ public final class CliClient {
             .argName("id")
             .desc("Inspect these iflow artifact IDs")
             .build());
+        // Add the option to specify which packages to inspect.
+        options.addOption(Option.builder()
+        	.longOpt(CLI_OPTION_PACKAGES)
+            .required(false)
+            .hasArgs()
+            .argName("id")
+            .desc("Inspect these packages")
+            .build());
         // Add the option to skip SAP packages when retrieving all iflow artifacts from the tenant.
         options.addOption(Option.builder()
         	.longOpt(CLI_OPTION_SKIP_SAP_PACKAGES)
@@ -581,7 +611,7 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + tenant-host
+    	 * + tmn-host
     	 * + username
     	 * + iflows
     	 * 
@@ -590,8 +620,6 @@ public final class CliClient {
     	 * + password
     	 * + boring
     	 * + debug
-    	 * 
-    	 * The -iflows option must have at least one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
@@ -603,7 +631,7 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + tenant-host
+    	 * + tmn-host
     	 * + username
     	 * 
     	 * The following options are optional:
@@ -615,11 +643,31 @@ public final class CliClient {
     	 * + skip-drafts
     	 * + boring
     	 * + debug
-    	 * 
-    	 * if the -skip-iflows option is present, it must have at least one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	return checkOptions(cl, mandatory, optional);
+    }
+    
+    private static boolean tenantSupplierPackagesMode(CommandLine cl) {
+    	/*
+    	 * The following options are mandatory in this mode:
+    	 * 
+    	 * + rules
+    	 * + tmn-host
+    	 * + username
+    	 * + packages
+    	 * 
+    	 * The following options are optional:
+    	 * 
+    	 * + password
+    	 * + skip-iflows
+    	 * + skip-drafts
+    	 * + boring
+    	 * + debug
+    	 */
+    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PACKAGES);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
     	return checkOptions(cl, mandatory, optional);
     }
     

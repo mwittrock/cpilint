@@ -26,7 +26,7 @@ abstract class IteratingApiSupplierBase implements IflowArtifactSupplier {
 		try {
 			iflow = api.getIflowArtifact(iflowArtifactIdIterator.next());
 		} catch (CloudIntegrationApiError e) {
-			throw new IflowArtifactSupplierError("API error", e);
+			throw new IflowArtifactSupplierError("API error when retrieving iflow", e);
 		}
 		artifactsSupplied++;
 		return iflow;
@@ -40,6 +40,6 @@ abstract class IteratingApiSupplierBase implements IflowArtifactSupplier {
 	@Override
 	public int artifactsSupplied() {
 		return artifactsSupplied;
-	}	
+	}
 	
 }

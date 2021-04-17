@@ -107,7 +107,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 	}
 
 	@Override
-	public Set<String> getIntegrationPackageIds(boolean skipSapPackages) {
+	public Set<String> getEditableIntegrationPackageIds(boolean skipSapPackages) {
 		logger.info("Retrieving package IDs from tenant");
 		logger.debug(skipSapPackages ? "SAP packages will be skipped" : "SAP packages will be included");
 		XQueryEvaluator evaluator = createXqueryEvaluator("package-ids-from-api-response.xquery");

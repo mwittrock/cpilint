@@ -21,7 +21,6 @@ final class UnencryptedEndpointsNotAllowedRule extends RuleBase {
 		ReceiverAdapter.HTTP,
 		ReceiverAdapter.IDOC,
 		ReceiverAdapter.SOAP,
-		ReceiverAdapter.SUCCESSFACTORS,
 		ReceiverAdapter.XI,
 		ReceiverAdapter.AS2
 		

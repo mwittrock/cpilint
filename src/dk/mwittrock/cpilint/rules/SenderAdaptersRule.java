@@ -20,6 +20,8 @@ final class SenderAdaptersRule extends RuleBase {
 	private final Set<SenderAdapter> adapters;
 	
 	SenderAdaptersRule(boolean allowed, Set<SenderAdapter> adapters) {
+		assert adapters != null;
+		assert !adapters.isEmpty();
 		this.allowed = allowed;
 		this.adapters = new HashSet<>(adapters);
 	}

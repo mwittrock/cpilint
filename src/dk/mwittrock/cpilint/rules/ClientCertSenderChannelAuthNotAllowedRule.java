@@ -20,7 +20,9 @@ final class ClientCertSenderChannelAuthNotAllowedRule extends RuleBase {
 			SenderAdapter.IDOC,
 			SenderAdapter.ODATA,
 			SenderAdapter.SOAP,
-			SenderAdapter.XI
+			SenderAdapter.XI,
+			SenderAdapter.AS2,
+			SenderAdapter.AS4
 		);
 
 	@Override

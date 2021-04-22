@@ -11,16 +11,23 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 	
 	static {
 		receiverAdapters = new HashMap<>();
+		receiverAdapters.put("amqp", ReceiverAdapter.AMQP);
 		receiverAdapters.put("ariba", ReceiverAdapter.ARIBA);
+		receiverAdapters.put("as2", ReceiverAdapter.AS2);
 		receiverAdapters.put("as4", ReceiverAdapter.AS4);
+		receiverAdapters.put("elster", ReceiverAdapter.ELSTER);
 		receiverAdapters.put("facebook", ReceiverAdapter.FACEBOOK);
+		receiverAdapters.put("ftp", ReceiverAdapter.FTP);
 		receiverAdapters.put("odata", ReceiverAdapter.ODATA);
 		receiverAdapters.put("http", ReceiverAdapter.HTTP);
 		receiverAdapters.put("idoc", ReceiverAdapter.IDOC);
 		receiverAdapters.put("jdbc", ReceiverAdapter.JDBC);
+		receiverAdapters.put("jms", ReceiverAdapter.JMS);
+		receiverAdapters.put("kafka", ReceiverAdapter.KAFKA);
 		receiverAdapters.put("ldap", ReceiverAdapter.LDAP);
 		receiverAdapters.put("mail", ReceiverAdapter.MAIL);
 		receiverAdapters.put("odc", ReceiverAdapter.ODC);
+		receiverAdapters.put("openconnectors", ReceiverAdapter.OPENCONNECTORS);
 		receiverAdapters.put("processdirect", ReceiverAdapter.PROCESSDIRECT);
 		receiverAdapters.put("rfc", ReceiverAdapter.RFC);
 		receiverAdapters.put("sftp", ReceiverAdapter.SFTP);

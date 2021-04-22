@@ -38,16 +38,23 @@ final class DefaultXmlModel implements XmlModel {
 		directionPropertyValues.put(ChannelDirection.RECEIVER, "Receiver");
 		// Initialize the receiverAdapterComponentTypes map.
 		receiverAdapterComponentTypes = new HashMap<>();
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AMQP, "AMQP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ARIBA, "Ariba");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AS2, "AS2");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS4, "AS4");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.ELSTER, "ELSTER");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FACEBOOK, "Facebook");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.FTP, "FTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ODATA, "HCIOData");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.HTTP, "HTTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.IDOC, "IDOC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.JDBC, "JDBC");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.JMS, "JMS");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.KAFKA, "Kafka");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.LDAP, "LDAP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.MAIL, "Mail");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ODC, "ODC");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.OPENCONNECTORS, "OpenConnectors");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.PROCESSDIRECT, "ProcessDirect");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.RFC, "RFC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SFTP, "SFTP");
@@ -57,9 +64,15 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.XI, "XI");
 		// Initialize the senderAdapterComponentTypes map.
 		senderAdapterComponentTypes = new HashMap<>();
+		senderAdapterComponentTypes.put(SenderAdapter.AMQP, "AMQP");
 		senderAdapterComponentTypes.put(SenderAdapter.ARIBA, "Ariba");
+		senderAdapterComponentTypes.put(SenderAdapter.AS2, "AS2");
+		senderAdapterComponentTypes.put(SenderAdapter.AS4, "AS4");
+		senderAdapterComponentTypes.put(SenderAdapter.FTP, "FTP");
 		senderAdapterComponentTypes.put(SenderAdapter.HTTPS, "HTTPS");
 		senderAdapterComponentTypes.put(SenderAdapter.IDOC, "IDOC");
+		senderAdapterComponentTypes.put(SenderAdapter.JMS, "JMS");
+		senderAdapterComponentTypes.put(SenderAdapter.KAFKA, "Kafka");
 		senderAdapterComponentTypes.put(SenderAdapter.MAIL, "Mail");
 		senderAdapterComponentTypes.put(SenderAdapter.ODATA, "ODataSender");
 		senderAdapterComponentTypes.put(SenderAdapter.PROCESSDIRECT, "ProcessDirect");
@@ -69,13 +82,14 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.XI, "XI");
 		// Initialize the httpEndpointPropertyKeyNames map.
 		httpEndpointPropertyKeyNames = new HashMap<>();
-		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS4, List.of("endpointUrl", "samlEndpoint"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS4, List.of("endpointUrl", "samlEndpoint", "pullReceiptTargetURL"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.ODATA, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.HTTP, List.of("httpAddressWithoutQuery"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.IDOC, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.SOAP, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.SUCCESSFACTORS, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.XI, List.of("Address"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS2, List.of("receipientURL", "mdnTargetURL"));
 		// Initialize the mappingTypePropertyKeys map.
 		mappingTypePropertyKeys = new HashMap<>();
 		mappingTypePropertyKeys.put(MappingType.MESSAGE_MAPPING, "mappingType");
@@ -117,6 +131,8 @@ final class DefaultXmlModel implements XmlModel {
 		clientCertAuthPropertyKeys.put(SenderAdapter.ODATA, "authentication");
 		clientCertAuthPropertyKeys.put(SenderAdapter.SOAP, "senderAuthType");
 		clientCertAuthPropertyKeys.put(SenderAdapter.XI, "senderAuthType");
+		clientCertAuthPropertyKeys.put(SenderAdapter.AS2, "senderAuthType");
+		clientCertAuthPropertyKeys.put(SenderAdapter.AS4, "senderAuthType");
 		// Initialize the clientCertAuthPropertyValues map.
 		clientCertAuthPropertyValues = new HashMap<>();
 		clientCertAuthPropertyValues.put(SenderAdapter.HTTPS, "ClientCertificate");
@@ -124,7 +140,10 @@ final class DefaultXmlModel implements XmlModel {
 		clientCertAuthPropertyValues.put(SenderAdapter.ODATA, "certificate");
 		clientCertAuthPropertyValues.put(SenderAdapter.SOAP, "ClientCertificate");
 		clientCertAuthPropertyValues.put(SenderAdapter.XI, "ClientCertificate");
+		clientCertAuthPropertyValues.put(SenderAdapter.AS2, "ClientCertificate");
+		clientCertAuthPropertyValues.put(SenderAdapter.AS4, "ClientCertificate");
 		// Initialize the onPremReceiverAdapters set.
+		// TODO: Check that the following is still accurate.
 		onPremReceiverAdapters = new HashSet<>();
 		onPremReceiverAdapters.add(ReceiverAdapter.HTTP);
 		onPremReceiverAdapters.add(ReceiverAdapter.ODATA);
@@ -135,6 +154,8 @@ final class DefaultXmlModel implements XmlModel {
 		onPremReceiverAdapters.add(ReceiverAdapter.MAIL);
 		onPremReceiverAdapters.add(ReceiverAdapter.SFTP);
 		onPremReceiverAdapters.add(ReceiverAdapter.ODC);
+		onPremReceiverAdapters.add(ReceiverAdapter.AS2);
+		onPremReceiverAdapters.add(ReceiverAdapter.AS4);
 	}
 
 	@Override

@@ -4,9 +4,15 @@ import java.util.Set;
 
 public enum SenderAdapter {
 	
+	AMQP("AMQP"),
 	ARIBA("Ariba"),
+	AS2("AS2"),
+	AS4("AS4"),
+	FTP("FTP"),
 	HTTPS("HTTPS"),
 	IDOC("IDoc"),
+	JMS("JMS"),
+	KAFKA("Kafka"),
 	MAIL("Mail"),
 	ODATA("OData"),
 	PROCESSDIRECT("ProcessDirect"),

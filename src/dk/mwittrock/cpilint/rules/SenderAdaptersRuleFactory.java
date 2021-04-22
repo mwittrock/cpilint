@@ -11,9 +11,15 @@ public final class SenderAdaptersRuleFactory extends AllowDisallowRuleFactoryBas
 	
 	static {
 		senderAdapters = new HashMap<>();
+		senderAdapters.put("amqp", SenderAdapter.AMQP);
 		senderAdapters.put("ariba", SenderAdapter.ARIBA);
+		senderAdapters.put("as2", SenderAdapter.AS2);
+		senderAdapters.put("as4", SenderAdapter.AS4);
+		senderAdapters.put("ftp", SenderAdapter.FTP);
 		senderAdapters.put("https", SenderAdapter.HTTPS);
 		senderAdapters.put("idoc", SenderAdapter.IDOC);
+		senderAdapters.put("jms", SenderAdapter.JMS);
+		senderAdapters.put("kafka", SenderAdapter.KAFKA);
 		senderAdapters.put("mail", SenderAdapter.MAIL);
 		senderAdapters.put("odata", SenderAdapter.ODATA);
 		senderAdapters.put("processdirect", SenderAdapter.PROCESSDIRECT);

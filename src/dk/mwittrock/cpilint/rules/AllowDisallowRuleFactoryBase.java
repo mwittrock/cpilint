@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -19,6 +20,13 @@ abstract class AllowDisallowRuleFactoryBase<T, U extends Rule> implements RuleFa
 	private final BiFunction<Boolean, Set<T>, U> ruleFunction; 
 	
 	AllowDisallowRuleFactoryBase(String allowElementName, String disallowElementName, Map<String, T> valueMap, BiFunction<Boolean, Set<T>, U> ruleFunction) {
+		assert allowElementName != null;
+		assert !allowElementName.isBlank();
+		assert disallowElementName != null;
+		assert !disallowElementName.isBlank();
+		assert valueMap != null;
+		assert !valueMap.isEmpty();
+		assert ruleFunction != null;
 		this.allowElementName = allowElementName;
 		this.disallowElementName = disallowElementName;
 		this.valueMap = new HashMap<>(valueMap);
@@ -27,12 +35,14 @@ abstract class AllowDisallowRuleFactoryBase<T, U extends Rule> implements RuleFa
 
 	@Override
 	public boolean canCreateFrom(Element e) {
+		Objects.requireNonNull(e, "e must not be null");
 		String elementName = e.getName();
 		return elementName.equals(allowElementName) || elementName.equals(disallowElementName);
 	}
 
 	@Override
 	public U createFrom(Element e) {
+		Objects.requireNonNull(e, "e must not be null");
 		String ruleElementName = e.getName();
 		if (!canCreateFrom(e)) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", ruleElementName));

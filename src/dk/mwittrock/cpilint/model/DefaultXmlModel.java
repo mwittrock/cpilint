@@ -378,6 +378,11 @@ final class DefaultXmlModel implements XmlModel {
 		return JarResourceUtil.loadXqueryResource("process-direct-sender-channel-addresses.xquery");
 	}
 
+	@Override
+	public String xqueryForCleartextBasicAuthReceiverChannels() {
+		return JarResourceUtil.loadXqueryResource("cleartext-basic-auth-not-allowed.xquery");
+	}
+	
 	private static void nodeMustBeAnElement(XdmNode node) {
 		if (node.getNodeKind() != XdmNodeKind.ELEMENT) {
 			throw new IllegalArgumentException("Provided node is not an element");

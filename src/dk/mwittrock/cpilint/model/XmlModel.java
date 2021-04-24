@@ -58,6 +58,8 @@ public interface XmlModel {
 	
 	public String xqueryForProcessDirectSenderChannelAddresses();
 	
+	public String xqueryForCleartextBasicAuthReceiverChannels();
+	
 	// Flow step related.
 	
 	public String xpathForFlowSteps(String... predicates);

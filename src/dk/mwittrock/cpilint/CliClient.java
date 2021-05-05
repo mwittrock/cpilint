@@ -41,7 +41,7 @@ import dk.mwittrock.cpilint.suppliers.TenantSingleArtifactsSupplier;
 public final class CliClient {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CliClient.class);
-	private static final String VERSION = "1.0.2";
+	private static final String VERSION = "1.0.3";
 	private static final String COPYRIGHT = "2019-2021 Morten N. Wittrock";
 	private static final int EXIT_STATUS_SUCCESS = 0;
 	private static final int EXIT_STATUS_ISSUES = 1;

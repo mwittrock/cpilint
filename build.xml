@@ -3,7 +3,7 @@
 <project name="CPILint" default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="app.name" value="cpilint"/>
-	<property name="version" value="1.0.2"/>
+	<property name="version" value="1.0.3"/>
 	<property name="app.name.versioned" value="${app.name}-${version}"/>
 	<property name="jar" value="${app.name.versioned}.jar"/>
 	<property name="source.dir" value="src"/>
@@ -22,6 +22,7 @@
 	<property name="scripts.dir" value="scripts"/>
 	<property name="logback.dir" value="logback"/>
 	<property name="resources.dir" value="resources"/>
+	<property name="dist.files.dir" value="dist-files"/>
 
 	<path id="classpath.build">
 		<fileset dir="${compile.dependencies.dir}" includes="*.jar"/>
@@ -69,6 +70,7 @@
 			<fileset dir="." includes="${resources.dir}/**"/>
 			<fileset dir="." includes="${3rd.party.licenses.dir}/*"/>
 			<fileset dir="." includes="${logback.dir}/*"/>
+			<fileset dir="." includes="${dist.files.dir}/*"/>
 			<fileset dir="." includes="build.xml"/>
             <fileset dir="." includes="ivy.xml"/>
 			<fileset dir="." includes="LICENSE.txt"/>
@@ -84,6 +86,7 @@
 			<zipfileset dir="." includes="LICENSE.txt" prefix="${release.root}/"/>
 			<zipfileset dir="${logback.dir}" prefix="${release.root}/logback"/>
 			<zipfileset dir="${3rd.party.licenses.dir}" prefix="${release.root}/3rd-party-licenses"/>
+			<zipfileset dir="${dist.files.dir}" includes="README.txt" prefix="${release.root}/"/>
 		</zip>
 		<!-- Clean up. -->
 		<delete dir="${temp.dir}"/>

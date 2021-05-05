@@ -88,7 +88,7 @@ final class DefaultXmlModel implements XmlModel {
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.IDOC, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.SOAP, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.XI, List.of("Address"));
-		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS2, List.of("receipientURL", "mdnTargetURL"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS2, List.of("receipientURL")); // Removed mdnTargetURL since it's not called from CPI.
 		// Initialize the mappingTypePropertyKeys map.
 		mappingTypePropertyKeys = new HashMap<>();
 		mappingTypePropertyKeys.put(MappingType.MESSAGE_MAPPING, "mappingType");

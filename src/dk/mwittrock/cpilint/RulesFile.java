@@ -22,6 +22,7 @@ import dk.mwittrock.cpilint.rules.ClientCertSenderChannelAuthNotAllowedRuleFacto
 import dk.mwittrock.cpilint.rules.CsrfProtectionRequiredRuleFactory;
 import dk.mwittrock.cpilint.rules.DuplicateResourcesNotAllowedRuleFactory;
 import dk.mwittrock.cpilint.rules.IflowDescriptionRequiredRuleFactory;
+import dk.mwittrock.cpilint.rules.IflowNameMatchesRuleFactory;
 import dk.mwittrock.cpilint.rules.JavaArchivesRuleFactory;
 import dk.mwittrock.cpilint.rules.MappingTypesRuleFactory;
 import dk.mwittrock.cpilint.rules.MatchingProcessDirectChannelsRequiredRuleFactory;
@@ -57,6 +58,7 @@ public final class RulesFile {
 		ruleFactories.add(new MultiConditionTypeRoutersNotAllowedRuleFactory());
 		ruleFactories.add(new MatchingProcessDirectChannelsRequiredRuleFactory());
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
+		ruleFactories.add(new IflowNameMatchesRuleFactory());
 	}
 	
 	private RulesFile() {

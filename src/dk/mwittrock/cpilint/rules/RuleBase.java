@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import dk.mwittrock.cpilint.consumers.IssueConsumer;
 
-abstract class RuleBase implements Rule {
+public abstract class RuleBase implements Rule {
 	
 	protected IssueConsumer consumer;
 

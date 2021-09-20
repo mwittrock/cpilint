@@ -7,8 +7,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.ServiceLoader;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -39,6 +41,7 @@ public final class RulesFile {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RulesFile.class);
 	private static final Collection<RuleFactory> ruleFactories;
+	private static final ServiceLoader<RuleFactory> loader = ServiceLoader.load(RuleFactory.class);
 	
 	static {
 		ruleFactories = new ArrayList<>();
@@ -57,6 +60,16 @@ public final class RulesFile {
 		ruleFactories.add(new MultiConditionTypeRoutersNotAllowedRuleFactory());
 		ruleFactories.add(new MatchingProcessDirectChannelsRequiredRuleFactory());
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
+		Iterator<RuleFactory> extensionRules = loader.iterator();
+		logger.info("Checking for extensions");
+		System.out.println("Test");
+		while(extensionRules.hasNext())
+		{
+			RuleFactory extensionRule = extensionRules.next();
+			System.out.println("Found new extension: "+ extensionRule.getClass().getName());
+			logger.debug("Found new extension: '%s'", extensionRule.getClass().getName());
+			ruleFactories.add(extensionRule);
+		}
 	}
 	
 	private RulesFile() {
@@ -108,7 +121,7 @@ public final class RulesFile {
 				.filter(f -> f.canCreateFrom(ruleElement))
 				.collect(Collectors.toSet());
 			if (factories.isEmpty()) {
-				throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleElement.getName()));
+				throw new RulesFileError(String.format("No factory available to process rule '%s'. Please check your classpath", ruleElement.getName()));
 			}
 			if (factories.size() > 1) {
 				logger.debug("Multiple RuleFactory instances available for element {}: {}",

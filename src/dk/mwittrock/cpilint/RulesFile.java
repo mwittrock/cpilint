@@ -61,12 +61,10 @@ public final class RulesFile {
 		ruleFactories.add(new MatchingProcessDirectChannelsRequiredRuleFactory());
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
 		Iterator<RuleFactory> extensionRules = loader.iterator();
-		logger.info("Checking for extensions");
-		System.out.println("Test");
+		logger.debug("Checking for extensions");
 		while(extensionRules.hasNext())
 		{
 			RuleFactory extensionRule = extensionRules.next();
-			System.out.println("Found new extension: "+ extensionRule.getClass().getName());
 			logger.debug("Found new extension: '%s'", extensionRule.getClass().getName());
 			ruleFactories.add(extensionRule);
 		}

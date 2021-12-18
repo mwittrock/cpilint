@@ -37,9 +37,10 @@ public final class TenantIndividualPackagesSupplier extends PackageSupplierBase 
 	@Override
 	public void setup() {
 		/*
-		 * Filter out packages that are not editable. Otherwise the API will
-		 * return iflow IDs, that will cause HTTP status 400 when they are
-		 * fetched later on. 
+		 * Make sure to proceed with only editable integration packages.
+		 * Read-only packages will return iflow IDs, that cause HTTP status
+		 * 400 when they are fetched later on. Nonexistent packages will cause
+		 * HTTP 404 when trying to fetch their iflow artifacts.
 		 */
 		Set<String> editablePackageIds = new HashSet<>(packageIds);
 		final boolean packagesFiltered;
@@ -49,10 +50,10 @@ public final class TenantIndividualPackagesSupplier extends PackageSupplierBase 
 			throw new IflowArtifactSupplierError("API error when fetching editable packages", e);
 		}
 		/*
-		 * Log it if any read-only packages were filtered out.
+		 * Log it if any packages were filtered out.
 		 */
 		if (packagesFiltered) {
-			logger.debug("The following read-only packages were filtered out: {}",
+			logger.debug("The following read-only or nonexistent packages were filtered out: {}",
 				packageIds.stream().filter(p -> !editablePackageIds.contains(p)).collect(Collectors.joining(",")));
 		}
 		iflowArtifactIdIterator = iteratorFromPackages(editablePackageIds, skipDrafts, skipIflowArtifactIds);

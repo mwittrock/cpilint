@@ -101,10 +101,12 @@ public final class CliClient {
 			System.exit(EXIT_STATUS_SUCCESS);
 		}
 		/*
-		 * Prepare to run a test.
+		 * Prepare to run a test. The rules file is processed first, so that
+		 * the user is not asked to needlessly type in their password, if
+		 * it turns out there's a problem with the rules file.  
 		 */
-		IflowArtifactSupplier supplier = supplierFromCommandLine(mode, cl);
 		Collection<Rule> rules = rulesFromCommandLine(cl);
+		IflowArtifactSupplier supplier = supplierFromCommandLine(mode, cl);
 		IssueConsumer consumer = issueConsumerFromCommandLine(cl);
 		/*
 		 *  Now, create a CpiLint object and run the test.

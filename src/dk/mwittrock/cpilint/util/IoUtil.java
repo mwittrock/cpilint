@@ -10,7 +10,7 @@ public final class IoUtil {
 		throw new AssertionError("Never supposed to be instantiated");
 	}
 	
-	public static String inputstreamToString(InputStream in, Charset cs) throws IOException {
+	public static String inputStreamToString(InputStream in, Charset cs) throws IOException {
 		byte[] bytes = in.readAllBytes();
 		return new String(bytes, cs);
 	}

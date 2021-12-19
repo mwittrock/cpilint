@@ -27,7 +27,7 @@ public final class JarResourceUtil {
 		}
 		String xquery;
 		try {
-			xquery = IoUtil.inputstreamToString(xqueryStream, StandardCharsets.UTF_8);
+			xquery = IoUtil.inputStreamToString(xqueryStream, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			throw new JarResourceError(String.format("Error reading XQuery resource '%s'", xqueryFilename), e);
 		}

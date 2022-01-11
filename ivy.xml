@@ -15,6 +15,6 @@
         <dependency org="org.slf4j" name="slf4j-api" rev="1.7.30" conf="compile->master"/>
         <dependency org="ch.qos.logback" name="logback-core" rev="1.2.3" conf="compile->master"/>
         <dependency org="ch.qos.logback" name="logback-classic" rev="1.2.3" conf="compile->master"/>
+        <dependency org="org.json" name="json" rev="20211205" conf="compile->master"/>
     </dependencies>
 </ivy-module>
-

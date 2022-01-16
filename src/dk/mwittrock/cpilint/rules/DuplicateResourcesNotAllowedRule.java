@@ -19,11 +19,21 @@ final class DuplicateResourcesNotAllowedRule extends RuleBase {
 	private static final String HASHING_ALGORITHM = "SHA-256";
 	
 	private final Set<ArtifactResourceType> typesToInspect;
-	private Map<ArtifactResourceType, Map<BigInteger, Set<ArtifactResource>>> resources = new HashMap<>();
+	private final Map<ArtifactResourceType, Map<BigInteger, Set<ArtifactResource>>> resources = new HashMap<>();
 	
 	DuplicateResourcesNotAllowedRule() {
-		// Look for duplicates in all types of resources.
-		this(Set.of(ArtifactResourceType.values()));
+		// Look for duplicates of all supported resource types.
+		this(Set.of(
+			ArtifactResourceType.MESSAGE_MAPPING,
+			ArtifactResourceType.XSLT_MAPPING,
+			ArtifactResourceType.OPERATION_MAPPING,
+			ArtifactResourceType.JAVASCRIPT_SCRIPT,
+			ArtifactResourceType.GROOVY_SCRIPT,
+			ArtifactResourceType.JAVA_ARCHIVE,
+			ArtifactResourceType.EDMX,
+			ArtifactResourceType.WSDL,
+			ArtifactResourceType.XSD
+		));
 	}
 	
 	DuplicateResourcesNotAllowedRule(Set<ArtifactResourceType> typesToInspect) {

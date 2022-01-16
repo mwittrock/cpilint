@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.dom4j.Element;
 
+import dk.mwittrock.cpilint.RulesFileError;
 import dk.mwittrock.cpilint.artifacts.ArtifactResourceType;
 
 public final class DuplicateResourcesNotAllowedRuleFactory implements RuleFactory {
@@ -21,7 +22,6 @@ public final class DuplicateResourcesNotAllowedRuleFactory implements RuleFactor
 		resourceTypes.put("javascript-script", ArtifactResourceType.JAVASCRIPT_SCRIPT);
 		resourceTypes.put("groovy-script", ArtifactResourceType.GROOVY_SCRIPT);
 		resourceTypes.put("java-archive", ArtifactResourceType.JAVA_ARCHIVE);
-		resourceTypes.put("integration-flow", ArtifactResourceType.IFLOW);
 		resourceTypes.put("edmx", ArtifactResourceType.EDMX);
 		resourceTypes.put("wsdl", ArtifactResourceType.WSDL);
 		resourceTypes.put("xml-schema", ArtifactResourceType.XSD);
@@ -37,9 +37,21 @@ public final class DuplicateResourcesNotAllowedRuleFactory implements RuleFactor
 		if (!canCreateFrom(e)) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", e.getName()));
 		}
-		Set<ArtifactResourceType> specifiedTypes = e.elements("resource-type")
+		Set<String> specifiedTypeNames = e.elements("resource-type")
 			.stream()
 			.map(Element::getText)
+			.collect(Collectors.toSet());
+		// Make sure that we recognize all the specified resources.
+		Set<String> unknownTypeNames = specifiedTypeNames
+			.stream()
+			.filter(n -> !resourceTypes.containsKey(n))
+			.collect(Collectors.toSet());
+		if (!unknownTypeNames.isEmpty()) {
+			throw new RulesFileError(String.format("Unknown resource type(s) in rule DuplicateResourcesNotAllowed: %s", unknownTypeNames.stream().collect(Collectors.joining(","))));
+		}
+		// All the specified resource types are recognized.
+		Set<ArtifactResourceType> specifiedTypes = specifiedTypeNames
+			.stream()
 			.map(resourceTypes::get)
 			.collect(Collectors.toSet());
 		Rule r;

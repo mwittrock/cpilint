@@ -765,7 +765,7 @@ public final class CliClient {
 		 * errors that might occur are logged but not reported. In this mode,
 		 * if anything fails we'll just return from the method.
 		 */
-		final String apiEndpoint = "https://f996c3f5trial-trial.integrationsuitetrial-apim.ap21.hana.ondemand.com/f996c3f5trial/releases/latest";
+		final String apiEndpoint = "https://api.github.com/repos/mwittrock/cpilint/releases/latest";
 		final String tagRegex = "^v\\d+(?:\\.\\d+)+$";
 		final int httpOkayStatus = 200; // TODO: All the statuses we use should go in a utility class as static final fields.
 		final String whereToDownload = "https://github.com/mwittrock/cpilint/releases/latest";
@@ -789,7 +789,7 @@ public final class CliClient {
             .build();
         HttpResponse<String> response = null;
 		try {
-			logger.debug("Calling GitHub API");
+			logger.debug("Calling GitHub API at {}", apiEndpoint);
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
 			logger.error("Exception calling GitHub API", e);

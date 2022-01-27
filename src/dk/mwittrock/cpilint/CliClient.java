@@ -65,7 +65,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_PACKAGES = "packages";
 	private static final String CLI_OPTION_PASSWORD = "password";
 	private static final String CLI_OPTION_USERNAME = "username";
-	private static final String CLI_OPTION_TMN_HOST = "tmn-host";
+	private static final String CLI_OPTION_HOST = "host";
 	private static final String CLI_OPTION_FILES = "files";
 	private static final String CLI_OPTION_DIRECTORY = "directory";
 	private static final String CLI_OPTION_RULES = "rules";
@@ -322,7 +322,7 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierSingleFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
+		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
@@ -331,7 +331,7 @@ public final class CliClient {
 	}
 
 	private static IflowArtifactSupplier tenantSupplierMultiFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
+		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
@@ -343,7 +343,7 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierPackagesFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_TMN_HOST);
+		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
 		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
@@ -411,7 +411,7 @@ public final class CliClient {
 		System.out.println(">cpilint -rules <file> -directory <dir>");
 		System.out.println();
 		System.out.println("To inspect all iflows in your tenant:");
-		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user>");
+		System.out.println(">cpilint -rules <file> -host <host> -username <user>");
 		System.out.println();
 		System.out.println("Apply the optional -skip-sap-packages option to skip SAP packages.");
 		System.out.println("Apply the optional -skip-packages <id> ... option to skip certain packages.");
@@ -419,13 +419,13 @@ public final class CliClient {
 		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
 		System.out.println();
 		System.out.println("To inspect the iflows in individual packages in your tenant:");
-		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user> -packages <id> ...");
+		System.out.println(">cpilint -rules <file> -host <host> -username <user> -packages <id> ...");
 		System.out.println();
 		System.out.println("Apply the optional -skip-drafts option to skip draft iflows.");
 		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
 		System.out.println();
 		System.out.println("To inspect individual iflows in your tenant:");
-		System.out.println(">cpilint -rules <file> -tmn-host <host> -username <user> -iflows <id> ...");
+		System.out.println(">cpilint -rules <file> -host <host> -username <user> -iflows <id> ...");
 		System.out.println();
 		System.out.println("You can provide your tenant password with the optional -password <password> option. If you don't, you will be prompted for it.");
 		System.out.println();
@@ -502,7 +502,7 @@ public final class CliClient {
             .build());
         // Add the Tenant Management Node host option.
         options.addOption(Option.builder()
-        	.longOpt(CLI_OPTION_TMN_HOST)
+        	.longOpt(CLI_OPTION_HOST)
             .required(false)
             .hasArg()
             .argName("host")
@@ -660,7 +660,7 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + tmn-host
+    	 * + host
     	 * + username
     	 * + iflows
     	 * 
@@ -670,7 +670,7 @@ public final class CliClient {
     	 * + boring
     	 * + debug
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
+    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
     	return checkOptions(cl, mandatory, optional);
     }
@@ -680,7 +680,7 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + tmn-host
+    	 * + host
     	 * + username
     	 * 
     	 * The following options are optional:
@@ -693,7 +693,7 @@ public final class CliClient {
     	 * + boring
     	 * + debug
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME);
+    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
     	return checkOptions(cl, mandatory, optional);
     }
@@ -703,7 +703,7 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + tmn-host
+    	 * + host
     	 * + username
     	 * + packages
     	 * 
@@ -715,7 +715,7 @@ public final class CliClient {
     	 * + boring
     	 * + debug
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_TMN_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PACKAGES);
+    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PACKAGES);
     	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
     	return checkOptions(cl, mandatory, optional);
     }

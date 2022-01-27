@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="cpilint">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="rules" type="rulesType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="rulesType">
+		<xs:all>
+			<xs:element name="cleartext-basic-auth-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="matching-process-direct-channels-required" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="multi-condition-type-routers-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="allowed-receiver-adapters" type="allowedReceiverAdaptersType" minOccurs="0"/>
+			<xs:element name="disallowed-receiver-adapters" type="disallowedReceiverAdaptersType" minOccurs="0"/>
+			<xs:element name="allowed-scripting-languages" type="allowedScriptingLanguagesType" minOccurs="0"/>
+			<xs:element name="disallowed-scripting-languages" type="disallowedScriptingLanguagesType" minOccurs="0"/>
+			<xs:element name="allowed-sender-adapters" type="allowedSenderAdaptersType" minOccurs="0"/>
+			<xs:element name="disallowed-sender-adapters" type="disallowedSenderAdaptersType" minOccurs="0"/>
+			<xs:element name="unencrypted-data-store-write-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="unencrypted-endpoints-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="allowed-xslt-versions" type="allowedXsltVersionsType" minOccurs="0"/>
+			<xs:element name="disallowed-xslt-versions" type="disallowedXsltVersionsType" minOccurs="0"/>
+			<xs:element name="client-cert-sender-channel-auth-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="csrf-protection-required" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="allowed-mapping-types" type="allowedMappingTypesType" minOccurs="0"/>
+			<xs:element name="disallowed-mapping-types" type="disallowedMappingTypesType" minOccurs="0"/>
+			<xs:element name="allowed-java-archives" type="allowedJavaArchivesType" minOccurs="0"/>
+			<xs:element name="disallowed-java-archives" type="disallowedJavaArchivesType" minOccurs="0"/>
+			<xs:element name="iflow-description-required" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+
+	<!-- General types -->
+
+	<xs:complexType name="emptyElementType"/>
+
+	<!-- Types for rule ReceiverAdapters -->
+
+	<xs:simpleType name="receiverAdaptersType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="amqp"/>
+			<xs:enumeration value="ariba"/>
+			<xs:enumeration value="as2"/>
+			<xs:enumeration value="as4"/>
+			<xs:enumeration value="elster"/>
+			<xs:enumeration value="facebook"/>
+			<xs:enumeration value="ftp"/>
+			<xs:enumeration value="odata"/>
+			<xs:enumeration value="http"/>
+			<xs:enumeration value="idoc"/>
+			<xs:enumeration value="jdbc"/>
+			<xs:enumeration value="jms"/>
+			<xs:enumeration value="kafka"/>
+			<xs:enumeration value="ldap"/>
+			<xs:enumeration value="mail"/>
+			<xs:enumeration value="odc"/>
+			<xs:enumeration value="openconnectors"/>
+			<xs:enumeration value="processdirect"/>
+			<xs:enumeration value="rfc"/>
+			<xs:enumeration value="sftp"/>
+			<xs:enumeration value="soap"/>
+			<xs:enumeration value="successfactors"/>
+			<xs:enumeration value="twitter"/>
+			<xs:enumeration value="xi"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="allowedReceiverAdaptersType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="receiverAdaptersType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedReceiverAdaptersType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="receiverAdaptersType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule ScriptingLanguages -->
+
+	<xs:simpleType name="scriptingLanguagesType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="groovy"/>
+			<xs:enumeration value="javascript"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="allowedScriptingLanguagesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="scriptingLanguagesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedScriptingLanguagesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="scriptingLanguagesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule SenderAdapters -->
+
+	<xs:simpleType name="senderAdaptersType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="amqp"/>
+			<xs:enumeration value="ariba"/>
+			<xs:enumeration value="as2"/>
+			<xs:enumeration value="as4"/>
+			<xs:enumeration value="ftp"/>
+			<xs:enumeration value="https"/>
+			<xs:enumeration value="idoc"/>
+			<xs:enumeration value="jms"/>
+			<xs:enumeration value="kafka"/>
+			<xs:enumeration value="mail"/>
+			<xs:enumeration value="odata"/>
+			<xs:enumeration value="processdirect"/>
+			<xs:enumeration value="sftp"/>
+			<xs:enumeration value="soap"/>
+			<xs:enumeration value="successfactors"/>
+			<xs:enumeration value="xi"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="allowedSenderAdaptersType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="senderAdaptersType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedSenderAdaptersType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="senderAdaptersType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule XsltVersions -->
+
+	<xs:simpleType name="xsltVersionsType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1.0"/>
+			<xs:enumeration value="2.0"/>
+			<xs:enumeration value="3.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="allowedXsltVersionsType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="xsltVersionsType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedXsltVersionsType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="xsltVersionsType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule MappingTypes -->
+
+	<xs:simpleType name="mappingTypesType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="message-mapping"/>
+			<xs:enumeration value="operation-mapping"/>
+			<xs:enumeration value="xslt-mapping"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="allowedMappingTypesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="mappingTypesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedMappingTypesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="mappingTypesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule JavaArchives -->
+
+	<xs:complexType name="allowedJavaArchivesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedJavaArchivesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule DuplicateResourcesNotAllowed -->
+
+	<xs:simpleType name="resourcesType">
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="message-mapping"/>
+				<xs:enumeration value="xslt-mapping"/>
+				<xs:enumeration value="operation-mapping"/>
+				<xs:enumeration value="javascript-script"/>
+				<xs:enumeration value="groovy-script"/>
+				<xs:enumeration value="java-archive"/>
+				<xs:enumeration value="integration-flow"/>
+				<xs:enumeration value="edmx"/>
+				<xs:enumeration value="wsdl"/>
+				<xs:enumeration value="xml-schema"/>
+			</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="duplicateResourcesType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="resource-type" type="resourcesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

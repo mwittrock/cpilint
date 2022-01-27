@@ -8,14 +8,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import dk.mwittrock.cpilint.rules.CleartextBasicAuthNotAllowedRuleFactory;
 import dk.mwittrock.cpilint.rules.ClientCertSenderChannelAuthNotAllowedRuleFactory;
@@ -37,6 +48,7 @@ import dk.mwittrock.cpilint.rules.XsltVersionsRuleFactory;
 
 public final class RulesFile {
 	
+	private static final String XML_SCHEMA_RESOURCE_PATH = "resources/xml-schema/rules-file-schema.xsd";
 	private static final Logger logger = LoggerFactory.getLogger(RulesFile.class);
 	private static final Collection<RuleFactory> ruleFactories;
 	
@@ -84,7 +96,7 @@ public final class RulesFile {
 		Document doc;
 		try {
 			doc = parseRulesFile(is);
-		} catch (DocumentException e) {
+		} catch (DocumentException | SAXException e) {
 			throw new RulesFileError("Error parsing rules file XML", e);
 		}
 		/*
@@ -122,11 +134,68 @@ public final class RulesFile {
 		return rules;
 	}
 	
-	private static Document parseRulesFile(InputStream is) throws DocumentException {
-		// TODO: Also validate the XML.
+	private static Document parseRulesFile(InputStream is) throws DocumentException, SAXException {
         SAXReader reader = new SAXReader();
+		// Disable access to XML external entities.
+		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         Document document = reader.read(is);
+		validateRules(document);
+		logger.info("Rules file is valid");
         return document;
-	}	
+	}
+
+	private static void validateRules(Document document) {
+		// Validate using the XML Schema first.
+		try {
+			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			Schema schema = factory.newSchema(new StreamSource(RulesFile.class.getClassLoader().getResourceAsStream(XML_SCHEMA_RESOURCE_PATH)));
+			Validator validator = schema.newValidator();
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			validator.setErrorHandler(new ErrorHandler() {
+				public void warning(SAXParseException e) throws SAXException {
+					// Ignore.
+				}
+				public void error(SAXParseException e) throws SAXException {
+					failValidation(e);
+				}
+				public void fatalError(SAXParseException e) throws SAXException {
+					failValidation(e);
+				}
+				private void failValidation(SAXParseException e) {
+					logger.error("Rules file schema validation error: {}", e.getMessage());
+					throw new RulesFileError("The rules file format is not valid.");
+				}
+			});
+			validator.validate(new DocumentSource(document));
+		} catch (SAXException e) {
+			logger.error("SAXException from Validator", e);
+			throw new RulesFileError("There was an error validating the rules file.");
+		} catch (IOException e) {
+			logger.error("IOException while validating the rules file", e);
+			throw new RulesFileError("There was an I/O error while validating the rules file.");
+		}
+		// Then check additional validation rules, that are not implemented in XML Schema yet.
+		Set<String> ruleElementNames = document.getRootElement().element("rules").elements()
+			.stream()
+			.map(Element::getName)
+			.collect(Collectors.toUnmodifiableSet());
+		if (ruleElementNames.isEmpty()) {
+			throw new RulesFileError("The rules file must contain at least one rule.");
+		}
+		Collection<Consumer<Set<String>>> allowDisallowRulesChecks = Set.of(
+			s -> { if (s.contains("allowed-receiver-adapters") && s.contains("disallowed-receiver-adapters")) throw new RulesFileError("Only one of the variations of rule ReceiverAdapters is allowed."); },
+			s -> { if (s.contains("allowed-scripting-languages") && s.contains("disallowed-scripting-languages")) throw new RulesFileError("Only one of the variations of rule ScriptingLanguages is allowed."); },
+			s -> { if (s.contains("allowed-sender-adapters") && s.contains("disallowed-sender-adapters")) throw new RulesFileError("Only one of the variations of rule SenderAdapters is allowed."); },
+			s -> { if (s.contains("allowed-xslt-versions") && s.contains("disallowed-xslt-versions")) throw new RulesFileError("Only one of the variations of rule XsltVersions is allowed."); },
+			s -> { if (s.contains("allowed-mapping-types") && s.contains("disallowed-mapping-types")) throw new RulesFileError("Only one of the variations of rule MappingTypes is allowed."); },
+			s -> { if (s.contains("allowed-java-archives") && s.contains("disallowed-java-archives")) throw new RulesFileError("Only one of the variations of rule JavaArchives is allowed."); }
+		);
+		allowDisallowRulesChecks.forEach(c -> c.accept(ruleElementNames));
+	}
 
 }

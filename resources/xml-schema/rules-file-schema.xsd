@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1">
 
 	<xs:element name="cpilint">
 		<xs:complexType>
@@ -33,6 +33,15 @@
 			<xs:element name="iflow-description-required" type="emptyElementType" minOccurs="0"/>
 			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
 		</xs:all>
+		<!-- At least one rule should be present. -->
+		<xs:assert test="count(*) gt 0"/>
+		<!-- For the allow/disallow rules, only one of the variations must be present. -->
+		<xs:assert test="not(allowed-receiver-adapters and disallowed-receiver-adapters)"/>
+		<xs:assert test="not(allowed-scripting-languages and disallowed-scripting-languages)"/>
+		<xs:assert test="not(allowed-sender-adapters and disallowed-sender-adapters)"/>
+		<xs:assert test="not(allowed-xslt-versions and disallowed-xslt-versions)"/>
+		<xs:assert test="not(allowed-mapping-types and disallowed-mapping-types)"/>
+		<xs:assert test="not(allowed-java-archives and disallowed-java-archives)"/>
 	</xs:complexType>
 
 	<!-- General types -->

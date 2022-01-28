@@ -23,6 +23,7 @@
 	<property name="logback.dir" value="logback"/>
 	<property name="resources.dir" value="resources"/>
 	<property name="dist.files.dir" value="dist-files"/>
+	<property name="xerces.dir" value="${dist.files.dir}/xerces-runtime-jars"/>
 
 	<path id="classpath.build">
 		<fileset dir="${compile.dependencies.dir}" includes="*.jar"/>
@@ -81,6 +82,7 @@
 		<zip destfile="${release.dir}/${release.archive}">
 			<zipfileset dir="${build.lib}" includes="${jar}" prefix="${release.root}/lib"/>
 			<zipfileset dir="${runtime.dependencies.dir}" includes="*.jar" prefix="${release.root}/lib"/>
+			<zipfileset dir="${xerces.dir}" includes="*.jar" prefix="${release.root}/lib"/>
 			<zipfileset dir="${temp.dir}" includes="${source.archive}" prefix="${release.root}/source"/>
 			<zipfileset dir="${scripts.dir}" prefix="${release.root}/bin"/>
 			<zipfileset dir="." includes="LICENSE.txt" prefix="${release.root}/"/>

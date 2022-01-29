@@ -65,6 +65,10 @@ final class DuplicateResourcesNotAllowedRule extends RuleBase {
 
 	@Override
 	public void endTesting() {
+		if (resources.isEmpty()) {
+			// No iflows were inspected.
+			return;
+		}
 		for (ArtifactResourceType type : typesToInspect) {
 			assert resources.containsKey(type);
 			Map<BigInteger, Set<ArtifactResource>> digests = resources.get(type);

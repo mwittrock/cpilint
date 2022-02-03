@@ -1,0 +1,15 @@
+package dk.mwittrock.cpilint.model;
+
+public enum Nameable {
+	
+	IFLOW_NAME,
+	IFLOW_ID,
+	CHANNEL,
+	SENDER_CHANNEL,
+	RECEIVER_CHANNEL,
+	MAPPING,
+	MESSAGE_MAPPING,
+	XSLT_MAPPING,
+	OPERATION_MAPPING;
+	
+}

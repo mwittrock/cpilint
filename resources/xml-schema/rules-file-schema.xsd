@@ -32,6 +32,7 @@
 			<xs:element name="disallowed-java-archives" type="disallowedJavaArchivesType" minOccurs="0"/>
 			<xs:element name="iflow-description-required" type="emptyElementType" minOccurs="0"/>
 			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
+			<xs:element name="naming" type="namingType" minOccurs="0" maxOccurs="unbounded"/> <!-- Unlike the other rules, the naming rule can occur multiple times. -->
 		</xs:all>
 		<!-- At least one rule should be present. -->
 		<xs:assert test="count(*) gt 0"/>
@@ -226,6 +227,65 @@
 		<xs:sequence minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="resource-type" type="resourcesType"/>
 		</xs:sequence>
+	</xs:complexType>
+
+	<!-- Types for rule Naming -->
+	
+	<xs:complexType name="namingType">
+		<xs:sequence>
+			<xs:element name="scheme" type="schemeTypeSingle"/>
+			<xs:element name="message" type="xs:string"/>
+			<xs:element name="apply-to" type="nameableType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:simpleType name="nameableType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="iflow.name"/>
+			<xs:enumeration value="iflow.id"/>
+			<xs:enumeration value="channel.name"/>
+			<xs:enumeration value="sender-channel.name"/>
+			<xs:enumeration value="receiver-channel.name"/>
+			<xs:enumeration value="mapping.name"/>
+			<xs:enumeration value="message-mapping.name"/>
+			<xs:enumeration value="xslt-mapping.name"/>
+			<xs:enumeration value="operation-mapping.name"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:group name="schemeGroup">
+		<xs:choice>
+			<xs:element name="starts-with" type="xs:string"/>
+			<xs:element name="ends-with" type="xs:string"/>
+			<xs:element name="equals" type="equalsSchemeType"/>
+			<xs:element name="regex" type="xs:string"/>
+			<xs:element name="not" type="schemeTypeSingle"/>
+			<xs:element name="and" type="schemeTypeMultiple"/>
+			<xs:element name="or" type="schemeTypeMultiple"/>
+		</xs:choice>
+	</xs:group>
+	
+	<xs:complexType name="schemeTypeSingle">
+		<xs:group ref="schemeGroup"/>
+	</xs:complexType>
+	
+	<xs:complexType name="schemeTypeMultiple">
+		<xs:group ref="schemeGroup" maxOccurs="unbounded"/>
+	</xs:complexType>
+	
+	<xs:complexType name="equalsSchemeType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="ignore-case" use="optional">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="yes"/>
+							<xs:enumeration value="no"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 
 </xs:schema>

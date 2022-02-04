@@ -250,6 +250,11 @@
 			<xs:enumeration value="message-mapping.name"/>
 			<xs:enumeration value="xslt-mapping.name"/>
 			<xs:enumeration value="operation-mapping.name"/>
+			<xs:enumeration value="script.name"/>
+			<xs:enumeration value="groovy-script.name"/>
+			<xs:enumeration value="js-script.name"/>
+			<xs:enumeration value="sender.name"/>
+			<xs:enumeration value="receiver.name"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

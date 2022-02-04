@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.mwittrock.cpilint.IflowXml;
 import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.IflowArtifactTag;
@@ -15,6 +18,7 @@ import dk.mwittrock.cpilint.issues.NamingRuleIssue;
 import dk.mwittrock.cpilint.model.ChannelDirection;
 import dk.mwittrock.cpilint.model.MappingType;
 import dk.mwittrock.cpilint.model.Nameable;
+import dk.mwittrock.cpilint.model.ScriptingLanguage;
 import dk.mwittrock.cpilint.model.XmlModel;
 import dk.mwittrock.cpilint.model.XmlModelFactory;
 import dk.mwittrock.cpilint.rules.naming.NamingScheme;
@@ -26,6 +30,7 @@ final class NamingRule extends RuleBase {
 	private static final Map<Nameable, Function<XmlModel, String>> nameableToXpathFunctionMap;
 	private static final Map<Nameable, BiFunction<XdmNode, XmlModel, String>> nameableToNameFunctionMap;
 	private static final Map<Nameable, BiFunction<XdmNode, XmlModel, String>> nameableToIdentFunctionMap;
+	private static final Logger logger = LoggerFactory.getLogger(NamingRule.class);
 	
 	static {
 		// Initialize the nameableToXpathFunctionMap map.
@@ -37,6 +42,11 @@ final class NamingRule extends RuleBase {
 		nameableToXpathFunctionMap.put(Nameable.MESSAGE_MAPPING, m -> m.xpathForMappingSteps(MappingType.MESSAGE_MAPPING));
 		nameableToXpathFunctionMap.put(Nameable.XSLT_MAPPING, m -> m.xpathForMappingSteps(MappingType.XSLT_MAPPING));
 		nameableToXpathFunctionMap.put(Nameable.OPERATION_MAPPING, m -> m.xpathForMappingSteps(MappingType.OPERATION_MAPPING));
+		nameableToXpathFunctionMap.put(Nameable.SCRIPT, m -> m.xpathForFlowSteps(m.stepPredicateForScriptSteps()));
+		nameableToXpathFunctionMap.put(Nameable.GROOVY_SCRIPT, m -> m.xpathForScriptSteps(ScriptingLanguage.GROOVY));
+		nameableToXpathFunctionMap.put(Nameable.JS_SCRIPT, m -> m.xpathForScriptSteps(ScriptingLanguage.JAVASCRIPT));
+		nameableToXpathFunctionMap.put(Nameable.SENDER, m -> m.xpathForSenderParticipants());
+		nameableToXpathFunctionMap.put(Nameable.RECEIVER, m -> m.xpathForReceiverParticipants());
 		// Initialize the nameableToNameFunctionMap map.
 		nameableToNameFunctionMap = new HashMap<>();
 		nameableToNameFunctionMap.put(Nameable.CHANNEL, (n, m) -> m.getChannelNameFromElement(n));
@@ -46,6 +56,11 @@ final class NamingRule extends RuleBase {
 		nameableToNameFunctionMap.put(Nameable.MESSAGE_MAPPING, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.XSLT_MAPPING, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.OPERATION_MAPPING, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.SCRIPT, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.GROOVY_SCRIPT, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.JS_SCRIPT, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.SENDER, (n, m) -> m.getParticipantNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.RECEIVER, (n, m) -> m.getParticipantNameFromElement(n));
 		// Initialize the nameableToIdentFunctionMap map.
 		nameableToIdentFunctionMap = new HashMap<>();
 		nameableToIdentFunctionMap.put(Nameable.CHANNEL, (n, m) -> String.format("channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
@@ -55,6 +70,11 @@ final class NamingRule extends RuleBase {
 		nameableToIdentFunctionMap.put(Nameable.MESSAGE_MAPPING, (n, m) -> String.format("message mapping step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.XSLT_MAPPING, (n, m) -> String.format("XSLT mapping step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.OPERATION_MAPPING, (n, m) -> String.format("operation mapping step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.SCRIPT, (n, m) -> String.format("script step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.GROOVY_SCRIPT, (n, m) -> String.format("Groovy script step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.JS_SCRIPT, (n, m) -> String.format("JavaScript script step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.SENDER, (n, m) -> String.format("Sender participant '%s' (ID '%s')", m.getParticipantNameFromElement(n), m.getParticipantIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.RECEIVER, (n, m) -> String.format("Receiver participant '%s' (ID '%s')", m.getParticipantNameFromElement(n), m.getParticipantIdFromElement(n)));
 		// The keys of the above maps should be identical.
 		assert nameableToXpathFunctionMap.keySet().equals(nameableToNameFunctionMap.keySet());
 		assert nameableToNameFunctionMap.keySet().equals(nameableToIdentFunctionMap.keySet());
@@ -96,15 +116,19 @@ final class NamingRule extends RuleBase {
 			 *  ones that are not extracted with XPath from the iflow XML.
 			 */
 			if (n == Nameable.IFLOW_NAME) {
-				String iflowName = tag.getName(); 
+				String iflowName = tag.getName();
+				logger.debug("Checking {} name '{}'", n, iflowName);
 				if (!scheme.test(iflowName)) {
+					logger.debug("Name is not compliant ('{}')", message);
 					consumer.consume(new NamingRuleIssue(tag, errorMessage("iflow name"), iflowName));
 				}
 				continue;
 			}
 			if (n == Nameable.IFLOW_ID) {
 				String iflowId = tag.getId();
+				logger.debug("Checking {} name '{}'", n, iflowId);
 				if (!scheme.test(iflowId)) {
+					logger.debug("Name is not compliant ('{}')", message);
 					consumer.consume(new NamingRuleIssue(tag, errorMessage("iflow ID"), iflowId));
 				}
 				continue;
@@ -121,8 +145,10 @@ final class NamingRule extends RuleBase {
 				assert i.isNode();
 				XdmNode node = (XdmNode)i;
 				String name = nameableToNameFunctionMap.get(n).apply(node, model);
+				logger.debug("Checking {} name '{}'", n, name);
 				if (!scheme.test(name)) {
 					// This name does not follow the naming scheme.
+					logger.debug("Name is not compliant ('{}')", message);
 					String ident = nameableToIdentFunctionMap.get(n).apply(node, model);
 					consumer.consume(new NamingRuleIssue(tag, errorMessage(ident), name));
 				}

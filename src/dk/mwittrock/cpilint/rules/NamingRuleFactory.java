@@ -39,6 +39,11 @@ public final class NamingRuleFactory implements RuleFactory {
 		applyToValues.put("message-mapping.name", Nameable.MESSAGE_MAPPING);
 		applyToValues.put("xslt-mapping.name", Nameable.XSLT_MAPPING);
 		applyToValues.put("operation-mapping.name", Nameable.OPERATION_MAPPING);
+		applyToValues.put("script.name", Nameable.SCRIPT);
+		applyToValues.put("groovy-script.name", Nameable.GROOVY_SCRIPT);
+		applyToValues.put("js-script.name", Nameable.JS_SCRIPT);
+		applyToValues.put("sender.name", Nameable.SENDER);
+		applyToValues.put("receiver.name", Nameable.RECEIVER);
 	}
 
 	@Override

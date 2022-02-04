@@ -98,6 +98,16 @@ public interface XmlModel {
 	
 	public String xqueryForMultiConditionTypeRouters();
 	
+	// Participant related.
+
+	public String xpathForSenderParticipants();
+
+	public String xpathForReceiverParticipants();
+
+	public String getParticipantNameFromElement(XdmNode node);
+
+	public String getParticipantIdFromElement(XdmNode node);
+
 	// Other iflow content.
 	
 	public String xpathForIflowDescription();

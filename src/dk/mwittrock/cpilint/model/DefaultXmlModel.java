@@ -388,5 +388,33 @@ final class DefaultXmlModel implements XmlModel {
 			throw new IllegalArgumentException("Provided node is not an element");
 		}
 	}
-	
+
+	private static String attributeEqualityPredicate(String attributeName, String value) {
+		return String.format("[@%s = '%s']", attributeName, value);
+	}
+
+	private String xpathForParticipants(String... predicates) {
+		return appendPredicates("//bpmn2:participant", predicates);
+	}
+
+	public String xpathForSenderParticipants() {
+		String senderTypePredicate = attributeEqualityPredicate("ifl:type", "EndpointSender");
+		return xpathForParticipants(senderTypePredicate);
+	}
+
+	public String xpathForReceiverParticipants() {
+		String receiverTypePredicate = attributeEqualityPredicate("ifl:type", "EndpointRecevier"); // Yes, that is the spelling to use, even though receiver is spelled wrong.
+		return xpathForParticipants(receiverTypePredicate);
+	}
+
+	public String getParticipantNameFromElement(XdmNode node) {
+		nodeMustBeAnElement(node);
+		return node.attribute("name");
+	}
+
+	public String getParticipantIdFromElement(XdmNode node) {
+		nodeMustBeAnElement(node);
+		return node.attribute("id");
+	}
+
 }

@@ -301,6 +301,11 @@ final class DefaultXmlModel implements XmlModel {
 	}
 
 	@Override
+	public String stepPredicateForContentModifierSteps() {
+		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "Enricher");
+	}
+
+	@Override
 	public String stepPredicateForScriptingLanguage(ScriptingLanguage scriptingLanguage) {
 		assert scriptingLanguagePropertyValues.containsKey(scriptingLanguage);
 		String key = "subActivityType";

@@ -47,6 +47,7 @@ final class NamingRule extends RuleBase {
 		nameableToXpathFunctionMap.put(Nameable.JS_SCRIPT, m -> m.xpathForScriptSteps(ScriptingLanguage.JAVASCRIPT));
 		nameableToXpathFunctionMap.put(Nameable.SENDER, m -> m.xpathForSenderParticipants());
 		nameableToXpathFunctionMap.put(Nameable.RECEIVER, m -> m.xpathForReceiverParticipants());
+		nameableToXpathFunctionMap.put(Nameable.CONTENT_MODIFIER, m -> m.xpathForFlowSteps(m.stepPredicateForContentModifierSteps()));
 		// Initialize the nameableToNameFunctionMap map.
 		nameableToNameFunctionMap = new HashMap<>();
 		nameableToNameFunctionMap.put(Nameable.CHANNEL, (n, m) -> m.getChannelNameFromElement(n));
@@ -61,6 +62,7 @@ final class NamingRule extends RuleBase {
 		nameableToNameFunctionMap.put(Nameable.JS_SCRIPT, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SENDER, (n, m) -> m.getParticipantNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.RECEIVER, (n, m) -> m.getParticipantNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.CONTENT_MODIFIER, (n, m) -> m.getStepNameFromElement(n));
 		// Initialize the nameableToIdentFunctionMap map.
 		nameableToIdentFunctionMap = new HashMap<>();
 		nameableToIdentFunctionMap.put(Nameable.CHANNEL, (n, m) -> String.format("channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
@@ -75,6 +77,7 @@ final class NamingRule extends RuleBase {
 		nameableToIdentFunctionMap.put(Nameable.JS_SCRIPT, (n, m) -> String.format("JavaScript script step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SENDER, (n, m) -> String.format("Sender participant '%s' (ID '%s')", m.getParticipantNameFromElement(n), m.getParticipantIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.RECEIVER, (n, m) -> String.format("Receiver participant '%s' (ID '%s')", m.getParticipantNameFromElement(n), m.getParticipantIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.CONTENT_MODIFIER, (n, m) -> String.format("content modifier step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		// The keys of the above maps should be identical.
 		assert nameableToXpathFunctionMap.keySet().equals(nameableToNameFunctionMap.keySet());
 		assert nameableToNameFunctionMap.keySet().equals(nameableToIdentFunctionMap.keySet());

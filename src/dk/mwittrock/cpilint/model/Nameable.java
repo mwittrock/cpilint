@@ -15,6 +15,7 @@ public enum Nameable {
 	GROOVY_SCRIPT,
 	JS_SCRIPT,
 	SENDER,
-	RECEIVER;
+	RECEIVER,
+	CONTENT_MODIFIER;
 	
 }

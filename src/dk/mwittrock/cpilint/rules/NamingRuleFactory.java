@@ -44,6 +44,7 @@ public final class NamingRuleFactory implements RuleFactory {
 		applyToValues.put("js-script.name", Nameable.JS_SCRIPT);
 		applyToValues.put("sender.name", Nameable.SENDER);
 		applyToValues.put("receiver.name", Nameable.RECEIVER);
+		applyToValues.put("content-modifier.name", Nameable.CONTENT_MODIFIER);
 	}
 
 	@Override

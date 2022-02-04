@@ -32,19 +32,19 @@ public final class NamingRuleFactory implements RuleFactory {
 		applyToValues = new HashMap<>();
 		applyToValues.put("iflow.name", Nameable.IFLOW_NAME);
 		applyToValues.put("iflow.id", Nameable.IFLOW_ID);
-		applyToValues.put("channel.name", Nameable.CHANNEL);
-		applyToValues.put("sender-channel.name", Nameable.SENDER_CHANNEL);
-		applyToValues.put("receiver-channel.name", Nameable.RECEIVER_CHANNEL);
-		applyToValues.put("mapping.name", Nameable.MAPPING);
-		applyToValues.put("message-mapping.name", Nameable.MESSAGE_MAPPING);
-		applyToValues.put("xslt-mapping.name", Nameable.XSLT_MAPPING);
-		applyToValues.put("operation-mapping.name", Nameable.OPERATION_MAPPING);
-		applyToValues.put("script.name", Nameable.SCRIPT);
-		applyToValues.put("groovy-script.name", Nameable.GROOVY_SCRIPT);
-		applyToValues.put("js-script.name", Nameable.JS_SCRIPT);
-		applyToValues.put("sender.name", Nameable.SENDER);
-		applyToValues.put("receiver.name", Nameable.RECEIVER);
-		applyToValues.put("content-modifier.name", Nameable.CONTENT_MODIFIER);
+		applyToValues.put("channel.name", Nameable.CHANNEL_NAME);
+		applyToValues.put("sender-channel.name", Nameable.SENDER_CHANNEL_NAME);
+		applyToValues.put("receiver-channel.name", Nameable.RECEIVER_CHANNEL_NAME);
+		applyToValues.put("mapping.name", Nameable.MAPPING_STEP_NAME);
+		applyToValues.put("message-mapping.name", Nameable.MESSAGE_MAPPING_STEP_NAME);
+		applyToValues.put("xslt-mapping.name", Nameable.XSLT_MAPPING_STEP_NAME);
+		applyToValues.put("operation-mapping.name", Nameable.OPERATION_MAPPING_STEP_NAME);
+		applyToValues.put("script.name", Nameable.SCRIPT_STEP_NAME);
+		applyToValues.put("groovy-script.name", Nameable.GROOVY_SCRIPT_STEP_NAME);
+		applyToValues.put("js-script.name", Nameable.JS_SCRIPT_STEP_NAME);
+		applyToValues.put("sender.name", Nameable.SENDER_NAME);
+		applyToValues.put("receiver.name", Nameable.RECEIVER_NAME);
+		applyToValues.put("content-modifier.name", Nameable.CONTENT_MODIFIER_STEP_NAME);
 	}
 
 	@Override

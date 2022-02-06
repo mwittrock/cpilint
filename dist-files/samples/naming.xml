@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpilint>
+    <rules>
+
+        <!-- The following examples of naming conventions have been borrowed from SAP’s Integration Flow Design Guidelines. -->
+
+        <naming>
+            <scheme>
+                <starts-with>HTTP_RCV_</starts-with>
+            </scheme>
+            <message>HTTP receiver channel names should start with HTTP_RCV_</message>
+            <apply-to>http-receiver-channel.name</apply-to>
+        </naming>
+
+        <naming>
+            <scheme>
+                <or>
+                    <starts-with>OP_</starts-with>
+                    <starts-with>B2B_</starts-with>
+                    <starts-with>CP_</starts-with>
+                </or>
+            </scheme>
+            <message>Participant names should start with OP_, B2B_ or CP_</message>
+            <apply-to>sender.name</apply-to>
+            <apply-to>receiver.name</apply-to>
+        </naming>        
+
+        <naming>
+            <scheme>
+                <starts-with>XSL_</starts-with>
+            </scheme>
+            <message>XSLT mapping step names should start with XSL_</message>
+            <apply-to>xslt-mapping.name</apply-to>
+        </naming>
+
+    </rules>
+</cpilint>

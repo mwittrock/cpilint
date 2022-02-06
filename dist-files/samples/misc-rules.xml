@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpilint>
+    <rules>
+
+        <!-- Require that all iflows have a description. -->
+        <iflow-description-required/>
+
+        <!-- Don't allow the social media receiver adapters. -->
+        <disallowed-receiver-adapters>
+            <disallow>facebook</disallow>
+            <disallow>twitter</disallow>
+        </disallowed-receiver-adapters>
+
+        <!-- Don't allow Router steps configured with both XML and non-XML conditions. -->
+        <multi-condition-type-routers-not-allowed/>
+        
+        <!-- Message Mapping and XSLT are the two allowed mapping types. -->
+        <allowed-mapping-types>
+            <allow>message-mapping</allow>
+            <allow>xslt-mapping</allow>
+        </allowed-mapping-types>
+
+        <!-- Make sure that all data store writes are encrypted. -->
+        <unencrypted-data-store-write-not-allowed/>
+
+    </rules>
+</cpilint>
+

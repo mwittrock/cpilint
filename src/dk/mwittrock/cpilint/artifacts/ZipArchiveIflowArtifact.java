@@ -98,7 +98,12 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		// Extract all contents of the archive.
 		Map<String, byte[]> contents = extractArchiveContents(is);
 		// Extract the iflow's name and ID from the manifest.
-		IflowArtifactTag tag = createTag(contents.get(MANIFEST_PATH));
+	 	byte[] manifestcontents = contents.get(MANIFEST_PATH);
+		// If no Manifest in zipfile, not an iflow package;
+		if (manifestcontents == null) {
+			throw new SaxonApiException("Not an iflow zip package");
+		}
+		IflowArtifactTag tag = createTag(manifestcontents);
 		// Replace external parameters in the iflow XML, if this iflow artifact
 		// actually contains an external parameters file (this is not always the case).
 		if (externalParametersPresent(contents)) {

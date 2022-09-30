@@ -27,7 +27,7 @@ abstract class IteratorIflowArtifactSupplierBase implements IflowArtifactSupplie
 		try {
 			iflow = ZipArchiveIflowArtifact.from(iterator.next());
 		} catch (IOException | SaxonApiException e) {
-			throw new IflowArtifactSupplierError("Error while processing iflow artifact", e);
+			throw new IflowArtifactSupplierError("Error while processing iflow artifact\n"+e.getMessage(), e);
 		}
 		artifactsSupplied++;
 		return iflow;

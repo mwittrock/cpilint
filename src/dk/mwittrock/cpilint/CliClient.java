@@ -50,7 +50,7 @@ public final class CliClient {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CliClient.class);
 	private static final String VERSION = "1.0.4";
-	private static final String COPYRIGHT = "2019-2022 Morten N. Wittrock";
+	private static final String COPYRIGHT = "2019-2023 Morten N. Wittrock";
 	private static final int EXIT_STATUS_SUCCESS = 0;
 	private static final int EXIT_STATUS_ISSUES = 1;
 	private static final int EXIT_STATUS_ERRORS = 2;
@@ -72,6 +72,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_BORING = "boring";
 	private static final String CLI_OPTION_DEBUG = "debug";
 	private static final String CLI_OPTION_VERCHECK = "vercheck";
+	private static final String CLI_OPTION_SKIPVERCHECK = "skipvercheck";
 	
 	private static enum RunMode {
 		VERSION_MODE,
@@ -131,7 +132,12 @@ public final class CliClient {
 			printAsciiArtLogo();
 			System.out.println();
 		}
-		versionCheck(false);
+		if (cl.hasOption(CLI_OPTION_SKIPVERCHECK)) {
+			logger.info("Skipping version check");
+		} else {
+			logger.info("Performing version check");
+			versionCheck(false);
+		}
 		CpiLint linter = new CpiLint(supplier, rules, consumer);
 		try {
 			linter.run();
@@ -432,6 +438,8 @@ public final class CliClient {
 		System.out.println("To remove the ASCII art logo from CPILint's output, add the -boring option.");
 		System.out.println();
 		System.out.println("To create a debug log file, add the -debug option.");
+		System.out.println();
+		System.out.println("To skip the automatic version check, add the -skipvercheck option.");
 	}
 
 	private static void printAsciiArtLogo() {
@@ -584,7 +592,14 @@ public final class CliClient {
             .hasArg(false)
             .desc("Check if a newer version of CPILint exists")
             .build());
-			// All done.
+        // Add the option to skip the version check.
+        options.addOption(Option.builder()
+        	.longOpt(CLI_OPTION_SKIPVERCHECK)
+            .required(false)
+            .hasArg(false)
+            .desc("Skip the version check")
+            .build());
+		// All done.
         return options;
     }
     
@@ -628,11 +643,12 @@ public final class CliClient {
     	 * 
     	 * + boring
     	 * + debug
+		 * + skipvercheck
     	 * 
     	 * The -files option must have at least one argument.
     	 */    	
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_FILES);
-    	Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_FILES).length >= 1;
     }
 
@@ -647,11 +663,12 @@ public final class CliClient {
     	 * 
     	 * + boring
     	 * + debug
+		 * + skipvercheck
     	 * 
     	 * The -directory option must have exactly one argument.
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_DIRECTORY);
-    	Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_DIRECTORY).length == 1;
     }
     
@@ -669,9 +686,10 @@ public final class CliClient {
     	 * + password
     	 * + boring
     	 * + debug
+		 * + skipvercheck
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional);
     }
 
@@ -692,9 +710,10 @@ public final class CliClient {
     	 * + skip-drafts
     	 * + boring
     	 * + debug
+		 * + skipvercheck
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional);
     }
     
@@ -714,9 +733,10 @@ public final class CliClient {
     	 * + skip-drafts
     	 * + boring
     	 * + debug
+		 * + skipvercheck
     	 */
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PACKAGES);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG);
+    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional);
     }
     
@@ -849,15 +869,15 @@ public final class CliClient {
 		logger.debug("The latest version on GitHub is {}", latestVersion);
 		// Assumption: If the version on GitHub is different from the local version, the version on GitHub is newer.
 		if (VERSION.equals(latestVersion)) {
+			logger.info("CPILint version matches latest version on GitHub");
 			if (userInitiated) {
 				System.out.println("Congratulations! You are running the latest version of CPILint.");
-				System.exit(EXIT_STATUS_SUCCESS);
 			}
 		} else {
+			logger.info("CPILint version does not match latest version on GitHub");
 			if (userInitiated) {
 				String message = String.format("You are running version %s of CPILint. Version %s is available and can be downloaded here: %s", VERSION, latestVersion, whereToDownload);
 				System.out.println(message);
-				System.exit(EXIT_STATUS_SUCCESS);
 			} else {
 				String message = String.format("Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s", latestVersion, whereToDownload);
 				System.out.println(message);

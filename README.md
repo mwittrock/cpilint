@@ -12,8 +12,12 @@ With your chosen rules in place, CPILint does the heavy lifting of checking that
 
 ## Documentation
 
-Instructions on installing and using CPILint is available in the [wiki](https://github.com/mwittrock/cpilint/wiki).
+Instructions on installing and using CPILint are available in the [wiki](https://github.com/mwittrock/cpilint/wiki).
 
 ## License
 
 CPILint is licensed under the MIT license. For the full license text, please see the LICENSE.txt file in the root of the repository.
+
+## Contributing
+
+The CPILint project is not currently looking for code contributions. This may change in the future.

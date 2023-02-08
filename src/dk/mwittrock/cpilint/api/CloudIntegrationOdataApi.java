@@ -229,7 +229,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		}
 		// At this point, anything but HTTP status 200 OK is an error.
 		if (httpStatus != HTTP_OKAY_STATUS_CODE) {
-			String message = String.format("API responded with unexpected HTTP status code %d", httpStatus);
+			String message = String.format("API responded with unexpected HTTP status code %d at %s", httpStatus, uri);
 			throw new CloudIntegrationApiError(message);
 		}
 		// Execute the XQuery query.

@@ -164,7 +164,7 @@ public final class RulesFile {
 				}
 				private void failValidation(SAXParseException e) {
 					logger.error("Rules file schema validation error: {}", e.getMessage());
-					throw new RulesFileError("The rules file format is not valid.");
+					throw new RulesFileError("The rules file format is not valid.\n"+e.getMessage());
 				}
 			});
 			validator.validate(new DocumentSource(document));

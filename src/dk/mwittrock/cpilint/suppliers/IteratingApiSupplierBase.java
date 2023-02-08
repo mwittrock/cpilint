@@ -26,7 +26,8 @@ abstract class IteratingApiSupplierBase implements IflowArtifactSupplier {
 		try {
 			iflow = api.getIflowArtifact(iflowArtifactIdIterator.next());
 		} catch (CloudIntegrationApiError e) {
-			throw new IflowArtifactSupplierError("API error when retrieving iflow", e);
+			e.printStackTrace();
+			throw new IflowArtifactSupplierError("API error when retrieving iflow\n"+e.getMessage(), e);
 		}
 		artifactsSupplied++;
 		return iflow;

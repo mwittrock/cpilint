@@ -46,7 +46,7 @@ public final class TenantAllArtifactsSupplier extends PackageSupplierBase {
 		try {
 			packageIds = api.getEditableIntegrationPackageIds(skipSapPackages);
 		} catch (CloudIntegrationApiError e) {
-			throw new IflowArtifactSupplierError("API error when fetching package IDs", e);
+			throw new IflowArtifactSupplierError("API error when fetching package IDs\n"+e.getMessage(), e);
 		}
 		/*
 		 * Filter out all packages, that are to be skipped (if any).

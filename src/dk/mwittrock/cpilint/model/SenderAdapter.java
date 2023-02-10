@@ -8,6 +8,9 @@ public enum SenderAdapter {
 	ARIBA("Ariba"),
 	AS2("AS2"),
 	AS4("AS4"),
+	AZURESTORAGE("AzureStorage"),
+	DATASTORE("Data Store"),
+	DROPBOX("Dropbox"),
 	FTP("FTP"),
 	HTTPS("HTTPS"),
 	IDOC("IDoc"),
@@ -17,7 +20,9 @@ public enum SenderAdapter {
 	ODATA("OData"),
 	PROCESSDIRECT("ProcessDirect"),
 	SFTP("SFTP"),
+	SLACK("Slack"),
 	SOAP("SOAP"),
+	SPLUNK("Splunk"),
 	SUCCESSFACTORS("SuccessFactors"),
 	XI("XI");
 	

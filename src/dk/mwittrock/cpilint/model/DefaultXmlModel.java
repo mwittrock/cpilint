@@ -68,6 +68,9 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.ARIBA, "Ariba");
 		senderAdapterComponentTypes.put(SenderAdapter.AS2, "AS2");
 		senderAdapterComponentTypes.put(SenderAdapter.AS4, "AS4");
+		senderAdapterComponentTypes.put(SenderAdapter.AZURESTORAGE, "AzureStorage");
+		senderAdapterComponentTypes.put(SenderAdapter.DATASTORE, "DataStoreConsumer");
+		senderAdapterComponentTypes.put(SenderAdapter.DROPBOX, "Dropbox");
 		senderAdapterComponentTypes.put(SenderAdapter.FTP, "FTP");
 		senderAdapterComponentTypes.put(SenderAdapter.HTTPS, "HTTPS");
 		senderAdapterComponentTypes.put(SenderAdapter.IDOC, "IDOC");
@@ -77,7 +80,9 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.ODATA, "ODataSender");
 		senderAdapterComponentTypes.put(SenderAdapter.PROCESSDIRECT, "ProcessDirect");
 		senderAdapterComponentTypes.put(SenderAdapter.SFTP, "SFTP");
+		senderAdapterComponentTypes.put(SenderAdapter.SLACK, "Slack");
 		senderAdapterComponentTypes.put(SenderAdapter.SOAP, "SOAP");
+		senderAdapterComponentTypes.put(SenderAdapter.SPLUNK, "Splunk");
 		senderAdapterComponentTypes.put(SenderAdapter.SUCCESSFACTORS, "SuccessFactors");
 		senderAdapterComponentTypes.put(SenderAdapter.XI, "XI");
 		// Initialize the httpEndpointPropertyKeyNames map.

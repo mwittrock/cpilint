@@ -121,6 +121,9 @@
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
 			<xs:enumeration value="as4"/>
+			<xs:enumeration value="azurestorage"/>
+			<xs:enumeration value="data store"/>
+			<xs:enumeration value="dropbox"/>
 			<xs:enumeration value="ftp"/>
 			<xs:enumeration value="https"/>
 			<xs:enumeration value="idoc"/>
@@ -130,7 +133,9 @@
 			<xs:enumeration value="odata"/>
 			<xs:enumeration value="processdirect"/>
 			<xs:enumeration value="sftp"/>
+			<xs:enumeration value="slack"/>
 			<xs:enumeration value="soap"/>
+			<xs:enumeration value="splunk"/>
 			<xs:enumeration value="successfactors"/>
 			<xs:enumeration value="xi"/>
 		</xs:restriction>

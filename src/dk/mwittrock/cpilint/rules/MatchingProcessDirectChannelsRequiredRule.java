@@ -42,8 +42,8 @@ final class MatchingProcessDirectChannelsRequiredRule extends RuleBase {
 	@Override
 	public void endTesting() {
 		/*
-		 * Filter all issues for which the sender channel address does not
-		 * exist. Then, pass all remaining issues to the IssueConsumer.
+		 * Remove all issues for which the sender channel address exists. The
+		 * remaining issues are then passed to the IssueConsumer.
 		 */
 		issues
 			.stream()

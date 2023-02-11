@@ -57,6 +57,8 @@
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
 			<xs:enumeration value="as4"/>
+			<xs:enumeration value="azurestorage"/>
+			<xs:enumeration value="dropbox"/>
 			<xs:enumeration value="elster"/>
 			<xs:enumeration value="facebook"/>
 			<xs:enumeration value="ftp"/>
@@ -73,9 +75,12 @@
 			<xs:enumeration value="processdirect"/>
 			<xs:enumeration value="rfc"/>
 			<xs:enumeration value="sftp"/>
+			<xs:enumeration value="slack"/>
 			<xs:enumeration value="soap"/>
+			<xs:enumeration value="splunk"/>
 			<xs:enumeration value="successfactors"/>
 			<xs:enumeration value="twitter"/>
+			<xs:enumeration value="workday"/>
 			<xs:enumeration value="xi"/>
 		</xs:restriction>
 	</xs:simpleType>

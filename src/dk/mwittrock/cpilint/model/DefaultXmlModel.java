@@ -42,6 +42,8 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ARIBA, "Ariba");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS2, "AS2");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS4, "AS4");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AZURESTORAGE, "AzureStorage");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.DROPBOX, "Dropbox");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ELSTER, "ELSTER");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FACEBOOK, "Facebook");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FTP, "FTP");
@@ -58,9 +60,12 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.PROCESSDIRECT, "ProcessDirect");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.RFC, "RFC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SFTP, "SFTP");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SLACK, "Slack");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SOAP, "SOAP");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SPLUNK, "Splunk");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SUCCESSFACTORS, "SuccessFactors");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.TWITTER, "Twitter");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.WORKDAY, "Workday");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.XI, "XI");
 		// Initialize the senderAdapterComponentTypes map.
 		senderAdapterComponentTypes = new HashMap<>();

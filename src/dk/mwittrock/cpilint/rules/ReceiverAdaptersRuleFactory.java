@@ -15,6 +15,8 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 		receiverAdapters.put("ariba", ReceiverAdapter.ARIBA);
 		receiverAdapters.put("as2", ReceiverAdapter.AS2);
 		receiverAdapters.put("as4", ReceiverAdapter.AS4);
+		receiverAdapters.put("azurestorage", ReceiverAdapter.AZURESTORAGE);
+		receiverAdapters.put("dropbox", ReceiverAdapter.DROPBOX);
 		receiverAdapters.put("elster", ReceiverAdapter.ELSTER);
 		receiverAdapters.put("facebook", ReceiverAdapter.FACEBOOK);
 		receiverAdapters.put("ftp", ReceiverAdapter.FTP);
@@ -31,9 +33,12 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 		receiverAdapters.put("processdirect", ReceiverAdapter.PROCESSDIRECT);
 		receiverAdapters.put("rfc", ReceiverAdapter.RFC);
 		receiverAdapters.put("sftp", ReceiverAdapter.SFTP);
+		receiverAdapters.put("slack", ReceiverAdapter.SLACK);
 		receiverAdapters.put("soap", ReceiverAdapter.SOAP);
+		receiverAdapters.put("splunk", ReceiverAdapter.SPLUNK);
 		receiverAdapters.put("successfactors", ReceiverAdapter.SUCCESSFACTORS);
 		receiverAdapters.put("twitter", ReceiverAdapter.TWITTER);
+		receiverAdapters.put("workday", ReceiverAdapter.WORKDAY);
 		receiverAdapters.put("xi", ReceiverAdapter.XI);
 	}
 	

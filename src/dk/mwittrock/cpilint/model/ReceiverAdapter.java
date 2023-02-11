@@ -8,6 +8,8 @@ public enum ReceiverAdapter {
 	ARIBA("Ariba"),
 	AS2("AS2"),
 	AS4("AS4"),
+	AZURESTORAGE("AzureStorage"),
+	DROPBOX("Dropbox"),
 	ELSTER("Elster"),
 	FACEBOOK("Facebook"),
 	FTP("FTP"),
@@ -24,9 +26,12 @@ public enum ReceiverAdapter {
 	PROCESSDIRECT("ProcessDirect"),
 	RFC("RFC"),
 	SFTP("SFTP"),
+	SLACK("Slack"),
 	SOAP("SOAP"),
+	SPLUNK("Splunk"),
 	SUCCESSFACTORS("SuccessFactors"),
 	TWITTER("Twitter"),
+	WORKDAY("Workday"),
 	XI("XI");
 	
 	private final String name;

@@ -98,6 +98,10 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		// Extract all contents of the archive.
 		Map<String, byte[]> contents = extractArchiveContents(is);
 		// Extract the iflow's name and ID from the manifest.
+		if (!contents.containsKey(MANIFEST_PATH)) {
+			// No manifest means that this is not a valid iflow artifact.
+			throw new IflowArtifactError("No manifest in archive");
+		}
 		IflowArtifactTag tag = createTag(contents.get(MANIFEST_PATH));
 		// Replace external parameters in the iflow XML, if this iflow artifact
 		// actually contains an external parameters file (this is not always the case).
@@ -168,6 +172,14 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 				byte[] bytes = zis.readAllBytes();
 				contents.put(path, bytes);
 			}
+		}
+		/*
+		 * If the Map is empty, there were no entries, meaning that the
+		 * InputStream was not in fact a ZIP archive and therefore not
+		 * an iflow artifact.
+		 */
+		if (contents.isEmpty()) {
+			throw new IflowArtifactError("Not a valid iflow artifact");
 		}
 		return contents;
 	}

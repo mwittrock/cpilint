@@ -50,7 +50,7 @@ public final class CliClient {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CliClient.class);
 	private static final String VERSION = "1.0.4";
-	private static final String COPYRIGHT = "2019-2023 Morten N. Wittrock";
+	private static final String COPYRIGHT = "2019-2024 Morten N. Wittrock";
 	private static final int EXIT_STATUS_SUCCESS = 0;
 	private static final int EXIT_STATUS_ISSUES = 1;
 	private static final int EXIT_STATUS_ERRORS = 2;

@@ -50,7 +50,7 @@
     </target>
 
 	<target name="compile" depends="prepare,dependencies" description="Compiles all source files">
-		<javac srcdir="${source.dir}" destdir="${build.classes}" source="11" target="11" includeantruntime="false">
+		<javac srcdir="${source.dir}" destdir="${build.classes}" release="11" includeantruntime="false">
 			<classpath refid="classpath.build"/>
 		</javac>
 	</target>

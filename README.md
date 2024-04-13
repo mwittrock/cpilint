@@ -1,4 +1,4 @@
-# CPILint
+![CPILint logo](graphics/cpilint.png)
 
 Welcome to the CPILint GitHub repository!
 

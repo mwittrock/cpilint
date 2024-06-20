@@ -32,7 +32,8 @@ final class DuplicateResourcesNotAllowedRule extends RuleBase {
 			ArtifactResourceType.JAVA_ARCHIVE,
 			ArtifactResourceType.EDMX,
 			ArtifactResourceType.WSDL,
-			ArtifactResourceType.XSD
+			ArtifactResourceType.XSD,
+			ArtifactResourceType.JSON
 		));
 	}
 	

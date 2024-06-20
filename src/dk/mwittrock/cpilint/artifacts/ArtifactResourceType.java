@@ -11,7 +11,8 @@ public enum ArtifactResourceType {
 	IFLOW("integration flow"),
 	EDMX("EDMX"),
 	WSDL("WSDL"),
-	XSD("XML Schema");
+	XSD("XML Schema"),
+	JSON("JSON");
 
 	private final String name;
 	

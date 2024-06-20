@@ -53,6 +53,7 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		typePredicates.put(ArtifactResourceType.WSDL, s -> s.startsWith(IFLOW_RESOURCES_BASE_PATH + "wsdl/") && (s.endsWith(".wsdl")));
 		typePredicates.put(ArtifactResourceType.EDMX, s -> s.startsWith(IFLOW_RESOURCES_BASE_PATH + "edmx/") && (s.endsWith(".edmx")));
 		typePredicates.put(ArtifactResourceType.OPERATION_MAPPING, s -> s.startsWith(IFLOW_RESOURCES_BASE_PATH + "mapping/") && s.endsWith(".opmap"));
+		typePredicates.put(ArtifactResourceType.JSON, s -> s.startsWith(IFLOW_RESOURCES_BASE_PATH + "json/") && s.endsWith(".json"));
 	}
 	
 	private final IflowArtifactTag tag;

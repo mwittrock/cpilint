@@ -25,6 +25,7 @@ public final class DuplicateResourcesNotAllowedRuleFactory implements RuleFactor
 		resourceTypes.put("edmx", ArtifactResourceType.EDMX);
 		resourceTypes.put("wsdl", ArtifactResourceType.WSDL);
 		resourceTypes.put("xml-schema", ArtifactResourceType.XSD);
+		resourceTypes.put("json", ArtifactResourceType.JSON);
 	}
 
 	@Override

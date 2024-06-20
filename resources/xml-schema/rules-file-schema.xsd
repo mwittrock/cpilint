@@ -230,6 +230,7 @@
 				<xs:enumeration value="edmx"/>
 				<xs:enumeration value="wsdl"/>
 				<xs:enumeration value="xml-schema"/>
+				<xs:enumeration value="json"/>
 			</xs:restriction>
 	</xs:simpleType>
 

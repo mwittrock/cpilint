@@ -226,7 +226,6 @@
 				<xs:enumeration value="javascript-script"/>
 				<xs:enumeration value="groovy-script"/>
 				<xs:enumeration value="java-archive"/>
-				<xs:enumeration value="integration-flow"/>
 				<xs:enumeration value="edmx"/>
 				<xs:enumeration value="wsdl"/>
 				<xs:enumeration value="xml-schema"/>

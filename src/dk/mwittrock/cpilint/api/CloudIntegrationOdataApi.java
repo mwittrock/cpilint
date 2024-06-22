@@ -48,14 +48,14 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 	private static final int HTTP_NOT_FOUND_STATUS_CODE = 404;
 
 	private static final Logger logger = LoggerFactory.getLogger(CloudIntegrationOdataApi.class);
-	private final String tmnHost;
+	private final String hostname;
 	private final String apiUsername;
 	private final char[] apiPassword;
 	private final HttpClient httpClient;
 	private final XQueryCompiler xqueryCompiler;
 	
-	public CloudIntegrationOdataApi(String tmnHost, String apiUsername, char[] apiPassword) {
-		this.tmnHost = Objects.requireNonNull(tmnHost, "tmnHost must not be null");
+	public CloudIntegrationOdataApi(String hostname, String apiUsername, char[] apiPassword) {
+		this.hostname = Objects.requireNonNull(hostname, "hostname must not be null");
 		this.apiUsername = Objects.requireNonNull(apiUsername, "apiUsername must not be null");
 		this.apiPassword = Objects.requireNonNull(apiPassword, "apiPassword must not be null");
         httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
@@ -137,7 +137,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		assert !path.isBlank();
 		URI uri;
 		try {
-			uri = new URI(URI_SCHEME, tmnHost, path, null); // The null indicates no fragment, i.e. no location specified with #location.
+			uri = new URI(URI_SCHEME, hostname, path, null); // The null indicates no fragment, i.e. no location specified with #location.
 		} catch (URISyntaxException e) {
 			throw new CloudIntegrationApiError("Bad tenant URI error", e);
 		}

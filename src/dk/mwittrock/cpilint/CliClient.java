@@ -328,19 +328,19 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierSingleFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
+		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
 		Set<String> fetchIflowArtifactIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_IFLOWS)));
 		return new TenantSingleArtifactsSupplier(api, fetchIflowArtifactIds);
 	}
 
 	private static IflowArtifactSupplier tenantSupplierMultiFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
+		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
@@ -349,10 +349,10 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierPackagesFromCommandLine(CommandLine cl) {
-		String tmnHost = cl.getOptionValue(CLI_OPTION_HOST);
+		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
 		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
 		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(tmnHost, username, password);
+		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
 		Set<String> packageIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_PACKAGES)));
@@ -508,7 +508,7 @@ public final class CliClient {
             .argName("dir")
             .desc("Process all iflow artifact files in this directory")
             .build());
-        // Add the Tenant Management Node host option.
+        // Add the hostname option.
         options.addOption(Option.builder()
         	.longOpt(CLI_OPTION_HOST)
             .required(false)

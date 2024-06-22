@@ -73,6 +73,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_DEBUG = "debug";
 	private static final String CLI_OPTION_VERCHECK = "vercheck";
 	private static final String CLI_OPTION_SKIPVERCHECK = "skipvercheck";
+	private static final String CPILINT_WIKI_URL = "https://github.com/mwittrock/cpilint/wiki";
 	
 	private static enum RunMode {
 		VERSION_MODE,
@@ -440,6 +441,8 @@ public final class CliClient {
 		System.out.println("To create a debug log file, add the -debug option.");
 		System.out.println();
 		System.out.println("To skip the automatic version check, add the -skipvercheck option.");
+		System.out.println();
+		System.out.println("The full CPILint documentation is available in the project wiki: " + CPILINT_WIKI_URL);
 	}
 
 	private static void printAsciiArtLogo() {

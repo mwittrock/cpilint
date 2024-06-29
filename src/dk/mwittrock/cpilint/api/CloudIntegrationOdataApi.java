@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.ZipArchiveIflowArtifact;
 import dk.mwittrock.cpilint.util.JarResourceUtil;
+import dk.mwittrock.cpilint.util.HttpUtil;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -41,11 +42,6 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 	private static final String URI_SCHEME = "https";
 	private static final String EXPECTED_IFLOW_ARTIFACT_RESPONSE_TYPE = "application/zip";
 	private static final String CONTENT_TYPE_RESPONSE_HEADER = "content-type";
-	private static final int HTTP_OKAY_STATUS_CODE = 200;
-	private static final int HTTP_BAD_REQUEST_STATUS_CODE = 400;
-	private static final int HTTP_UNAUTHORIZED_STATUS_CODE = 401;
-	private static final int HTTP_FORBIDDEN_STATUS_CODE = 403;
-	private static final int HTTP_NOT_FOUND_STATUS_CODE = 404;
 
 	private static final Logger logger = LoggerFactory.getLogger(CloudIntegrationOdataApi.class);
 	private final String hostname;
@@ -72,22 +68,22 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		URI uri = iflowArtifactUriFromIflowArtifactId(iflowArtifactId);
 		HttpResponse<InputStream> apiResponse = httpGetRequest(uri);
 		final int httpStatus = apiResponse.statusCode();
-		if (httpStatus == HTTP_BAD_REQUEST_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_BAD_REQUEST_STATUS_CODE) {
 			String message = String.format("HTTP status 400 Bad Request returned for iflow artifact ID '%s', indicating that its package is read-only", iflowArtifactId);
 			throw new CloudIntegrationApiError(message);
 		}
-		if (httpStatus == HTTP_UNAUTHORIZED_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_UNAUTHORIZED_STATUS_CODE) {
 			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHENTICATED);
 		}
-		if (httpStatus == HTTP_FORBIDDEN_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_FORBIDDEN_STATUS_CODE) {
 			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHORIZED);
 		}
-		if (httpStatus == HTTP_NOT_FOUND_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_NOT_FOUND_STATUS_CODE) {
 			String message = String.format("Iflow artifact ID '%s' could not be found", iflowArtifactId);
 			throw new CloudIntegrationApiError(message);			
 		}
 		// At this point, the HTTP status code should be 200.
-		if (httpStatus != HTTP_OKAY_STATUS_CODE) {
+		if (httpStatus != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			String message = String.format("Unexpected HTTP status code %d when retrieving iflow artifact ID '%s'", httpStatus, iflowArtifactId);
 			throw new CloudIntegrationApiError(message);
 		}
@@ -221,14 +217,14 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		assert evaluator != null;
 		HttpResponse<InputStream> apiResponse = httpGetRequest(uri);
 		final int httpStatus = apiResponse.statusCode();
-		if (httpStatus == HTTP_UNAUTHORIZED_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_UNAUTHORIZED_STATUS_CODE) {
 			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHENTICATED);
 		}
-		if (httpStatus == HTTP_FORBIDDEN_STATUS_CODE) {
+		if (httpStatus == HttpUtil.HTTP_FORBIDDEN_STATUS_CODE) {
 			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHORIZED);
 		}
 		// At this point, anything but HTTP status 200 OK is an error.
-		if (httpStatus != HTTP_OKAY_STATUS_CODE) {
+		if (httpStatus != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			String message = String.format("API responded with unexpected HTTP status code %d", httpStatus);
 			throw new CloudIntegrationApiError(message);
 		}

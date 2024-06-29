@@ -45,6 +45,7 @@ import dk.mwittrock.cpilint.suppliers.IflowArtifactSupplierError;
 import dk.mwittrock.cpilint.suppliers.TenantAllArtifactsSupplier;
 import dk.mwittrock.cpilint.suppliers.TenantIndividualPackagesSupplier;
 import dk.mwittrock.cpilint.suppliers.TenantSingleArtifactsSupplier;
+import dk.mwittrock.cpilint.util.HttpUtil;
 
 public final class CliClient {
 	
@@ -790,7 +791,6 @@ public final class CliClient {
 		 */
 		final String apiEndpoint = "https://api.github.com/repos/mwittrock/cpilint/releases/latest";
 		final String tagRegex = "^v\\d+(?:\\.\\d+)+$";
-		final int httpOkayStatus = 200; // TODO: All the statuses we use should go in a utility class as static final fields.
 		final String whereToDownload = "https://github.com/mwittrock/cpilint/releases/latest";
 		// Fetch the GitHub API response.
 		URI apiUri = null;
@@ -824,7 +824,7 @@ public final class CliClient {
 		}
 		// Only proceed if we received HTTP status OK.
 		final int status = response.statusCode();
-		if (status != httpOkayStatus) {
+		if (status != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			logger.error("Unexpected HTTP status code returned by GitHub API: {}", status);
 			if (userInitiated) {
 				exitWithErrorMessage("Received a non-success response from the GitHub API.");

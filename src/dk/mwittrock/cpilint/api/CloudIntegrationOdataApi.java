@@ -35,13 +35,11 @@ import net.sf.saxon.s9api.XdmValue;
 
 public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 
-	private static final String AUTHORIZATION_REQUEST_HEADER = "Authorization";
 	private static final String MESSAGE_NOT_AUTHENTICATED = "Wrong username, password or both";
 	private static final String MESSAGE_NOT_AUTHORIZED = "User was authenticated but lacks authorizations";
 	private static final String ODATA_API_BASE_PATH = "/api/v1/";
 	private static final String URI_SCHEME = "https";
 	private static final String EXPECTED_IFLOW_ARTIFACT_RESPONSE_TYPE = "application/zip";
-	private static final String CONTENT_TYPE_RESPONSE_HEADER = "content-type";
 
 	private static final Logger logger = LoggerFactory.getLogger(CloudIntegrationOdataApi.class);
 	private final String hostname;
@@ -88,7 +86,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 			throw new CloudIntegrationApiError(message);
 		}
 		// Check that we have the expected response content type.
-		Optional<String> contentType = apiResponse.headers().firstValue(CONTENT_TYPE_RESPONSE_HEADER);
+		Optional<String> contentType = apiResponse.headers().firstValue(HttpUtil.RESPONSE_HEADER_CONTENT_TYPE);
 		if (contentType.isPresent() && !contentType.get().equals(EXPECTED_IFLOW_ARTIFACT_RESPONSE_TYPE)) {
 			String message = String.format("Unexpected response content type '%s' when retrieving iflow artifact ID '%s'", contentType.get(), iflowArtifactId);
 			throw new CloudIntegrationApiError(message);
@@ -187,7 +185,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		 */
         HttpRequest request = HttpRequest.newBuilder()
            	.uri(uri)
-           	.header(AUTHORIZATION_REQUEST_HEADER, basicAuthHeaderValue())
+           	.header(HttpUtil.REQUEST_HEADER_AUTHORIZATION, basicAuthHeaderValue())
            	.GET()
             .build();
         HttpResponse<InputStream> response;

@@ -34,6 +34,7 @@ import org.json.JSONException;
 import ch.qos.logback.classic.Level;
 import dk.mwittrock.cpilint.api.CloudIntegrationApi;
 import dk.mwittrock.cpilint.api.CloudIntegrationOdataApi;
+import dk.mwittrock.cpilint.auth.AuthorizationServer;
 import dk.mwittrock.cpilint.consumers.ConsoleIssueConsumer;
 import dk.mwittrock.cpilint.consumers.IssueConsumer;
 import dk.mwittrock.cpilint.rules.Rule;
@@ -74,7 +75,14 @@ public final class CliClient {
 	private static final String CLI_OPTION_DEBUG = "debug";
 	private static final String CLI_OPTION_VERCHECK = "vercheck";
 	private static final String CLI_OPTION_SKIPVERCHECK = "skipvercheck";
+	private static final String CLI_OPTION_KEY = "key";
 	private static final String CPILINT_WIKI_URL = "https://github.com/mwittrock/cpilint/wiki";
+	private static final String SERVICE_KEY_FIELD_OAUTH = "oauth";
+	private static final String SERVICE_KEY_FIELD_CLIENTSECRET = "clientsecret";
+	private static final String SERVICE_KEY_FIELD_CLIENTID = "clientid";
+	private static final String SERVICE_KEY_FIELD_URL = "url";
+	private static final String SERVICE_KEY_FIELD_TOKENURL = "tokenurl";
+	private static final String SERVICE_KEY_VALIDATION_ERROR = "Service key JSON does not have the expected format.";
 	
 	private static enum RunMode {
 		VERSION_MODE,
@@ -100,8 +108,8 @@ public final class CliClient {
 		// Parse the command line arguments.
 		CommandLine cl = parseArguments(args);
 		// Determine the run mode.
-		RunMode mode = determineMode(cl);
-		logger.info("Mode detected: {}", mode);
+		RunMode mode = determineRunMode(cl);
+		logger.info("Run mode detected: {}", mode);
 		/*
 		 * The help, version and version check modes are handled separately.
 		 */
@@ -178,7 +186,7 @@ public final class CliClient {
 		logger.debug("Command line arguments provided: {}", cliArgs.stream().map(a -> "'" + a + "'").collect(Collectors.joining(" ")));
 	}
 	
-	private static RunMode determineMode(CommandLine cl) {
+	private static RunMode determineRunMode(CommandLine cl) {
 		RunMode mode = null;
 		if (versionMode(cl)) {
 			mode = RunMode.VERSION_MODE;
@@ -286,7 +294,7 @@ public final class CliClient {
 			 * Given that the command line arguments ought to be valid,
 			 * this should never happen.
 			 */
-			logger.error("Method supplierFromCommandLine called with an unexpected RunMode");
+			logger.error("Method supplierFromCommandLine called with unexpected RunMode {}", mode);
 			exitWithErrorMessage("Internal CPILint error.");
 		}
 		return supplier;
@@ -330,19 +338,13 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierSingleFromCommandLine(CommandLine cl) {
-		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
-		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
-		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
+		CloudIntegrationApi api = cloudIntegrationApiFromCommandLine(cl);
 		Set<String> fetchIflowArtifactIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_IFLOWS)));
 		return new TenantSingleArtifactsSupplier(api, fetchIflowArtifactIds);
 	}
 
 	private static IflowArtifactSupplier tenantSupplierMultiFromCommandLine(CommandLine cl) {
-		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
-		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
-		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
+		CloudIntegrationApi api = cloudIntegrationApiFromCommandLine(cl);
 		boolean skipSapPackages = cl.hasOption(CLI_OPTION_SKIP_SAP_PACKAGES);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
@@ -351,14 +353,107 @@ public final class CliClient {
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierPackagesFromCommandLine(CommandLine cl) {
-		String hostname = cl.getOptionValue(CLI_OPTION_HOST);
-		String username = cl.getOptionValue(CLI_OPTION_USERNAME);
-		char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
-		CloudIntegrationApi api = new CloudIntegrationOdataApi(hostname, username, password);
+		CloudIntegrationApi api = cloudIntegrationApiFromCommandLine(cl);
 		boolean skipDrafts = cl.hasOption(CLI_OPTION_SKIP_DRAFTS);
 		Set<String> skipIflowArtifactIds = cl.hasOption(CLI_OPTION_SKIP_IFLOWS) ? new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_SKIP_IFLOWS))) : Collections.emptySet();
 		Set<String> packageIds = new HashSet<>(Arrays.asList(cl.getOptionValues(CLI_OPTION_PACKAGES)));
 		return new TenantIndividualPackagesSupplier(api, skipDrafts, packageIds, skipIflowArtifactIds);
+	}
+
+	private static CloudIntegrationApi cloudIntegrationApiFromCommandLine(CommandLine cl) {
+		CloudIntegrationApi api = null;
+		if (basicAuthenticationMode(cl)) {
+			final String hostname = cl.getOptionValue(CLI_OPTION_HOST);
+			final String username = cl.getOptionValue(CLI_OPTION_USERNAME);
+			final char[] password = cl.hasOption(CLI_OPTION_PASSWORD) ? cl.getOptionValue(CLI_OPTION_PASSWORD).toCharArray() : promptForPassword(username);
+			api = new CloudIntegrationOdataApi(hostname, username, password);
+		} else if (oauthClientCredentialsMode(cl)) {
+			final Path keyPath = Paths.get(cl.getOptionValue(CLI_OPTION_KEY));
+			final JSONObject key = readServiceKey(keyPath).getJSONObject(SERVICE_KEY_FIELD_OAUTH);
+			final String clientId = key.getString(SERVICE_KEY_FIELD_CLIENTID);
+			final String clientSecret = key.getString(SERVICE_KEY_FIELD_CLIENTSECRET);
+			String hostname = null;
+			try {
+				hostname = new URI(key.getString(SERVICE_KEY_FIELD_URL)).getHost();
+			} catch (URISyntaxException e) {
+				logger.error("Bad URL in service key", e);
+				exitWithErrorMessage("Malformed URL in service key.");
+			}
+			URI tokenUrl = null;
+			try {
+				tokenUrl = new URI(key.getString(SERVICE_KEY_FIELD_TOKENURL) + "?grant_type=client_credentials");
+			} catch (URISyntaxException e) {
+				logger.error("Bad token URL in service key", e);
+				exitWithErrorMessage("Malformed token URL in service key.");
+			}
+			final AuthorizationServer authServer = AuthorizationServer.newInstance(clientId, clientSecret, tokenUrl);
+			api = new CloudIntegrationOdataApi(hostname, authServer);
+		} else {
+			// This should never happen.
+			throw new AssertionError("Unexpected authentication mode");
+		}
+		return api;
+	}
+
+	private static JSONObject readServiceKey(Path keyPath) {
+		// Make sure that the service key file exists and actually is a file.
+		if (Files.notExists(keyPath)) {
+			logger.error("Service key file does not exist: '{}'", keyPath);
+			exitWithErrorMessage("The provided service key file does not exist.");
+		}
+		if (!Files.isRegularFile(keyPath)) {
+			logger.error("Service key file is not a file: '{}'", keyPath);
+			exitWithErrorMessage("The provided service key file is not a file.");
+		}
+		// Read the service key file's contents.
+		logger.info("Reading service key file");
+		String content = null;
+		try {
+			content = Files.readString(keyPath);
+		} catch (IOException e) {
+			logger.error("Exception while reading service key file", e);
+			exitWithErrorMessage("I/O error reading service key file.");
+		}
+		// Now parse it as JSON.
+		logger.info("Parsing service key contents");
+		JSONObject json = null;
+		try {
+			json = new JSONObject(content);
+		} catch (JSONException e) {
+			logger.error("Exception while parsing service key", e);
+			exitWithErrorMessage("There was a problem parsing the service key JSON content.");
+		}
+		// Validate the JSON object.
+		validateServiceKey(json);
+		return json;
+	}
+
+	private static void validateServiceKey(JSONObject json) {
+		logger.info("Validating the service key JSON");
+		/*
+		 * The object should contain a single field, containing another object
+		 * that contains the fields we are interested in.
+		 */
+		if (!json.has(SERVICE_KEY_FIELD_OAUTH)) {
+			logger.error("Service key JSON does not have an oauth field");
+			exitWithErrorMessage(SERVICE_KEY_VALIDATION_ERROR);
+		}
+		Object oauthObject = json.get(SERVICE_KEY_FIELD_OAUTH);
+		if (!(oauthObject instanceof JSONObject)) {
+			logger.error("Service key oauth field does not contain an object");
+			exitWithErrorMessage(SERVICE_KEY_VALIDATION_ERROR);
+		}
+		JSONObject oauthJsonObject = (JSONObject) oauthObject;
+		// Check that all required fields are present.
+        Collection<String> missingFields = Stream.of(SERVICE_KEY_FIELD_CLIENTID, SERVICE_KEY_FIELD_CLIENTSECRET, SERVICE_KEY_FIELD_URL, SERVICE_KEY_FIELD_TOKENURL)
+            .filter(f -> !oauthJsonObject.has(f))
+            .collect(Collectors.toSet());
+        if (!missingFields.isEmpty()) {
+            String message = String.format("Service key has missing fields: %s", missingFields.stream().collect(Collectors.joining(",")));
+			logger.error(message);
+            exitWithErrorMessage(SERVICE_KEY_VALIDATION_ERROR);
+        }
+		logger.info("Service key JSON was valid");
 	}
 	
 	private static char[] promptForPassword(String username) {
@@ -418,24 +513,26 @@ public final class CliClient {
 		System.out.println("To inspect all iflow files in a directory on the local machine:");
 		System.out.println(">cpilint -rules <file> -directory <dir>");
 		System.out.println();
-		System.out.println("To inspect all iflows in your tenant:");
-		System.out.println(">cpilint -rules <file> -host <host> -username <user>");
+		System.out.println("To inspect all iflows in your tenant using OAuth 2.0:");
+		System.out.println(">cpilint -rules <file> -key <file>");
 		System.out.println();
 		System.out.println("Apply the optional -skip-sap-packages option to skip SAP packages.");
 		System.out.println("Apply the optional -skip-packages <id> ... option to skip certain packages.");
 		System.out.println("Apply the optional -skip-drafts option to skip draft iflows.");
 		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
 		System.out.println();
-		System.out.println("To inspect the iflows in individual packages in your tenant:");
-		System.out.println(">cpilint -rules <file> -host <host> -username <user> -packages <id> ...");
+		System.out.println("To inspect the iflows in individual packages in your tenant using OAuth 2.0:");
+		System.out.println(">cpilint -rules <file> -key <file> -packages <id> ...");
 		System.out.println();
 		System.out.println("Apply the optional -skip-drafts option to skip draft iflows.");
 		System.out.println("Apply the optional -skip-iflows <id> ... option to skip certain iflows.");
 		System.out.println();
-		System.out.println("To inspect individual iflows in your tenant:");
-		System.out.println(">cpilint -rules <file> -host <host> -username <user> -iflows <id> ...");
+		System.out.println("To inspect individual iflows in your tenant using OAuth 2.0:");
+		System.out.println(">cpilint -rules <file> -key <file> -iflows <id> ...");
 		System.out.println();
-		System.out.println("You can provide your tenant password with the optional -password <password> option. If you don't, you will be prompted for it.");
+		System.out.println("To specify the tenant hostname and use basic authentication instead of OAuth 2.0, replace the -key <file> option with -host <host> and -username <user>.");
+		System.out.println();
+		System.out.println("When using basic authentication, you can provide your tenant password with the optional -password <password> option. If you don't, you will be prompted for the password interactively.");
 		System.out.println();
 		System.out.println("To remove the ASCII art logo from CPILint's output, add the -boring option.");
 		System.out.println();
@@ -603,6 +700,14 @@ public final class CliClient {
             .hasArg(false)
             .desc("Skip the version check")
             .build());
+        // Add the service key option.
+        options.addOption(Option.builder()
+			.longOpt(CLI_OPTION_KEY)
+            .required(false)
+            .hasArg()
+            .argName("file")
+            .desc("Use this service key for authentication")
+            .build());
 		// All done.
         return options;
     }
@@ -681,20 +786,23 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + host
-    	 * + username
     	 * + iflows
     	 * 
     	 * The following options are optional in this mode:
     	 * 
-    	 * + password
+		 * + key
+		 * + host
+		 * + username
+		 * + password
     	 * + boring
     	 * + debug
 		 * + skipvercheck
+		 *
+		 * Either a service key or a hostname and a username must be provided.
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_IFLOWS);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
-    	return checkOptions(cl, mandatory, optional);
+		Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_IFLOWS);
+		Collection<String> optional = List.of(CLI_OPTION_KEY, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PASSWORD, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
+		return checkOptions(cl, mandatory, optional) && authAndHostProvided(cl);
     }
 
     private static boolean tenantSupplierMultiMode(CommandLine cl) {
@@ -702,12 +810,13 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + host
-    	 * + username
-    	 * 
+		 *
     	 * The following options are optional:
     	 * 
-    	 * + password
+		 * + key
+		 * + host
+		 * + username
+		 * + password
     	 * + skip-sap-packages
     	 * + skip-iflows
     	 * + skip-packages
@@ -715,10 +824,12 @@ public final class CliClient {
     	 * + boring
     	 * + debug
 		 * + skipvercheck
+		 *
+		 * Either a service key or a hostname and a username must be provided.
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
-    	return checkOptions(cl, mandatory, optional);
+		Collection<String> mandatory = List.of(CLI_OPTION_RULES);
+		Collection<String> optional = List.of(CLI_OPTION_KEY, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_SAP_PACKAGES, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_PACKAGES, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
+		return checkOptions(cl, mandatory, optional) && authAndHostProvided(cl);
     }
     
     private static boolean tenantSupplierPackagesMode(CommandLine cl) {
@@ -726,22 +837,25 @@ public final class CliClient {
     	 * The following options are mandatory in this mode:
     	 * 
     	 * + rules
-    	 * + host
-    	 * + username
     	 * + packages
     	 * 
     	 * The following options are optional:
     	 * 
-    	 * + password
+		 * + key
+		 * + host
+		 * + username
+		 * + password
     	 * + skip-iflows
     	 * + skip-drafts
     	 * + boring
     	 * + debug
 		 * + skipvercheck
+		 *
+		 * Either a service key or a hostname and a username must be provided.
     	 */
-    	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PACKAGES);
-    	Collection<String> optional = List.of(CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
-    	return checkOptions(cl, mandatory, optional);
+		Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_PACKAGES);
+		Collection<String> optional = List.of(CLI_OPTION_KEY, CLI_OPTION_HOST, CLI_OPTION_USERNAME, CLI_OPTION_PASSWORD, CLI_OPTION_SKIP_IFLOWS, CLI_OPTION_SKIP_DRAFTS, CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
+		return checkOptions(cl, mandatory, optional) && authAndHostProvided(cl);
     }
     
     private static boolean checkOptions(CommandLine cl, Collection<String> mandatory, Collection<String> optional) {
@@ -758,6 +872,36 @@ public final class CliClient {
     private static boolean checkForSingleOption(CommandLine cl, String singleOption) {
     	return cl.hasOption(singleOption) && cl.getOptions().length == 1;
     }
+
+	private static boolean authAndHostProvided(CommandLine cl) {
+		/*
+		 * OAuth Client Credentials mode and basic authentication mode are mutually
+		 * exclusive, so a regular OR is enough in the following (we don't need an
+		 * exclusive OR).
+		 */
+		return oauthClientCredentialsMode(cl) || basicAuthenticationMode(cl);
+	}
+
+	private static boolean oauthClientCredentialsMode(CommandLine cl) {
+		/*
+		 * In OAuth Client Credentials mode a service key is provided on the
+		 * command line and host name, user name and password are NOT provided.
+		 */
+		return cl.hasOption(CLI_OPTION_KEY) &&
+			!cl.hasOption(CLI_OPTION_HOST) &&
+			!cl.hasOption(CLI_OPTION_USERNAME) &&
+			!cl.hasOption(CLI_OPTION_PASSWORD);
+	}
+
+	private static boolean basicAuthenticationMode(CommandLine cl) {
+		/*
+		 * In basic authentication mode host name and user name are provided on the
+		 * command line and a service key is NOT provided.
+		 */
+		return !cl.hasOption(CLI_OPTION_KEY) &&
+			cl.hasOption(CLI_OPTION_HOST) &&
+			cl.hasOption(CLI_OPTION_USERNAME);
+	}
     
     private static void exitWithErrorMessage(String errorMessage) {
     	logger.info("Exiting CliClient with error status {} and message: {}", EXIT_STATUS_ERRORS, errorMessage);

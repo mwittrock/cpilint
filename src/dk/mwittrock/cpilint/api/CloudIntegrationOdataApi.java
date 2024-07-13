@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.ZipArchiveIflowArtifact;
+import dk.mwittrock.cpilint.auth.AccessToken;
+import dk.mwittrock.cpilint.auth.AuthMode;
+import dk.mwittrock.cpilint.auth.AuthorizationServer;
 import dk.mwittrock.cpilint.util.JarResourceUtil;
 import dk.mwittrock.cpilint.util.HttpUtil;
 import net.sf.saxon.s9api.Processor;
@@ -35,25 +38,38 @@ import net.sf.saxon.s9api.XdmValue;
 
 public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 
-	private static final String MESSAGE_NOT_AUTHENTICATED = "Wrong username, password or both";
-	private static final String MESSAGE_NOT_AUTHORIZED = "User was authenticated but lacks authorizations";
+	private static final Logger logger = LoggerFactory.getLogger(CloudIntegrationOdataApi.class);
+	private static final String MESSAGE_NOT_AUTHENTICATED = "Authentication failed";
+	private static final String MESSAGE_NOT_AUTHORIZED = "Authentication was successful but authorization failed";
 	private static final String ODATA_API_BASE_PATH = "/api/v1/";
 	private static final String URI_SCHEME = "https";
 	private static final String EXPECTED_IFLOW_ARTIFACT_RESPONSE_TYPE = "application/zip";
 
-	private static final Logger logger = LoggerFactory.getLogger(CloudIntegrationOdataApi.class);
+	private final AuthMode authMode;
 	private final String hostname;
 	private final String apiUsername;
 	private final char[] apiPassword;
-	private final HttpClient httpClient;
-	private final XQueryCompiler xqueryCompiler;
-	
+	private final AuthorizationServer authServer;
+	private AccessToken accessToken;
+	private final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+	private final XQueryCompiler xqueryCompiler = new Processor(false).newXQueryCompiler();
+
 	public CloudIntegrationOdataApi(String hostname, String apiUsername, char[] apiPassword) {
+		logger.debug("Instantiating CloudIntegrationOdataApi in basic authentication mode");
+		authMode = AuthMode.BASIC_AUTH;
 		this.hostname = Objects.requireNonNull(hostname, "hostname must not be null");
 		this.apiUsername = Objects.requireNonNull(apiUsername, "apiUsername must not be null");
 		this.apiPassword = Objects.requireNonNull(apiPassword, "apiPassword must not be null");
-        httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-		xqueryCompiler = new Processor(false).newXQueryCompiler();		
+		this.authServer = null;
+	}
+
+	public CloudIntegrationOdataApi(String hostname, AuthorizationServer authServer) {
+		logger.debug("Instantiating CloudIntegrationOdataApi in OAuth Client Credentials mode");
+		authMode = AuthMode.OAUTH_CLIENT_CREDENTIALS;
+		this.hostname = Objects.requireNonNull(hostname, "hostname must not be null");
+		this.apiUsername = null;
+		this.apiPassword = null;
+		this.authServer = Objects.requireNonNull(authServer, "authServer must not be null");
 	}
 
 	@Override
@@ -67,20 +83,14 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		HttpResponse<InputStream> apiResponse = httpGetRequest(uri);
 		final int httpStatus = apiResponse.statusCode();
 		if (httpStatus == HttpUtil.HTTP_BAD_REQUEST_STATUS_CODE) {
-			String message = String.format("HTTP status 400 Bad Request returned for iflow artifact ID '%s', indicating that its package is read-only", iflowArtifactId);
+			String message = String.format("HTTP status Bad Request returned for iflow artifact ID '%s', indicating that its package is read-only", iflowArtifactId);
 			throw new CloudIntegrationApiError(message);
-		}
-		if (httpStatus == HttpUtil.HTTP_UNAUTHORIZED_STATUS_CODE) {
-			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHENTICATED);
-		}
-		if (httpStatus == HttpUtil.HTTP_FORBIDDEN_STATUS_CODE) {
-			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHORIZED);
 		}
 		if (httpStatus == HttpUtil.HTTP_NOT_FOUND_STATUS_CODE) {
 			String message = String.format("Iflow artifact ID '%s' could not be found", iflowArtifactId);
 			throw new CloudIntegrationApiError(message);			
 		}
-		// At this point, the HTTP status code should be 200.
+		// At this point, the HTTP status should be OK.
 		if (httpStatus != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			String message = String.format("Unexpected HTTP status code %d when retrieving iflow artifact ID '%s'", httpStatus, iflowArtifactId);
 			throw new CloudIntegrationApiError(message);
@@ -173,19 +183,48 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		return iflowArtifactsUri;
 	}
 
-	private String basicAuthHeaderValue() {
-	    return "Basic " + Base64.getEncoder().encodeToString((apiUsername + ":" + new String(apiPassword)).getBytes(StandardCharsets.UTF_8));
+	private String authorizationHeaderValue() {
+		String headerValue;
+		if (authMode == AuthMode.BASIC_AUTH) {
+			assert apiUsername != null;
+			assert apiPassword != null;
+			// TODO: Duplicated in AuthorizationServer; could be moved to HttpUtil
+			headerValue = "Basic " + Base64.getEncoder().encodeToString((apiUsername + ":" + new String(apiPassword)).getBytes(StandardCharsets.UTF_8));
+		} else if (authMode == AuthMode.OAUTH_CLIENT_CREDENTIALS) {
+			assert accessToken != null;
+			headerValue = "Bearer " + accessToken.getToken();
+		} else {
+			// This should never happen.
+			throw new AssertionError("Unexpected authentication mode");
+		}
+	    return headerValue;
 	}
 	
 	private HttpResponse<InputStream> httpGetRequest(URI uri) {
+		return httpGetRequest(uri, false);
+	}
+
+	private HttpResponse<InputStream> httpGetRequest(URI uri, boolean tokenExpired) {
 		assert uri != null;
+		assert !(tokenExpired && authMode == AuthMode.BASIC_AUTH) : "Expired tokens only make sense in OAuth Client Credentials mode";
 		/*
-		 * Preemptively set the authorization header, since we know in advance
-		 * that basic authentication is required.
+		 * Make sure we have a valid access token if the authentication mode
+		 * is OAuth Client Credentials.
 		 */
-        HttpRequest request = HttpRequest.newBuilder()
+		if (authMode == AuthMode.OAUTH_CLIENT_CREDENTIALS) {
+			if (accessToken == null || !accessToken.isValid()) {
+				if (accessToken == null) {
+					logger.info("Requesting first access token");
+				} else {
+					logger.info("Access token has expired; requesting a new one");
+				}
+				accessToken = authServer.requestAccessToken();
+				assert accessToken.isValid();
+			}
+		}
+		HttpRequest request = HttpRequest.newBuilder()
            	.uri(uri)
-           	.header(HttpUtil.REQUEST_HEADER_AUTHORIZATION, basicAuthHeaderValue())
+			.header(HttpUtil.REQUEST_HEADER_AUTHORIZATION, authorizationHeaderValue())
            	.GET()
             .build();
         HttpResponse<InputStream> response;
@@ -193,6 +232,27 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 		} catch (IOException | InterruptedException e) {
 			throw new CloudIntegrationApiError("HTTP request error", e);
+		}
+		final int httpStatus = response.statusCode();
+		if (httpStatus == HttpUtil.HTTP_UNAUTHORIZED_STATUS_CODE) {
+			/*
+			 * If we are in OAuth Client Credentials mode and the access token has expired,
+			 * we retry the HTTP request once with a new access token. In all other cases,
+			 * nothing further can be done so we throw an exception.
+			 */
+			final boolean oauthMode = (authMode == AuthMode.OAUTH_CLIENT_CREDENTIALS);
+			final boolean tokenHasExpired = !accessToken.isValid();
+			final boolean notAlreadyRecursing = !tokenExpired;
+			if (oauthMode && tokenHasExpired && notAlreadyRecursing) {
+				logger.info("API call failed on authentication and access token has expired; retrying once with a new token");
+				return httpGetRequest(uri, true);
+			} else {
+				throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHENTICATED);
+			}
+		}
+		if (httpStatus == HttpUtil.HTTP_FORBIDDEN_STATUS_CODE) {
+			// This means insufficient authorizations regardless of authentication mode.
+			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHORIZED);
 		}
 		return response;
 	}
@@ -215,13 +275,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		assert evaluator != null;
 		HttpResponse<InputStream> apiResponse = httpGetRequest(uri);
 		final int httpStatus = apiResponse.statusCode();
-		if (httpStatus == HttpUtil.HTTP_UNAUTHORIZED_STATUS_CODE) {
-			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHENTICATED);
-		}
-		if (httpStatus == HttpUtil.HTTP_FORBIDDEN_STATUS_CODE) {
-			throw new CloudIntegrationApiError(MESSAGE_NOT_AUTHORIZED);
-		}
-		// At this point, anything but HTTP status 200 OK is an error.
+		// At this point, anything but HTTP status OK is an error.
 		if (httpStatus != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			String message = String.format("API responded with unexpected HTTP status code %d", httpStatus);
 			throw new CloudIntegrationApiError(message);

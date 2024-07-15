@@ -82,20 +82,11 @@ public final class RulesFile {
 		if (!Files.isRegularFile(rulesFile)) {
 			throw new IllegalArgumentException("Provided rules file is not a file");
 		}
-		InputStream is;
-		try {
-			 is = Files.newInputStream(rulesFile);
+		Document doc;
+		try (InputStream is = Files.newInputStream(rulesFile)) {
+			doc = parseRulesFile(is);
 		} catch (IOException e) {
 			throw new RulesFileError("I/O error opening rules file", e);
-		}
-		return fromInputStream(is);
-	}
-
-	public static Collection<Rule> fromInputStream(InputStream is) {
-		// Parse the rules document.
-		Document doc;
-		try {
-			doc = parseRulesFile(is);
 		} catch (DocumentException | SAXException e) {
 			throw new RulesFileError("Error parsing rules file XML", e);
 		}

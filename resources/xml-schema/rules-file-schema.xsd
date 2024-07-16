@@ -4,10 +4,17 @@
 	<xs:element name="cpilint">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="rules" type="rulesType"/>
+				<xs:element name="import" type="importType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="rules" type="rulesType" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
+			<!-- The file must contain imports, rules or both. -->
+			<xs:assert test="import or rules"/>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:complexType name="importType">
+		<xs:attribute name="src" use="required" type="nonEmptyString"/>
+	</xs:complexType>
 
 	<xs:complexType name="rulesType">
 		<xs:all>
@@ -34,7 +41,7 @@
 			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
 			<xs:element name="naming" type="namingType" minOccurs="0" maxOccurs="unbounded"/> <!-- Unlike the other rules, the naming rule can occur multiple times. -->
 		</xs:all>
-		<!-- At least one rule should be present. -->
+		<!-- At least one rule must be present. -->
 		<xs:assert test="count(*) gt 0"/>
 		<!-- For the allow/disallow rules, only one of the variations must be present. -->
 		<xs:assert test="not(allowed-receiver-adapters and disallowed-receiver-adapters)"/>
@@ -48,6 +55,12 @@
 	<!-- General types -->
 
 	<xs:complexType name="emptyElementType"/>
+
+	<xs:simpleType name="nonEmptyString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<!-- Types for rule ReceiverAdapters -->
 

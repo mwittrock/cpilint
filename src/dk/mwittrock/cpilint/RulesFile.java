@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,12 +79,21 @@ public final class RulesFile {
 	}
 	
 	public static Collection<Rule> fromPath(Path rulesFile) {
+		Objects.requireNonNull(rulesFile, "rulesFile must not be null");
+		return fromPath(rulesFile, new HashSet<Path>());
+	}
+
+	private static Collection<Rule> fromPath(Path rulesFile, Set<Path> visited) {
+		assert rulesFile != null;
+		assert visited != null;
 		if (!Files.exists(rulesFile)) {
-			throw new IllegalArgumentException("Provided rules file does not exist");
+			throw new RulesFileError("Rules file does not exist: " + rulesFile);
 		}
 		if (!Files.isRegularFile(rulesFile)) {
-			throw new IllegalArgumentException("Provided rules file is not a file");
+			throw new RulesFileError("Rules file is not a file: " + rulesFile);
 		}
+		logger.info("Processing rules file '{}'", rulesFile);
+		visited.add(rulesFile);
 		Document doc;
 		try (InputStream is = Files.newInputStream(rulesFile)) {
 			doc = parseRulesFile(is);
@@ -90,8 +102,31 @@ public final class RulesFile {
 		} catch (DocumentException | SAXException e) {
 			throw new RulesFileError("Error parsing rules file XML", e);
 		}
+		Collection<Rule> rules = new ArrayList<>();
 		/*
-		 *  Get a List of all rule elements, i.e. elements below 
+		 * If the rules file contains imports, process them recursively.
+		 */
+		List<Element> imports = doc.getRootElement().elements("import");
+		logger.debug("Rules file contains {} import(s)", imports.size());
+		for (Element i : imports) {
+			Path importPath = Paths.get(i.attributeValue("src"));
+			if (visited.contains(importPath)) {
+				// Circular import detected.
+				String message = String.format("Rules file '%s' has already been processed once (i.e. imports are circular)", importPath);
+				throw new RulesFileError(message);
+			}
+			logger.info("Recursively processing import '{}'", importPath);
+			rules.addAll(fromPath(importPath, visited));
+		}
+		/*
+		 * If the rules file does not contain rules (i.e. it only contains imports), we can
+		 * return early.
+		 */
+		if (doc.getRootElement().element("rules") == null) {
+			return rules;
+		}
+		/*
+		 *  The rules file contains rules. Get a List of all rule elements, i.e. elements below
 		 *  /cpilint/rules.
 		 */
 		List<Element> ruleElements = doc.getRootElement().element("rules").elements();
@@ -104,20 +139,20 @@ public final class RulesFile {
 		 * add that Rule to the collection, that will be returned from this
 		 * method.
 		 */
-		Collection<Rule> rules = new ArrayList<>();
 		for (Element ruleElement : ruleElements) {
+			String ruleName = ruleElement.getName();
 			Set<RuleFactory> factories = ruleFactories
 				.stream()
 				.filter(f -> f.canCreateFrom(ruleElement))
 				.collect(Collectors.toSet());
 			if (factories.isEmpty()) {
-				throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleElement.getName()));
+				throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleName));
 			}
 			if (factories.size() > 1) {
 				logger.debug("Multiple RuleFactory instances available for element {}: {}",
-					ruleElement.getName(),
+					ruleName,
 					factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(",")));
-				throw new RulesFileError(String.format("More than one factory available to process rule '%s'", ruleElement.getName()));
+				throw new RulesFileError(String.format("More than one factory available to process rule '%s'", ruleName));
 			}
 			RuleFactory factory = factories.iterator().next();
 			rules.add(factory.createFrom(ruleElement));

@@ -253,13 +253,14 @@ public final class CliClient {
 		}
 		try {
 			rules = RulesFile.fromPath(rulesPath);
+			assert !rules.isEmpty();
 		} catch (RulesFileError e) {
 			logger.error("Rules file error", e);
-			exitWithErrorMessage("There was an error in the rules file: " + e.getMessage());
+			exitWithErrorMessage("There was a rules file error: " + e.getMessage());
 		} catch (RuleFactoryError e) {
 			logger.error("Rule factory error", e);
 			exitWithErrorMessage("There was an error creating a rule: " + e.getMessage());
-		}		
+		}
 		return rules;
 	}
 	

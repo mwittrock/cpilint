@@ -98,8 +98,23 @@ public final class CliClient {
 	private CliClient() {
 		throw new AssertionError("Never supposed to be instantiated");
 	}
-	
+
 	public static void main(String[] args) {
+		/*
+		 * The actual launcher code is in the run method. It _should_ catch all unchecked
+		 * exceptions thrown by CPILint. The call to run is wrapped in a try/catch block
+		 * below to get a last chance to catch anything previously uncaught. This ensures
+		 * that CPILint always exits with the documented status code.
+		 */
+		try {
+			run(args);
+		} catch (Throwable t) {
+			logger.error("Previously uncaught Throwable", t);
+			exitWithErrorMessage("Uncaught Throwable; run CPILint in debug mode for more information.");
+		}
+	}
+
+	private static void run(String[] args) {
 		// If logging is requested, it should be set up before anything else.
 		configureLogging(args);
 		logger.info("CPILint version {}", VERSION);

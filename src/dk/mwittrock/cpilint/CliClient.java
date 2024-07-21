@@ -1034,12 +1034,16 @@ public final class CliClient {
 		if (VERSION.equals(latestVersion)) {
 			logger.info("CPILint version matches latest version on GitHub");
 			if (userInitiated) {
+				printVersionBanner();
+				System.out.println();
 				System.out.println("Congratulations! You are running the latest version of CPILint.");
 			}
 		} else {
 			logger.info("CPILint version does not match latest version on GitHub");
 			if (userInitiated) {
 				String message = String.format("You are running version %s of CPILint. Version %s is available and can be downloaded here: %s", VERSION, latestVersion, whereToDownload);
+				printVersionBanner();
+				System.out.println();
 				System.out.println(message);
 			} else {
 				String message = String.format("Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s", latestVersion, whereToDownload);

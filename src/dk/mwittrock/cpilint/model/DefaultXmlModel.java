@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ final class DefaultXmlModel implements XmlModel {
 	private static final Map<SenderAdapter, String> clientCertAuthPropertyKeys;
 	private static final Map<SenderAdapter, String> clientCertAuthPropertyValues;
 	private static final Set<ReceiverAdapter> onPremReceiverAdapters;
+	private static final Map<String, SenderAdapter> componentTypeToSenderAdapter;
 	
 	static {
 		// Initialize the directionPropertyValues map.
@@ -165,6 +168,13 @@ final class DefaultXmlModel implements XmlModel {
 		onPremReceiverAdapters.add(ReceiverAdapter.ODC);
 		onPremReceiverAdapters.add(ReceiverAdapter.AS2);
 		onPremReceiverAdapters.add(ReceiverAdapter.AS4);
+		/*
+		 * Initialize the componentTypeToSenderAdapter map. This map is the
+		 * inverse of the senderAdapterComponentTypes.
+		 */
+		componentTypeToSenderAdapter = senderAdapterComponentTypes.entrySet()
+			.stream()
+			.collect(Collectors.toMap(Entry::getValue, Entry::getKey));
 	}
 
 	@Override
@@ -379,6 +389,13 @@ final class DefaultXmlModel implements XmlModel {
 	}
 
 	@Override
+	public SenderAdapter senderChannelComponentTypeToSenderAdapter(String componentType) {
+		Objects.requireNonNull(componentType, "componentType must not be null");
+		assert componentTypeToSenderAdapter.containsKey(componentType);
+		return componentTypeToSenderAdapter.get(componentType);
+	}
+
+	@Override
 	public String xqueryForMultiConditionTypeRouters() {
 		return JarResourceUtil.loadXqueryResource("multi-condition-type-routers.xquery");
 	}
@@ -397,7 +414,11 @@ final class DefaultXmlModel implements XmlModel {
 	public String xqueryForCleartextBasicAuthReceiverChannels() {
 		return JarResourceUtil.loadXqueryResource("cleartext-basic-auth-not-allowed.xquery");
 	}
-	
+
+	@Override
+	public String xqueryForSenderChannelUserRoles() {
+		return JarResourceUtil.loadXqueryResource("sender-channel-user-roles.xquery");	}
+
 	private static void nodeMustBeAnElement(XdmNode node) {
 		if (node.getNodeKind() != XdmNodeKind.ELEMENT) {
 			throw new IllegalArgumentException("Provided node is not an element");

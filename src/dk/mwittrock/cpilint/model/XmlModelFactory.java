@@ -11,12 +11,7 @@ public final class XmlModelFactory {
 	}
 	
 	public static XmlModel getModelFor(IflowXml iflowXml) {
-		/*
-		 * At the moment, the factory returns the same model regardless
-		 * of the iflow XML. At a later date, it will return different
-		 * models for the various iflow XML flavours, or throw an exception
-		 * if a model could not be found.
-		 */
+		// At the moment, only one model exists, so the same model is always returned.
 		return instance;
 	}
 

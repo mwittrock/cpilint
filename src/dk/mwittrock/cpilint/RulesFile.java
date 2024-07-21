@@ -46,6 +46,7 @@ import dk.mwittrock.cpilint.rules.ScriptingLanguagesRuleFactory;
 import dk.mwittrock.cpilint.rules.SenderAdaptersRuleFactory;
 import dk.mwittrock.cpilint.rules.UnencryptedDataStoreWriteNotAllowedRuleFactory;
 import dk.mwittrock.cpilint.rules.UnencryptedEndpointsNotAllowedRuleFactory;
+import dk.mwittrock.cpilint.rules.UserRolesRuleFactory;
 import dk.mwittrock.cpilint.rules.XsltVersionsRuleFactory;
 
 public final class RulesFile {
@@ -53,6 +54,8 @@ public final class RulesFile {
 	private static final String XML_SCHEMA_RESOURCE_PATH = "resources/xml-schema/rules-file-schema.xsd";
 	private static final Logger logger = LoggerFactory.getLogger(RulesFile.class);
 	private static final Collection<RuleFactory> ruleFactories;
+
+	// TODO: At some point, the rule factories ought to be loaded via the service provider mechanism.
 	
 	static {
 		ruleFactories = new ArrayList<>();
@@ -72,6 +75,7 @@ public final class RulesFile {
 		ruleFactories.add(new MatchingProcessDirectChannelsRequiredRuleFactory());
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
 		ruleFactories.add(new NamingRuleFactory());
+		ruleFactories.add(new UserRolesRuleFactory());
 	}
 	
 	private RulesFile() {

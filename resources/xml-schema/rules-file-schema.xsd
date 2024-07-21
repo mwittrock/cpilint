@@ -40,6 +40,8 @@
 			<xs:element name="iflow-description-required" type="emptyElementType" minOccurs="0"/>
 			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
 			<xs:element name="naming" type="namingType" minOccurs="0" maxOccurs="unbounded"/> <!-- Unlike the other rules, the naming rule can occur multiple times. -->
+			<xs:element name="allowed-user-roles" type="allowedUserRolesType" minOccurs="0"/>
+			<xs:element name="disallowed-user-roles" type="disallowedUserRolesType" minOccurs="0"/>
 		</xs:all>
 		<!-- At least one rule must be present. -->
 		<xs:assert test="count(*) gt 0"/>
@@ -50,6 +52,7 @@
 		<xs:assert test="not(allowed-xslt-versions and disallowed-xslt-versions)"/>
 		<xs:assert test="not(allowed-mapping-types and disallowed-mapping-types)"/>
 		<xs:assert test="not(allowed-java-archives and disallowed-java-archives)"/>
+		<xs:assert test="not(allowed-user-roles and disallowed-user-roles)"/>
 	</xs:complexType>
 
 	<!-- General types -->
@@ -355,6 +358,20 @@
 				</xs:attribute>
 			</xs:extension>
 		</xs:simpleContent>
+	</xs:complexType>
+
+	<!-- Types for rule UserRoles -->
+
+	<xs:complexType name="allowedUserRolesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="allow" type="nonEmptyString"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="disallowedUserRolesType">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="disallow" type="nonEmptyString"/>
+		</xs:sequence>
 	</xs:complexType>
 
 </xs:schema>

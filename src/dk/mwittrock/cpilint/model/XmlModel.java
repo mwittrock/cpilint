@@ -53,12 +53,16 @@ public interface XmlModel {
 		System.arraycopy(predicates, 0, newPredicates, 2, predicates.length);
 		return xpathForChannels(newPredicates);
 	}
+
+	public SenderAdapter senderChannelComponentTypeToSenderAdapter(String componentType);
 	
 	public String xqueryForProcessDirectReceiverChannels();
 	
 	public String xqueryForProcessDirectSenderChannelAddresses();
 	
 	public String xqueryForCleartextBasicAuthReceiverChannels();
+
+	public String xqueryForSenderChannelUserRoles();
 	
 	// Flow step related.
 	

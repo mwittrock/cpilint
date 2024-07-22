@@ -1,0 +1,1 @@
+The Xerces JARs that we need for XML Schema 1.1 validation are not in Maven and can therefore not be maintained with Ivy. That's why we store them directly in the repository.

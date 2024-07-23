@@ -4,6 +4,7 @@ import java.util.Set;
 
 public enum SenderAdapter {
 	
+	ADVANCEDEVENTMESH("AdvancedEventMesh"),
 	AMQP("AMQP"),
 	ARIBA("Ariba"),
 	AS2("AS2"),
@@ -17,8 +18,10 @@ public enum SenderAdapter {
 	JMS("JMS"),
 	KAFKA("Kafka"),
 	MAIL("Mail"),
+	MICROSOFTSHAREPOINT("Microsoft SharePoint"),
 	ODATA("OData"),
 	PROCESSDIRECT("ProcessDirect"),
+	RABBITMQ("RabbitMQ"),
 	SFTP("SFTP"),
 	SLACK("Slack"),
 	SOAP("SOAP"),

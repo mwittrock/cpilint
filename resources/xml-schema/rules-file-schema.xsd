@@ -138,6 +138,7 @@
 
 	<xs:simpleType name="senderAdaptersType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="advancedeventmesh"/>
 			<xs:enumeration value="amqp"/>
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
@@ -151,8 +152,10 @@
 			<xs:enumeration value="jms"/>
 			<xs:enumeration value="kafka"/>
 			<xs:enumeration value="mail"/>
+			<xs:enumeration value="microsoft sharepoint"/>
 			<xs:enumeration value="odata"/>
 			<xs:enumeration value="processdirect"/>
+			<xs:enumeration value="rabbitmq"/>
 			<xs:enumeration value="sftp"/>
 			<xs:enumeration value="slack"/>
 			<xs:enumeration value="soap"/>

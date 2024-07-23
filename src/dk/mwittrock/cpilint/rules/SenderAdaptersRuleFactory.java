@@ -11,6 +11,7 @@ public final class SenderAdaptersRuleFactory extends AllowDisallowRuleFactoryBas
 	
 	static {
 		senderAdapters = new HashMap<>();
+		senderAdapters.put("advancedeventmesh", SenderAdapter.ADVANCEDEVENTMESH);
 		senderAdapters.put("amqp", SenderAdapter.AMQP);
 		senderAdapters.put("ariba", SenderAdapter.ARIBA);
 		senderAdapters.put("as2", SenderAdapter.AS2);
@@ -24,8 +25,10 @@ public final class SenderAdaptersRuleFactory extends AllowDisallowRuleFactoryBas
 		senderAdapters.put("jms", SenderAdapter.JMS);
 		senderAdapters.put("kafka", SenderAdapter.KAFKA);
 		senderAdapters.put("mail", SenderAdapter.MAIL);
+		senderAdapters.put("microsoft sharepoint", SenderAdapter.MICROSOFTSHAREPOINT);
 		senderAdapters.put("odata", SenderAdapter.ODATA);
 		senderAdapters.put("processdirect", SenderAdapter.PROCESSDIRECT);
+		senderAdapters.put("rabbitmq", SenderAdapter.RABBITMQ);
 		senderAdapters.put("sftp", SenderAdapter.SFTP);
 		senderAdapters.put("slack", SenderAdapter.SLACK);
 		senderAdapters.put("soap", SenderAdapter.SOAP);

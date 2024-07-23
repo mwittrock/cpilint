@@ -72,6 +72,7 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.XI, "XI");
 		// Initialize the senderAdapterComponentTypes map.
 		senderAdapterComponentTypes = new HashMap<>();
+		senderAdapterComponentTypes.put(SenderAdapter.ADVANCEDEVENTMESH, "AdvancedEventMesh");
 		senderAdapterComponentTypes.put(SenderAdapter.AMQP, "AMQP");
 		senderAdapterComponentTypes.put(SenderAdapter.ARIBA, "Ariba");
 		senderAdapterComponentTypes.put(SenderAdapter.AS2, "AS2");
@@ -85,8 +86,10 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.JMS, "JMS");
 		senderAdapterComponentTypes.put(SenderAdapter.KAFKA, "Kafka");
 		senderAdapterComponentTypes.put(SenderAdapter.MAIL, "Mail");
+		senderAdapterComponentTypes.put(SenderAdapter.MICROSOFTSHAREPOINT, "MicrosoftSharePoint");
 		senderAdapterComponentTypes.put(SenderAdapter.ODATA, "ODataSender");
 		senderAdapterComponentTypes.put(SenderAdapter.PROCESSDIRECT, "ProcessDirect");
+		senderAdapterComponentTypes.put(SenderAdapter.RABBITMQ, "RabbitMQ");
 		senderAdapterComponentTypes.put(SenderAdapter.SFTP, "SFTP");
 		senderAdapterComponentTypes.put(SenderAdapter.SLACK, "Slack");
 		senderAdapterComponentTypes.put(SenderAdapter.SOAP, "SOAP");

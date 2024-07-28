@@ -69,11 +69,13 @@
 
 	<xs:simpleType name="receiverAdaptersType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="advancedeventmesh"/>
 			<xs:enumeration value="amqp"/>
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
 			<xs:enumeration value="as4"/>
 			<xs:enumeration value="azurestorage"/>
+			<xs:enumeration value="coupa"/>
 			<xs:enumeration value="dropbox"/>
 			<xs:enumeration value="elster"/>
 			<xs:enumeration value="facebook"/>
@@ -86,15 +88,21 @@
 			<xs:enumeration value="kafka"/>
 			<xs:enumeration value="ldap"/>
 			<xs:enumeration value="mail"/>
+			<xs:enumeration value="mdi"/>
+			<xs:enumeration value="microsoft sharepoint"/>
+			<xs:enumeration value="netsuite"/>
 			<xs:enumeration value="odc"/>
 			<xs:enumeration value="openconnectors"/>
 			<xs:enumeration value="processdirect"/>
+			<xs:enumeration value="rabbitmq"/>
 			<xs:enumeration value="rfc"/>
+			<xs:enumeration value="servicenow"/>
 			<xs:enumeration value="sftp"/>
 			<xs:enumeration value="slack"/>
 			<xs:enumeration value="soap"/>
 			<xs:enumeration value="splunk"/>
 			<xs:enumeration value="successfactors"/>
+			<xs:enumeration value="sugarcrm"/>
 			<xs:enumeration value="twitter"/>
 			<xs:enumeration value="workday"/>
 			<xs:enumeration value="xi"/>

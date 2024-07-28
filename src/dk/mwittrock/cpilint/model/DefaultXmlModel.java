@@ -41,11 +41,13 @@ final class DefaultXmlModel implements XmlModel {
 		directionPropertyValues.put(ChannelDirection.RECEIVER, "Receiver");
 		// Initialize the receiverAdapterComponentTypes map.
 		receiverAdapterComponentTypes = new HashMap<>();
+		receiverAdapterComponentTypes.put(ReceiverAdapter.ADVANCEDEVENTMESH, "AdvancedEventMesh");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AMQP, "AMQP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ARIBA, "Ariba");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS2, "AS2");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS4, "AS4");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AZURESTORAGE, "AzureStorage");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.COUPA, "Coupa");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.DROPBOX, "Dropbox");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ELSTER, "ELSTER");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FACEBOOK, "Facebook");
@@ -58,15 +60,21 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.KAFKA, "Kafka");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.LDAP, "LDAP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.MAIL, "Mail");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.MDI, "MDI");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.MICROSOFTSHAREPOINT, "MicrosoftSharePoint");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.NETSUITE, "NetSuite");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ODC, "ODC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.OPENCONNECTORS, "OpenConnectors");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.PROCESSDIRECT, "ProcessDirect");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.RABBITMQ, "RabbitMQ");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.RFC, "RFC");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SERVICENOW, "ServiceNow");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SFTP, "SFTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SLACK, "Slack");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SOAP, "SOAP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SPLUNK, "Splunk");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SUCCESSFACTORS, "SuccessFactors");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SUGARCRM, "SugarCRM");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.TWITTER, "Twitter");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.WORKDAY, "Workday");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.XI, "XI");

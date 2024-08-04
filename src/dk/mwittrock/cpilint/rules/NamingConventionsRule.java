@@ -86,6 +86,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToXpathFunctionMap.put(Nameable.RFC_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.RFC));
 		nameableToXpathFunctionMap.put(Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SERVICENOW));
 		nameableToXpathFunctionMap.put(Nameable.SFTP_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SFTP));
+		nameableToXpathFunctionMap.put(Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SNOWFLAKE));
 		nameableToXpathFunctionMap.put(Nameable.SOAP_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SOAP));
 		nameableToXpathFunctionMap.put(Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SUCCESSFACTORS));
 		nameableToXpathFunctionMap.put(Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME, m -> m.xpathForReceiverChannels(ReceiverAdapter.SUGARCRM));
@@ -152,6 +153,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToNameFunctionMap.put(Nameable.RFC_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SFTP_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SOAP_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
@@ -218,6 +220,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToIdentFunctionMap.put(Nameable.RFC_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("RFC receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("ServiceNow receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SFTP_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("SFTP receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("Snowflake receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SOAP_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("SOAP receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("SuccessFactors receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME, (n, m) -> String.format("SugarCRM receiver channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));

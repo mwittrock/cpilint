@@ -99,6 +99,7 @@
 			<xs:enumeration value="servicenow"/>
 			<xs:enumeration value="sftp"/>
 			<xs:enumeration value="slack"/>
+			<xs:enumeration value="snowflake"/>
 			<xs:enumeration value="soap"/>
 			<xs:enumeration value="splunk"/>
 			<xs:enumeration value="successfactors"/>
@@ -329,6 +330,7 @@
 			<xs:enumeration value="rfc-receiver-channel.name"/>
 			<xs:enumeration value="servicenow-receiver-channel.name"/>
 			<xs:enumeration value="sftp-receiver-channel.name"/>
+			<xs:enumeration value="snowflake-receiver-channel.name"/>
 			<xs:enumeration value="soap-receiver-channel.name"/>
 			<xs:enumeration value="successfactors-receiver-channel.name"/>
 			<xs:enumeration value="sugarcrm-receiver-channel.name"/>

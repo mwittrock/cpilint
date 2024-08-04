@@ -41,6 +41,7 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 		receiverAdapters.put("servicenow", ReceiverAdapter.SERVICENOW);
 		receiverAdapters.put("sftp", ReceiverAdapter.SFTP);
 		receiverAdapters.put("slack", ReceiverAdapter.SLACK);
+		receiverAdapters.put("snowflake", ReceiverAdapter.SNOWFLAKE);
 		receiverAdapters.put("soap", ReceiverAdapter.SOAP);
 		receiverAdapters.put("splunk", ReceiverAdapter.SPLUNK);
 		receiverAdapters.put("successfactors", ReceiverAdapter.SUCCESSFACTORS);

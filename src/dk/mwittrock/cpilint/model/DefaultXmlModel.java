@@ -71,6 +71,7 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SERVICENOW, "ServiceNow");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SFTP, "SFTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SLACK, "Slack");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SNOWFLAKE, "Snowflake");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SOAP, "SOAP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SPLUNK, "Splunk");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SUCCESSFACTORS, "SuccessFactors");

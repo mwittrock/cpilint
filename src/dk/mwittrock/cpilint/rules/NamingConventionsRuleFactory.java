@@ -81,6 +81,7 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("rfc-receiver-channel.name", Nameable.RFC_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("servicenow-receiver-channel.name", Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("sftp-receiver-channel.name", Nameable.SFTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("snowflake-receiver-channel.name", Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("soap-receiver-channel.name", Nameable.SOAP_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("successfactors-receiver-channel.name", Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("sugarcrm-receiver-channel.name", Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME);

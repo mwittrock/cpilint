@@ -34,6 +34,7 @@ public enum ReceiverAdapter {
 	SERVICENOW("ServiceNow"),
 	SFTP("SFTP"),
 	SLACK("Slack"),
+	SNOWFLAKE("Snowflake"),
 	SOAP("SOAP"),
 	SPLUNK("Splunk"),
 	SUCCESSFACTORS("SuccessFactors"),

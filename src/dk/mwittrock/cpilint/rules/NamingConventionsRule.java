@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import dk.mwittrock.cpilint.IflowXml;
 import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.IflowArtifactTag;
-import dk.mwittrock.cpilint.issues.NamingRuleIssue;
+import dk.mwittrock.cpilint.issues.NamingConventionsRuleIssue;
 import dk.mwittrock.cpilint.model.ChannelDirection;
 import dk.mwittrock.cpilint.model.MappingType;
 import dk.mwittrock.cpilint.model.Nameable;
@@ -27,12 +27,12 @@ import dk.mwittrock.cpilint.rules.naming.NamingScheme;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
-final class NamingRule extends RuleBase {
+final class NamingConventionsRule extends RuleBase {
 	
 	private static final Map<Nameable, Function<XmlModel, String>> nameableToXpathFunctionMap;
 	private static final Map<Nameable, BiFunction<XdmNode, XmlModel, String>> nameableToNameFunctionMap;
 	private static final Map<Nameable, BiFunction<XdmNode, XmlModel, String>> nameableToIdentFunctionMap;
-	private static final Logger logger = LoggerFactory.getLogger(NamingRule.class);
+	private static final Logger logger = LoggerFactory.getLogger(NamingConventionsRule.class);
 	
 	static {
 		// Initialize the nameableToXpathFunctionMap map.
@@ -242,7 +242,7 @@ final class NamingRule extends RuleBase {
 	private final String message;
 	private final Set<Nameable> applyTo;
 	
-	NamingRule(NamingScheme scheme, String message, Set<Nameable> applyTo) {
+	NamingConventionsRule(NamingScheme scheme, String message, Set<Nameable> applyTo) {
 		this.scheme = Objects.requireNonNull(scheme, "scheme must not be null");
 		Objects.requireNonNull(message, "message must not be null");
 		if (message.isBlank()) {
@@ -278,7 +278,7 @@ final class NamingRule extends RuleBase {
 				logger.debug("Checking {} name '{}'", n, iflowName);
 				if (!scheme.test(iflowName)) {
 					logger.debug("Name is not compliant ('{}')", message);
-					consumer.consume(new NamingRuleIssue(tag, errorMessage("iflow name"), iflowName));
+					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage("iflow name"), iflowName));
 				}
 				continue;
 			}
@@ -287,7 +287,7 @@ final class NamingRule extends RuleBase {
 				logger.debug("Checking {} name '{}'", n, iflowId);
 				if (!scheme.test(iflowId)) {
 					logger.debug("Name is not compliant ('{}')", message);
-					consumer.consume(new NamingRuleIssue(tag, errorMessage("iflow ID"), iflowId));
+					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage("iflow ID"), iflowId));
 				}
 				continue;
 			}
@@ -308,7 +308,7 @@ final class NamingRule extends RuleBase {
 					// This name does not follow the naming scheme.
 					logger.debug("Name is not compliant ('{}')", message);
 					String ident = nameableToIdentFunctionMap.get(n).apply(node, model);
-					consumer.consume(new NamingRuleIssue(tag, errorMessage(ident), name));
+					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage(ident), name));
 				}
 			}
 		}

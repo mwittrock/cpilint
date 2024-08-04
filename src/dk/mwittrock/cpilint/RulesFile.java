@@ -38,7 +38,7 @@ import dk.mwittrock.cpilint.rules.JavaArchivesRuleFactory;
 import dk.mwittrock.cpilint.rules.MappingTypesRuleFactory;
 import dk.mwittrock.cpilint.rules.MatchingProcessDirectChannelsRequiredRuleFactory;
 import dk.mwittrock.cpilint.rules.MultiConditionTypeRoutersNotAllowedRuleFactory;
-import dk.mwittrock.cpilint.rules.NamingRuleFactory;
+import dk.mwittrock.cpilint.rules.NamingConventionsRuleFactory;
 import dk.mwittrock.cpilint.rules.ReceiverAdaptersRuleFactory;
 import dk.mwittrock.cpilint.rules.Rule;
 import dk.mwittrock.cpilint.rules.RuleFactory;
@@ -74,7 +74,7 @@ public final class RulesFile {
 		ruleFactories.add(new MultiConditionTypeRoutersNotAllowedRuleFactory());
 		ruleFactories.add(new MatchingProcessDirectChannelsRequiredRuleFactory());
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
-		ruleFactories.add(new NamingRuleFactory());
+		ruleFactories.add(new NamingConventionsRuleFactory());
 		ruleFactories.add(new UserRolesRuleFactory());
 	}
 	

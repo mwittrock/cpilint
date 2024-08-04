@@ -24,7 +24,7 @@ import dk.mwittrock.cpilint.rules.naming.NegationScheme;
 import dk.mwittrock.cpilint.rules.naming.RegexScheme;
 import dk.mwittrock.cpilint.rules.naming.StartsWithScheme;
 
-public final class NamingRuleFactory implements RuleFactory {
+public final class NamingConventionsRuleFactory implements RuleFactory {
 	
 	private static final Map<String, Nameable> applyToValues;
 	
@@ -120,7 +120,7 @@ public final class NamingRuleFactory implements RuleFactory {
 			assert applyToValues.containsKey(val);
 			applyTo.add(applyToValues.get(val));
 		}
-		return new NamingRule(scheme, message, applyTo);
+		return new NamingConventionsRule(scheme, message, applyTo);
 	}
 	
 	private static NamingScheme schemeFromElement(Element e) {
@@ -177,7 +177,7 @@ public final class NamingRuleFactory implements RuleFactory {
 	private static List<NamingScheme> innerSchemesFromElement(Element e) {
 		return e.elements()
 			.stream()
-			.map(NamingRuleFactory::schemeFromElement)
+			.map(NamingConventionsRuleFactory::schemeFromElement)
 			.collect(Collectors.toList());
 	}
 	

@@ -39,6 +39,9 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("ariba-sender-channel.name", Nameable.ARIBA_SENDER_CHANNEL_NAME);
 		applyToValues.put("as2-sender-channel.name", Nameable.AS2_SENDER_CHANNEL_NAME);
 		applyToValues.put("as4-sender-channel.name", Nameable.AS4_SENDER_CHANNEL_NAME);
+		applyToValues.put("azurestorage-sender-channel.name", Nameable.AZURESTORAGE_SENDER_CHANNEL_NAME);
+		applyToValues.put("data-store-sender-channel.name", Nameable.DATA_STORE_SENDER_CHANNEL_NAME);
+		applyToValues.put("dropbox-sender-channel.name", Nameable.DROPBOX_SENDER_CHANNEL_NAME);
 		applyToValues.put("ftp-sender-channel.name", Nameable.FTP_SENDER_CHANNEL_NAME);
 		applyToValues.put("https-sender-channel.name", Nameable.HTTPS_SENDER_CHANNEL_NAME);
 		applyToValues.put("idoc-sender-channel.name", Nameable.IDOC_SENDER_CHANNEL_NAME);
@@ -50,7 +53,9 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("processdirect-sender-channel.name", Nameable.PROCESSDIRECT_SENDER_CHANNEL_NAME);
 		applyToValues.put("rabbitmq-sender-channel.name", Nameable.RABBITMQ_SENDER_CHANNEL_NAME);
 		applyToValues.put("sftp-sender-channel.name", Nameable.SFTP_SENDER_CHANNEL_NAME);
+		applyToValues.put("slack-sender-channel.name", Nameable.SLACK_SENDER_CHANNEL_NAME);
 		applyToValues.put("soap-sender-channel.name", Nameable.SOAP_SENDER_CHANNEL_NAME);
+		applyToValues.put("splunk-sender-channel.name", Nameable.SPLUNK_SENDER_CHANNEL_NAME);
 		applyToValues.put("successfactors-sender-channel.name", Nameable.SUCCESSFACTORS_SENDER_CHANNEL_NAME);
 		applyToValues.put("xi-sender-channel.name", Nameable.XI_SENDER_CHANNEL_NAME);
 		applyToValues.put("receiver-channel.name", Nameable.RECEIVER_CHANNEL_NAME);
@@ -59,7 +64,9 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("ariba-receiver-channel.name", Nameable.ARIBA_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("as2-receiver-channel.name", Nameable.AS2_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("as4-receiver-channel.name", Nameable.AS4_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("azurestorage-receiver-channel.name", Nameable.AZURESTORAGE_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("coupa-receiver-channel.name", Nameable.COUPA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("dropbox-receiver-channel.name", Nameable.DROPBOX_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("elster-receiver-channel.name", Nameable.ELSTER_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("facebook-receiver-channel.name", Nameable.FACEBOOK_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("ftp-receiver-channel.name", Nameable.FTP_RECEIVER_CHANNEL_NAME);
@@ -81,11 +88,14 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("rfc-receiver-channel.name", Nameable.RFC_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("servicenow-receiver-channel.name", Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("sftp-receiver-channel.name", Nameable.SFTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("slack-receiver-channel.name", Nameable.SLACK_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("snowflake-receiver-channel.name", Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("soap-receiver-channel.name", Nameable.SOAP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("splunk-receiver-channel.name", Nameable.SPLUNK_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("successfactors-receiver-channel.name", Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("sugarcrm-receiver-channel.name", Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("twitter-receiver-channel.name", Nameable.TWITTER_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("workday-receiver-channel.name", Nameable.WORKDAY_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("xi-receiver-channel.name", Nameable.XI_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("mapping.name", Nameable.MAPPING_STEP_NAME);
 		applyToValues.put("message-mapping.name", Nameable.MESSAGE_MAPPING_STEP_NAME);

@@ -288,6 +288,9 @@
 			<xs:enumeration value="ariba-sender-channel.name"/>
 			<xs:enumeration value="as2-sender-channel.name"/>
 			<xs:enumeration value="as4-sender-channel.name"/>
+			<xs:enumeration value="azurestorage-sender-channel.name"/>
+			<xs:enumeration value="data-store-sender-channel.name"/>
+			<xs:enumeration value="dropbox-sender-channel.name"/>
 			<xs:enumeration value="ftp-sender-channel.name"/>
 			<xs:enumeration value="https-sender-channel.name"/>
 			<xs:enumeration value="idoc-sender-channel.name"/>
@@ -299,7 +302,9 @@
 			<xs:enumeration value="processdirect-sender-channel.name"/>
 			<xs:enumeration value="rabbitmq-sender-channel.name"/>
 			<xs:enumeration value="sftp-sender-channel.name"/>
+			<xs:enumeration value="slack-sender-channel.name"/>
 			<xs:enumeration value="soap-sender-channel.name"/>
+			<xs:enumeration value="splunk-sender-channel.name"/>
 			<xs:enumeration value="successfactors-sender-channel.name"/>
 			<xs:enumeration value="xi-sender-channel.name"/>
 			<xs:enumeration value="receiver-channel.name"/>
@@ -308,7 +313,9 @@
 			<xs:enumeration value="ariba-receiver-channel.name"/>
 			<xs:enumeration value="as2-receiver-channel.name"/>
 			<xs:enumeration value="as4-receiver-channel.name"/>
+			<xs:enumeration value="azurestorage-receiver-channel.name"/>
 			<xs:enumeration value="coupa-receiver-channel.name"/>
+			<xs:enumeration value="dropbox-receiver-channel.name"/>
 			<xs:enumeration value="elster-receiver-channel.name"/>
 			<xs:enumeration value="facebook-receiver-channel.name"/>
 			<xs:enumeration value="ftp-receiver-channel.name"/>
@@ -330,11 +337,14 @@
 			<xs:enumeration value="rfc-receiver-channel.name"/>
 			<xs:enumeration value="servicenow-receiver-channel.name"/>
 			<xs:enumeration value="sftp-receiver-channel.name"/>
+			<xs:enumeration value="slack-receiver-channel.name"/>
 			<xs:enumeration value="snowflake-receiver-channel.name"/>
 			<xs:enumeration value="soap-receiver-channel.name"/>
+			<xs:enumeration value="splunk-receiver-channel.name"/>
 			<xs:enumeration value="successfactors-receiver-channel.name"/>
 			<xs:enumeration value="sugarcrm-receiver-channel.name"/>
 			<xs:enumeration value="twitter-receiver-channel.name"/>
+			<xs:enumeration value="workday-receiver-channel.name"/>
 			<xs:enumeration value="xi-receiver-channel.name"/>
 			<xs:enumeration value="mapping.name"/>
 			<xs:enumeration value="message-mapping.name"/>

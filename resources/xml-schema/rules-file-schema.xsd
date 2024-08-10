@@ -356,6 +356,7 @@
 			<xs:enumeration value="sender.name"/>
 			<xs:enumeration value="receiver.name"/>
 			<xs:enumeration value="content-modifier.name"/>
+			<xs:enumeration value="filter.name"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

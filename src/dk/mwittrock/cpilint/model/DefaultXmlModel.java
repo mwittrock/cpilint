@@ -333,6 +333,11 @@ final class DefaultXmlModel implements XmlModel {
 	}
 
 	@Override
+	public String stepPredicateForFilterSteps() {
+		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "Filter");
+	}
+
+	@Override
 	public String stepPredicateForContentModifierSteps() {
 		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "Enricher");
 	}

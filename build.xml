@@ -3,7 +3,7 @@
 <project name="CPILint" default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="app.name" value="cpilint"/>
-	<property name="version" value="1.0.4"/>
+	<property name="version" value="1.0.5"/>
 	<property name="app.name.versioned" value="${app.name}-${version}"/>
 	<property name="jar" value="${app.name.versioned}.jar"/>
 	<property name="source.dir" value="src"/>

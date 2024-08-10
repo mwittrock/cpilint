@@ -10,6 +10,8 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +53,7 @@ import dk.mwittrock.cpilint.util.HttpUtil;
 public final class CliClient {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CliClient.class);
-	private static final String VERSION = "1.0.4";
+	private static final String VERSION = "1.0.5";
 	private static final String COPYRIGHT = "2019-2024 Morten N. Wittrock";
 	private static final int EXIT_STATUS_SUCCESS = 0;
 	private static final int EXIT_STATUS_ISSUES = 1;
@@ -156,6 +158,7 @@ public final class CliClient {
 		if (!cl.hasOption(CLI_OPTION_BORING)) {
 			printAsciiArtLogo();
 			System.out.println();
+			easter();
 		}
 		if (cl.hasOption(CLI_OPTION_SKIPVERCHECK)) {
 			logger.info("Skipping version check");
@@ -562,15 +565,15 @@ public final class CliClient {
 	private static void printAsciiArtLogo() {
 		/*
 		 * The logo was created with the "Text to ASCII Art Generator"
-		 * (http://patorjk.com/software/taag/) using the Banner3 font.
+		 * (http://patorjk.com/software/taag/) using the 3D-ASCII font.
 		 */
-		System.out.println(" ######  ########  #### ##       #### ##    ## ######## ");
-		System.out.println("##    ## ##     ##  ##  ##        ##  ###   ##    ##    ");
-		System.out.println("##       ##     ##  ##  ##        ##  ####  ##    ##    ");
-		System.out.println("##       ########   ##  ##        ##  ## ## ##    ##    ");
-		System.out.println("##       ##         ##  ##        ##  ##  ####    ##    ");
-		System.out.println("##    ## ##         ##  ##        ##  ##   ###    ##    ");
-		System.out.println(" ######  ##        #### ######## #### ##    ##    ##    ");
+		System.out.println(" ________  ________  ___  ___       ___  ________   _________   ");
+		System.out.println("|\\   ____\\|\\   __  \\|\\  \\|\\  \\     |\\  \\|\\   ___  \\|\\___   ___\\ ");
+		System.out.println("\\ \\  \\___|\\ \\  \\|\\  \\ \\  \\ \\  \\    \\ \\  \\ \\  \\\\ \\  \\|___ \\  \\_| ");
+		System.out.println(" \\ \\  \\    \\ \\   ____\\ \\  \\ \\  \\    \\ \\  \\ \\  \\\\ \\  \\   \\ \\  \\  ");
+		System.out.println("  \\ \\  \\____\\ \\  \\___|\\ \\  \\ \\  \\____\\ \\  \\ \\  \\\\ \\  \\   \\ \\  \\ ");
+		System.out.println("   \\ \\_______\\ \\__\\    \\ \\__\\ \\_______\\ \\__\\ \\__\\\\ \\__\\   \\ \\__\\");
+		System.out.println("    \\|_______|\\|__|     \\|__|\\|_______|\\|__|\\|__| \\|__|    \\|__|");
 	}
 	
     private static Options prepareCliOptions() {
@@ -1052,5 +1055,14 @@ public final class CliClient {
 			}
 		}
 	}
-    
+
+	private static void easter() {
+		final LocalDate release = LocalDate.of(2019, Month.AUGUST, 31);
+		final LocalDate today = LocalDate.now();
+		if (today.getDayOfMonth() == release.getDayOfMonth() && today.getMonth() == release.getMonth()) {
+			System.out.println(String.format("Today, CPILint is %d years old; happy birthday to me \\o/", today.getYear() - release.getYear()));
+			System.out.println();
+		}
+	}
+
 }

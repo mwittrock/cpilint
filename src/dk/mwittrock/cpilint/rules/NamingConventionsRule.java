@@ -113,6 +113,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToXpathFunctionMap.put(Nameable.RECEIVER_NAME, m -> m.xpathForReceiverParticipants());
 		nameableToXpathFunctionMap.put(Nameable.CONTENT_MODIFIER_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForContentModifierSteps()));
 		nameableToXpathFunctionMap.put(Nameable.FILTER_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForFilterSteps()));
+		nameableToXpathFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForXmlValidatorSteps()));
 		// Initialize the nameableToNameFunctionMap map.
 		nameableToNameFunctionMap = new HashMap<>();
 		nameableToNameFunctionMap.put(Nameable.CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
@@ -191,6 +192,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToNameFunctionMap.put(Nameable.RECEIVER_NAME, (n, m) -> m.getParticipantNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.CONTENT_MODIFIER_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.FILTER_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
 		// Initialize the nameableToIdentFunctionMap map.
 		nameableToIdentFunctionMap = new HashMap<>();
 		nameableToIdentFunctionMap.put(Nameable.CHANNEL_NAME, (n, m) -> String.format("channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
@@ -269,6 +271,7 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToIdentFunctionMap.put(Nameable.RECEIVER_NAME, (n, m) -> String.format("Receiver participant '%s' (ID '%s')", m.getParticipantNameFromElement(n), m.getParticipantIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.CONTENT_MODIFIER_STEP_NAME, (n, m) -> String.format("content modifier step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.FILTER_STEP_NAME, (n, m) -> String.format("filter step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, (n, m) -> String.format("XML Validator step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		// The keys of the above maps should be identical.
 		assert nameableToXpathFunctionMap.keySet().equals(nameableToNameFunctionMap.keySet());
 		assert nameableToNameFunctionMap.keySet().equals(nameableToIdentFunctionMap.keySet());

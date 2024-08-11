@@ -338,6 +338,11 @@ final class DefaultXmlModel implements XmlModel {
 	}
 
 	@Override
+	public String stepPredicateForXmlValidatorSteps() {
+		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "XmlValidator");
+	}
+
+	@Override
 	public String stepPredicateForContentModifierSteps() {
 		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "Enricher");
 	}

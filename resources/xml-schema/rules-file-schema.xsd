@@ -357,6 +357,7 @@
 			<xs:enumeration value="receiver.name"/>
 			<xs:enumeration value="content-modifier.name"/>
 			<xs:enumeration value="filter.name"/>
+			<xs:enumeration value="xml-validator.name"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

@@ -108,6 +108,7 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("receiver.name", Nameable.RECEIVER_NAME);
 		applyToValues.put("content-modifier.name", Nameable.CONTENT_MODIFIER_STEP_NAME);
 		applyToValues.put("filter.name", Nameable.FILTER_STEP_NAME);
+		applyToValues.put("xml-validator.name", Nameable.XML_VALIDATOR_STEP_NAME);
 	}
 
 	@Override

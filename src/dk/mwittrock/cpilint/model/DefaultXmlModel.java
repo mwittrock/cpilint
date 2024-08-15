@@ -343,6 +343,11 @@ final class DefaultXmlModel implements XmlModel {
 	}
 
 	@Override
+	public String stepPredicateForEdiValidatorSteps() {
+		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "EDIValidator");
+	}
+
+	@Override
 	public String stepPredicateForContentModifierSteps() {
 		return propertyKeyValuePredicate(ACTIVITY_TYPE_PROPERTY_KEY, "Enricher");
 	}

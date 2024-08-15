@@ -89,6 +89,8 @@ public interface XmlModel {
 
 	public String stepPredicateForXmlValidatorSteps();
 
+	public String stepPredicateForEdiValidatorSteps();
+
 	public String stepPredicateForContentModifierSteps();
 	
 	public String stepPredicateForScriptingLanguage(ScriptingLanguage scriptingLanguage);

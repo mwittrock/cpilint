@@ -110,17 +110,20 @@ public final class RulesFile {
 		/*
 		 * If the rules file contains imports, process them recursively.
 		 */
-		List<Element> imports = doc.getRootElement().elements("import");
-		logger.debug("Rules file contains {} import(s)", imports.size());
-		for (Element i : imports) {
-			Path importPath = Paths.get(i.attributeValue("src"));
-			if (visited.contains(importPath)) {
-				// Circular import detected.
-				String message = String.format("Rules file '%s' has already been processed once (i.e. imports are circular)", importPath);
-				throw new RulesFileError(message);
+		Element imports = doc.getRootElement().element("imports");
+		if (imports != null) {
+			List<Element> importElements = imports.elements("import");
+			logger.debug("Rules file contains {} import(s)", importElements.size());
+			for (Element i : importElements) {
+				Path importPath = Paths.get(i.attributeValue("src"));
+				if (visited.contains(importPath)) {
+					// Circular import detected.
+					String message = String.format("Rules file '%s' has already been processed once (i.e. imports are circular)", importPath);
+					throw new RulesFileError(message);
+				}
+				logger.info("Recursively processing import '{}'", importPath);
+				rules.addAll(fromPath(importPath, visited));
 			}
-			logger.info("Recursively processing import '{}'", importPath);
-			rules.addAll(fromPath(importPath, visited));
 		}
 		/*
 		 * If the rules file does not contain rules (i.e. it only contains imports), we can

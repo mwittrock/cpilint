@@ -4,16 +4,22 @@
 	<xs:element name="cpilint">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="import" type="importType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="imports" type="importsType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="rules" type="rulesType" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<!-- The file must contain imports, rules or both. -->
-			<xs:assert test="import or rules"/>
+			<xs:assert test="imports or rules"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="importType">
-		<xs:attribute name="src" use="required" type="nonEmptyString"/>
+	<xs:complexType name="importsType">
+		<xs:sequence>
+			<xs:element name="import" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="src" use="required" type="nonEmptyString"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="rulesType">

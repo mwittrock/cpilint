@@ -144,7 +144,7 @@ final class DefaultXmlModel implements XmlModel {
 		basicAuthPropertyValues.put(ReceiverAdapter.XI, "BasicAuthentication");
 		// Initialize the datastoreOperationPropertyValues map.
 		datastoreOperationPropertyValues = new HashMap<>();
-		datastoreOperationPropertyValues.put(DataStoreOperation.READ, "get");
+		datastoreOperationPropertyValues.put(DataStoreOperation.GET, "get");
 		datastoreOperationPropertyValues.put(DataStoreOperation.WRITE, "put");
 		datastoreOperationPropertyValues.put(DataStoreOperation.SELECT, "select");
 		datastoreOperationPropertyValues.put(DataStoreOperation.DELETE, "delete");

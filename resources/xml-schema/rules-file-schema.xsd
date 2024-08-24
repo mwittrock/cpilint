@@ -365,6 +365,11 @@
 			<xs:enumeration value="filter.name"/>
 			<xs:enumeration value="xml-validator.name"/>
 			<xs:enumeration value="edi-validator.name"/>
+			<xs:enumeration value="data-store-operations.name"/>
+			<xs:enumeration value="get-data-store-operations.name"/>
+			<xs:enumeration value="select-data-store-operations.name"/>
+			<xs:enumeration value="delete-data-store-operations.name"/>
+			<xs:enumeration value="write-data-store-operations.name"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

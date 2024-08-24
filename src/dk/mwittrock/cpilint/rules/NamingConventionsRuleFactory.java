@@ -110,6 +110,11 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("filter.name", Nameable.FILTER_STEP_NAME);
 		applyToValues.put("xml-validator.name", Nameable.XML_VALIDATOR_STEP_NAME);
 		applyToValues.put("edi-validator.name", Nameable.EDI_VALIDATOR_STEP_NAME);
+		applyToValues.put("data-store-operations.name", Nameable.DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("get-data-store-operations.name", Nameable.GET_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("select-data-store-operations.name", Nameable.SELECT_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("delete-data-store-operations.name", Nameable.DELETE_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("write-data-store-operations.name", Nameable.WRITE_DATA_STORE_OPERATIONS_STEP_NAME);
 	}
 
 	@Override

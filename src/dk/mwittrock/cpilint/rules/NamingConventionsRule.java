@@ -16,6 +16,7 @@ import dk.mwittrock.cpilint.artifacts.IflowArtifact;
 import dk.mwittrock.cpilint.artifacts.IflowArtifactTag;
 import dk.mwittrock.cpilint.issues.NamingConventionsRuleIssue;
 import dk.mwittrock.cpilint.model.ChannelDirection;
+import dk.mwittrock.cpilint.model.DataStoreOperation;
 import dk.mwittrock.cpilint.model.MappingType;
 import dk.mwittrock.cpilint.model.Nameable;
 import dk.mwittrock.cpilint.model.ReceiverAdapter;
@@ -115,6 +116,11 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToXpathFunctionMap.put(Nameable.FILTER_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForFilterSteps()));
 		nameableToXpathFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForXmlValidatorSteps()));
 		nameableToXpathFunctionMap.put(Nameable.EDI_VALIDATOR_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForEdiValidatorSteps()));
+		nameableToXpathFunctionMap.put(Nameable.DATA_STORE_OPERATIONS_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForDataStoreSteps()));
+		nameableToXpathFunctionMap.put(Nameable.GET_DATA_STORE_OPERATIONS_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForDataStoreSteps(), m.stepPredicateForDataStoreOperation(DataStoreOperation.GET)));
+		nameableToXpathFunctionMap.put(Nameable.SELECT_DATA_STORE_OPERATIONS_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForDataStoreSteps(), m.stepPredicateForDataStoreOperation(DataStoreOperation.SELECT)));
+		nameableToXpathFunctionMap.put(Nameable.DELETE_DATA_STORE_OPERATIONS_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForDataStoreSteps(), m.stepPredicateForDataStoreOperation(DataStoreOperation.DELETE)));
+		nameableToXpathFunctionMap.put(Nameable.WRITE_DATA_STORE_OPERATIONS_STEP_NAME, m -> m.xpathForFlowSteps(m.stepPredicateForDataStoreSteps(), m.stepPredicateForDataStoreOperation(DataStoreOperation.WRITE)));
 		// Initialize the nameableToNameFunctionMap map.
 		nameableToNameFunctionMap = new HashMap<>();
 		nameableToNameFunctionMap.put(Nameable.CHANNEL_NAME, (n, m) -> m.getChannelNameFromElement(n));
@@ -195,6 +201,11 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToNameFunctionMap.put(Nameable.FILTER_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
 		nameableToNameFunctionMap.put(Nameable.EDI_VALIDATOR_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.GET_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.SELECT_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.DELETE_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
+		nameableToNameFunctionMap.put(Nameable.WRITE_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> m.getStepNameFromElement(n));
 		// Initialize the nameableToIdentFunctionMap map.
 		nameableToIdentFunctionMap = new HashMap<>();
 		nameableToIdentFunctionMap.put(Nameable.CHANNEL_NAME, (n, m) -> String.format("channel '%s' (ID '%s')", m.getChannelNameFromElement(n), m.getChannelIdFromElement(n)));
@@ -275,6 +286,11 @@ final class NamingConventionsRule extends RuleBase {
 		nameableToIdentFunctionMap.put(Nameable.FILTER_STEP_NAME, (n, m) -> String.format("filter step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.XML_VALIDATOR_STEP_NAME, (n, m) -> String.format("XML Validator step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		nameableToIdentFunctionMap.put(Nameable.EDI_VALIDATOR_STEP_NAME, (n, m) -> String.format("EDI Validator step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> String.format("Data Store Operations step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.GET_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> String.format("Get Data Store Operations step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.SELECT_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> String.format("Select Data Store Operations step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.DELETE_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> String.format("Delete Data Store Operations step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
+		nameableToIdentFunctionMap.put(Nameable.WRITE_DATA_STORE_OPERATIONS_STEP_NAME, (n, m) -> String.format("Write Data Store Operations step '%s' (ID '%s')", m.getStepNameFromElement(n), m.getStepIdFromElement(n)));
 		// The keys of the above maps should be identical.
 		assert nameableToXpathFunctionMap.keySet().equals(nameableToNameFunctionMap.keySet());
 		assert nameableToNameFunctionMap.keySet().equals(nameableToIdentFunctionMap.keySet());

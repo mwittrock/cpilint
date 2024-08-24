@@ -2,7 +2,7 @@ package dk.mwittrock.cpilint.model;
 
 public enum DataStoreOperation {
 	
-	READ,
+	GET,
 	WRITE,
 	DELETE,
 	SELECT

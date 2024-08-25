@@ -3,8 +3,8 @@ package dk.mwittrock.cpilint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -97,9 +97,11 @@ public final class RulesFile {
 			throw new RulesFileError("Rules file is not a file: " + rulesFile);
 		}
 		logger.info("Processing rules file '{}'", rulesFile);
-		visited.add(rulesFile);
+		Path canonicalRulesFile = toCanonicalPath(rulesFile);
+		logger.debug("Canonical rules file path: {}", canonicalRulesFile);
+		visited.add(canonicalRulesFile);
 		Document doc;
-		try (InputStream is = Files.newInputStream(rulesFile)) {
+		try (InputStream is = Files.newInputStream(canonicalRulesFile)) {
 			doc = parseRulesFile(is);
 		} catch (IOException e) {
 			throw new RulesFileError("I/O error opening rules file", e);
@@ -115,14 +117,23 @@ public final class RulesFile {
 			List<Element> importElements = imports.elements("import");
 			logger.debug("Rules file contains {} import(s)", importElements.size());
 			for (Element i : importElements) {
-				Path importPath = Paths.get(i.attributeValue("src"));
-				if (visited.contains(importPath)) {
+				logger.debug("Value of src attribute: {}", i.attributeValue("src"));
+				Path importPath = canonicalRulesFile.getParent().resolve(i.attributeValue("src"));
+				if (!Files.exists(importPath)) {
+					throw new RulesFileError("Imported rules file does not exist: " + importPath);
+				}
+				if (!Files.isRegularFile(importPath)) {
+					throw new RulesFileError("Imported rules file is not a file: " + importPath);
+				}
+				Path canonicalImportPath = toCanonicalPath(importPath);
+				logger.debug("Canonical import path: {}", canonicalImportPath);
+				if (visited.contains(canonicalImportPath)) {
 					// Circular import detected.
-					String message = String.format("Rules file '%s' has already been processed once (i.e. imports are circular)", importPath);
+					String message = String.format("Rules file '%s' has already been processed once (i.e. imports are circular)", canonicalImportPath);
 					throw new RulesFileError(message);
 				}
-				logger.info("Recursively processing import '{}'", importPath);
-				rules.addAll(fromPath(importPath, visited));
+				logger.info("Recursively processing import '{}'", canonicalImportPath);
+				rules.addAll(fromPath(canonicalImportPath, visited));
 			}
 		}
 		/*
@@ -165,6 +176,23 @@ public final class RulesFile {
 			rules.add(factory.createFrom(ruleElement));
 		}
 		return rules;
+	}
+
+	private static Path toCanonicalPath(Path p) {
+		assert p != null;
+		assert Files.exists(p) && Files.isRegularFile(p);
+		Path canonical;
+		try {
+			/*
+			 * Why not follow symbolic links? In the specific context of one
+			 * rules file importing another rules file, relative paths going
+			 * up the directory tree could start behaving in unexpected ways.
+			 */
+			canonical = p.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			throw new RulesFileError("Error accessing file system", e);
+		}
+		return canonical;
 	}
 	
 	private static Document parseRulesFile(InputStream is) throws DocumentException, SAXException {

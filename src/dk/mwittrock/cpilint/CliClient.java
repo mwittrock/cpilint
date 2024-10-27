@@ -55,6 +55,7 @@ public final class CliClient {
 	private static final Logger logger = LoggerFactory.getLogger(CliClient.class);
 	private static final String VERSION = "1.0.5";
 	private static final String COPYRIGHT = "2019-2024 Morten N. Wittrock";
+	private static final List<String> LOG_SYSTEM_PROPERTIES = List.of("java.version", "java.vendor", "java.vm.version", "java.vm.vendor", "java.vm.name", "os.name", "os.arch", "os.version");
 	private static final int EXIT_STATUS_SUCCESS = 0;
 	private static final int EXIT_STATUS_ISSUES = 1;
 	private static final int EXIT_STATUS_ERRORS = 2;
@@ -120,6 +121,9 @@ public final class CliClient {
 		// If logging is requested, it should be set up before anything else.
 		configureLogging(args);
 		logger.info("CPILint version {}", VERSION);
+		for (String prop : LOG_SYSTEM_PROPERTIES) {
+			logger.debug("{} = {}", prop, System.getProperty(prop));
+		}
 		logger.info("Launching CliClient");
 		logArguments(args);
 		// Parse the command line arguments.

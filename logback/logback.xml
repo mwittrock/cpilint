@@ -2,11 +2,9 @@
 <configuration>
     <!--
         Why is the FileAppender wrapped in a SiftingAppender? The FileAppender always
-        creates a log file, even when no messages are logged. It should support lazy
-        file creation, but it doesn't (not yet, anyway). Wrapping the FileAppender in
-        a SiftingAppender is a workaround for this problem. Workaround sounds better
-        than kludge, doesn't it? Anyway, check out this feature request for more details:
-        https://jira.qos.ch/browse/LOGBACK-202
+        creates a log file, even when no messages are logged. Wrapping the FileAppender
+        in a SiftingAppender ensures that a log file is only created if we actually
+        write to it.
     -->
     <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
         <discriminator>

@@ -21,6 +21,7 @@
     <property name="release.root" value="${app.name.versioned}"/>
 	<property name="scripts.dir" value="scripts"/>
 	<property name="logback.dir" value="logback"/>
+	<property name="graphics.dir" value="graphics"/>
 	<property name="resources.dir" value="resources"/>
 	<property name="dist.files.dir" value="dist-files"/>
 	<property name="xerces.dir" value="${dist.files.dir}/xerces-runtime-jars"/>
@@ -67,17 +68,18 @@
 		<mkdir dir="${temp.dir}"/>
 		<!-- Create an archive containing the source. -->
 		<zip destfile="${temp.dir}/${source.archive}">
-			<fileset dir="." includes="${source.dir}/**"/>
-			<fileset dir="." includes="${scripts.dir}/*"/>
-			<fileset dir="." includes="${resources.dir}/**"/>
 			<fileset dir="." includes="${3rd.party.licenses.dir}/*"/>
-			<fileset dir="." includes="${logback.dir}/*"/>
 			<fileset dir="." includes="${dist.files.dir}/*"/>
-			<fileset dir="." includes="build.xml"/>
-            <fileset dir="." includes="ivy.xml"/>
+			<fileset dir="." includes="${graphics.dir}/*"/>
+			<fileset dir="." includes="${logback.dir}/*"/>
+			<fileset dir="." includes="${resources.dir}/**"/>
+			<fileset dir="." includes="${scripts.dir}/*"/>
+			<fileset dir="." includes="${source.dir}/**"/>
+			<fileset dir="." includes="BUILDING.md"/>
 			<fileset dir="." includes="LICENSE.txt"/>
 			<fileset dir="." includes="README.md"/>
-			<fileset dir="." includes="BUILDING.md"/>
+			<fileset dir="." includes="build.xml"/>
+			<fileset dir="." includes="ivy.xml"/>
 		</zip>
 		<!-- Create a release archive. -->
 		<zip destfile="${release.dir}/${release.archive}">

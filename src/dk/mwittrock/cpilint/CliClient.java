@@ -86,6 +86,7 @@ public final class CliClient {
 	private static final String SERVICE_KEY_FIELD_URL = "url";
 	private static final String SERVICE_KEY_FIELD_TOKENURL = "tokenurl";
 	private static final String SERVICE_KEY_VALIDATION_ERROR = "Service key JSON does not have the expected format.";
+	private static final String LATEST_RELEASE_DOWNLOAD_URL = "https://github.com/mwittrock/cpilint/releases/latest";
 	
 	private static enum RunMode {
 		VERSION_MODE,
@@ -962,7 +963,6 @@ public final class CliClient {
 		 */
 		final String apiEndpoint = "https://api.github.com/repos/mwittrock/cpilint/releases/latest";
 		final String tagRegex = "^v\\d+(?:\\.\\d+)+$";
-		final String whereToDownload = "https://github.com/mwittrock/cpilint/releases/latest";
 		// Fetch the GitHub API response.
 		URI apiUri = null;
 		try {
@@ -1052,12 +1052,12 @@ public final class CliClient {
 		} else {
 			logger.info("CPILint version does not match latest version on GitHub");
 			if (userInitiated) {
-				String message = String.format("You are running version %s of CPILint. Version %s is available and can be downloaded here: %s", VERSION, latestVersion, whereToDownload);
+				String message = String.format("You are running version %s of CPILint. Version %s is available and can be downloaded here: %s", VERSION, latestVersion, LATEST_RELEASE_DOWNLOAD_URL);
 				printVersionBanner();
 				System.out.println();
 				System.out.println(message);
 			} else {
-				String message = String.format("Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s", latestVersion, whereToDownload);
+				String message = String.format("Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s", latestVersion, LATEST_RELEASE_DOWNLOAD_URL);
 				System.out.println(message);
 				System.out.println();
 			}

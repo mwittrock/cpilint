@@ -42,7 +42,10 @@ final class DefaultXmlModel implements XmlModel {
 		// Initialize the receiverAdapterComponentTypes map.
 		receiverAdapterComponentTypes = new HashMap<>();
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ADVANCEDEVENTMESH, "AdvancedEventMesh");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AMAZONDYNAMODB, "AmazonDynamoDB");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AMAZONEVENTBRIDGE, "AmazonEventBridge");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AMQP, "AMQP");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.ANAPLAN, "Anaplan");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ARIBA, "Ariba");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS2, "AS2");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS4, "AS4");
@@ -52,10 +55,12 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ELSTER, "ELSTER");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FACEBOOK, "Facebook");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.FTP, "FTP");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.HUBSPOT, "HubSpot");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ODATA, "HCIOData");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.HTTP, "HTTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.IDOC, "IDOC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.JDBC, "JDBC");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.JIRA, "Jira");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.JMS, "JMS");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.KAFKA, "Kafka");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.LDAP, "LDAP");
@@ -71,6 +76,7 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SERVICENOW, "ServiceNow");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SFTP, "SFTP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SLACK, "Slack");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.SMB, "SMB");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SNOWFLAKE, "Snowflake");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SOAP, "SOAP");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.SPLUNK, "Splunk");
@@ -101,6 +107,7 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.RABBITMQ, "RabbitMQ");
 		senderAdapterComponentTypes.put(SenderAdapter.SFTP, "SFTP");
 		senderAdapterComponentTypes.put(SenderAdapter.SLACK, "Slack");
+		senderAdapterComponentTypes.put(SenderAdapter.SMB, "SMB");
 		senderAdapterComponentTypes.put(SenderAdapter.SOAP, "SOAP");
 		senderAdapterComponentTypes.put(SenderAdapter.SPLUNK, "Splunk");
 		senderAdapterComponentTypes.put(SenderAdapter.SUCCESSFACTORS, "SuccessFactors");

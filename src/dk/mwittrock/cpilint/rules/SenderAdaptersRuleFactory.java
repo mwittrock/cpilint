@@ -31,6 +31,7 @@ public final class SenderAdaptersRuleFactory extends AllowDisallowRuleFactoryBas
 		senderAdapters.put("rabbitmq", SenderAdapter.RABBITMQ);
 		senderAdapters.put("sftp", SenderAdapter.SFTP);
 		senderAdapters.put("slack", SenderAdapter.SLACK);
+		senderAdapters.put("smb", SenderAdapter.SMB);
 		senderAdapters.put("soap", SenderAdapter.SOAP);
 		senderAdapters.put("splunk", SenderAdapter.SPLUNK);
 		senderAdapters.put("successfactors", SenderAdapter.SUCCESSFACTORS);

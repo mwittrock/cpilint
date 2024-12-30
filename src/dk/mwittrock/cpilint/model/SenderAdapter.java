@@ -24,6 +24,7 @@ public enum SenderAdapter {
 	RABBITMQ("RabbitMQ"),
 	SFTP("SFTP"),
 	SLACK("Slack"),
+	SMB("SMB"),
 	SOAP("SOAP"),
 	SPLUNK("Splunk"),
 	SUCCESSFACTORS("SuccessFactors"),

@@ -76,7 +76,10 @@
 	<xs:simpleType name="receiverAdaptersType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="advancedeventmesh"/>
+			<xs:enumeration value="amazondynamodb"/>
+			<xs:enumeration value="amazoneventbridge"/>
 			<xs:enumeration value="amqp"/>
+			<xs:enumeration value="anaplan"/>
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
 			<xs:enumeration value="as4"/>
@@ -86,10 +89,12 @@
 			<xs:enumeration value="elster"/>
 			<xs:enumeration value="facebook"/>
 			<xs:enumeration value="ftp"/>
+			<xs:enumeration value="hubspot"/>
 			<xs:enumeration value="odata"/>
 			<xs:enumeration value="http"/>
 			<xs:enumeration value="idoc"/>
 			<xs:enumeration value="jdbc"/>
+			<xs:enumeration value="jira"/>
 			<xs:enumeration value="jms"/>
 			<xs:enumeration value="kafka"/>
 			<xs:enumeration value="ldap"/>
@@ -105,6 +110,7 @@
 			<xs:enumeration value="servicenow"/>
 			<xs:enumeration value="sftp"/>
 			<xs:enumeration value="slack"/>
+			<xs:enumeration value="smb"/>
 			<xs:enumeration value="snowflake"/>
 			<xs:enumeration value="soap"/>
 			<xs:enumeration value="splunk"/>
@@ -173,6 +179,7 @@
 			<xs:enumeration value="rabbitmq"/>
 			<xs:enumeration value="sftp"/>
 			<xs:enumeration value="slack"/>
+			<xs:enumeration value="smb"/>
 			<xs:enumeration value="soap"/>
 			<xs:enumeration value="splunk"/>
 			<xs:enumeration value="successfactors"/>

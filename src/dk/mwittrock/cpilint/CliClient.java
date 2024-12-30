@@ -86,7 +86,7 @@ public final class CliClient {
 	private static final String SERVICE_KEY_FIELD_URL = "url";
 	private static final String SERVICE_KEY_FIELD_TOKENURL = "tokenurl";
 	private static final String SERVICE_KEY_VALIDATION_ERROR = "Service key JSON does not have the expected format.";
-	private static final String LATEST_RELEASE_DOWNLOAD_URL = "https://github.com/mwittrock/cpilint/releases/latest";
+	private static final String LATEST_RELEASE_DOWNLOAD_URL = "https://cpilint.org/latest";
 	
 	private static enum RunMode {
 		VERSION_MODE,

@@ -12,6 +12,7 @@ public enum ReceiverAdapter {
 	ARIBA("Ariba"),
 	AS2("AS2"),
 	AS4("AS4"),
+	AZURECOSMOSDB("AzureCosmosDB"),
 	AZURESTORAGE("AzureStorage"),
 	COUPA("Coupa"),
 	DROPBOX("Dropbox"),

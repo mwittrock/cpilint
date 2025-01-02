@@ -49,6 +49,7 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ARIBA, "Ariba");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS2, "AS2");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AS4, "AS4");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.AZURECOSMOSDB, "AzureCosmosDB");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.AZURESTORAGE, "AzureStorage");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.COUPA, "Coupa");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.DROPBOX, "Dropbox");

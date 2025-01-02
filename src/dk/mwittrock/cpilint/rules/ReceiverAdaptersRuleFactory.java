@@ -19,6 +19,7 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 		receiverAdapters.put("ariba", ReceiverAdapter.ARIBA);
 		receiverAdapters.put("as2", ReceiverAdapter.AS2);
 		receiverAdapters.put("as4", ReceiverAdapter.AS4);
+		receiverAdapters.put("azurecosmosdb", ReceiverAdapter.AZURECOSMOSDB);
 		receiverAdapters.put("azurestorage", ReceiverAdapter.AZURESTORAGE);
 		receiverAdapters.put("coupa", ReceiverAdapter.COUPA);
 		receiverAdapters.put("dropbox", ReceiverAdapter.DROPBOX);

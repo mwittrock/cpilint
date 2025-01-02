@@ -83,6 +83,7 @@
 			<xs:enumeration value="ariba"/>
 			<xs:enumeration value="as2"/>
 			<xs:enumeration value="as4"/>
+			<xs:enumeration value="azurecosmosdb"/>
 			<xs:enumeration value="azurestorage"/>
 			<xs:enumeration value="coupa"/>
 			<xs:enumeration value="dropbox"/>

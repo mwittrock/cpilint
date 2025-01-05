@@ -22,8 +22,11 @@ final class UnencryptedEndpointsNotAllowedRule extends RuleBase {
 		ReceiverAdapter.IDOC,
 		ReceiverAdapter.SOAP,
 		ReceiverAdapter.XI,
-		ReceiverAdapter.AS2
-		
+		ReceiverAdapter.AS2,
+		ReceiverAdapter.ANAPLAN,
+		ReceiverAdapter.HUBSPOT,
+		ReceiverAdapter.AZURECOSMOSDB,
+		ReceiverAdapter.JIRA
 	);
 	
 	@Override

@@ -122,6 +122,10 @@ final class DefaultXmlModel implements XmlModel {
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.SOAP, List.of("address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.XI, List.of("Address"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AS2, List.of("receipientURL")); // Removed mdnTargetURL since it's not called from CPI.
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.ANAPLAN, List.of("authHost", "anaplanHost"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.HUBSPOT, List.of("addressURL"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AZURECOSMOSDB, List.of("hostUrl"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.JIRA, List.of("address"));
 		// Initialize the mappingTypePropertyKeys map.
 		mappingTypePropertyKeys = new HashMap<>();
 		mappingTypePropertyKeys.put(MappingType.MESSAGE_MAPPING, "mappingType");

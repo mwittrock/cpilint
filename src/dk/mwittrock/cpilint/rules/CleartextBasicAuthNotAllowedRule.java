@@ -30,6 +30,8 @@ final class CleartextBasicAuthNotAllowedRule extends RuleBase {
 		componentTypeToReceiverAdapterMap.put("SOAP", ReceiverAdapter.SOAP);
 		componentTypeToReceiverAdapterMap.put("AS2", ReceiverAdapter.AS2);
 		componentTypeToReceiverAdapterMap.put("AS4", ReceiverAdapter.AS4);
+		componentTypeToReceiverAdapterMap.put("Anaplan", ReceiverAdapter.ANAPLAN);
+		componentTypeToReceiverAdapterMap.put("Jira", ReceiverAdapter.JIRA);
 	}
 	
 	@Override

@@ -15,6 +15,11 @@
     
     Please note that at this point in time, the AS4 receiver adapter does not support
     Cloud Connector. That's the reason why proxy type is not checked for AS4.
+    
+    The Anaplan receiver adapter only supports basic authentication to the authentication
+    host and (obviously) does not support Cloud Connector.
+    
+    The Jira receiver adapter also does not support Cloud Connector.
 :)
 
 xquery version "3.1";
@@ -46,5 +51,9 @@ or
 ($adapterType = "AS4" and starts-with(lower-case(local:val($mf, "endpointUrl")), 'http://') and local:val($mf, "authenticationType") = "basic")
 or
 ($adapterType = "AS4" and starts-with(lower-case(local:val($mf, "pullReceiptTargetURL")), 'http://') and local:val($mf, "pullReceiptAuthenticationType") = "basic")
+or
+($adapterType = "Anaplan" and starts-with(lower-case(local:val($mf, "authHost")), 'http://'))
+or
+($adapterType = "Jira" and starts-with(lower-case(local:val($mf, "address")), 'http://') and local:val($mf, "authentication") = "basic")
 )
 return (string($mf/@name), string($mf/@id), string($adapterType))

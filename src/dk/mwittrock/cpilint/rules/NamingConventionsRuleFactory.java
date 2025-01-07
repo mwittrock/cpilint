@@ -54,13 +54,17 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("rabbitmq-sender-channel.name", Nameable.RABBITMQ_SENDER_CHANNEL_NAME);
 		applyToValues.put("sftp-sender-channel.name", Nameable.SFTP_SENDER_CHANNEL_NAME);
 		applyToValues.put("slack-sender-channel.name", Nameable.SLACK_SENDER_CHANNEL_NAME);
+		applyToValues.put("smb-sender-channel.name", Nameable.SMB_SENDER_CHANNEL_NAME);
 		applyToValues.put("soap-sender-channel.name", Nameable.SOAP_SENDER_CHANNEL_NAME);
 		applyToValues.put("splunk-sender-channel.name", Nameable.SPLUNK_SENDER_CHANNEL_NAME);
 		applyToValues.put("successfactors-sender-channel.name", Nameable.SUCCESSFACTORS_SENDER_CHANNEL_NAME);
 		applyToValues.put("xi-sender-channel.name", Nameable.XI_SENDER_CHANNEL_NAME);
 		applyToValues.put("receiver-channel.name", Nameable.RECEIVER_CHANNEL_NAME);
 		applyToValues.put("advancedevenmesh-receiver-channel.name", Nameable.ADVANCEDEVENTMESH_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("amazondynamodb-receiver-channel.name", Nameable.AMAZONDYNAMODB_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("amazoneventbridge-receiver-channel.name", Nameable.AMAZONEVENTBRIDGE_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("amqp-receiver-channel.name", Nameable.AMQP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("anaplan-receiver-channel.name", Nameable.ANAPLAN_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("ariba-receiver-channel.name", Nameable.ARIBA_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("as2-receiver-channel.name", Nameable.AS2_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("as4-receiver-channel.name", Nameable.AS4_RECEIVER_CHANNEL_NAME);
@@ -72,8 +76,10 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("ftp-receiver-channel.name", Nameable.FTP_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("odata-receiver-channel.name", Nameable.ODATA_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("http-receiver-channel.name", Nameable.HTTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("hubspot-receiver-channel.name", Nameable.HUBSPOT_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("idoc-receiver-channel.name", Nameable.IDOC_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("jdbc-receiver-channel.name", Nameable.JDBC_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("jira-receiver-channel.name", Nameable.JIRA_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("jms-receiver-channel.name", Nameable.JMS_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("kafka-receiver-channel.name", Nameable.KAFKA_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("ldap-receiver-channel.name", Nameable.LDAP_RECEIVER_CHANNEL_NAME);
@@ -89,6 +95,7 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 		applyToValues.put("servicenow-receiver-channel.name", Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("sftp-receiver-channel.name", Nameable.SFTP_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("slack-receiver-channel.name", Nameable.SLACK_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("smb-receiver-channel.name", Nameable.SMB_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("snowflake-receiver-channel.name", Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("soap-receiver-channel.name", Nameable.SOAP_RECEIVER_CHANNEL_NAME);
 		applyToValues.put("splunk-receiver-channel.name", Nameable.SPLUNK_RECEIVER_CHANNEL_NAME);

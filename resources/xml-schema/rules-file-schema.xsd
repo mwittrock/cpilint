@@ -317,13 +317,17 @@
 			<xs:enumeration value="rabbitmq-sender-channel.name"/>
 			<xs:enumeration value="sftp-sender-channel.name"/>
 			<xs:enumeration value="slack-sender-channel.name"/>
+			<xs:enumeration value="smb-sender-channel.name"/>
 			<xs:enumeration value="soap-sender-channel.name"/>
 			<xs:enumeration value="splunk-sender-channel.name"/>
 			<xs:enumeration value="successfactors-sender-channel.name"/>
 			<xs:enumeration value="xi-sender-channel.name"/>
 			<xs:enumeration value="receiver-channel.name"/>
 			<xs:enumeration value="advancedevenmesh-receiver-channel.name"/>
+			<xs:enumeration value="amazondynamodb-receiver-channel.name"/>
+			<xs:enumeration value="amazoneventbridge-receiver-channel.name"/>
 			<xs:enumeration value="amqp-receiver-channel.name"/>
+			<xs:enumeration value="anaplan-receiver-channel.name"/>
 			<xs:enumeration value="ariba-receiver-channel.name"/>
 			<xs:enumeration value="as2-receiver-channel.name"/>
 			<xs:enumeration value="as4-receiver-channel.name"/>
@@ -335,8 +339,10 @@
 			<xs:enumeration value="ftp-receiver-channel.name"/>
 			<xs:enumeration value="odata-receiver-channel.name"/>
 			<xs:enumeration value="http-receiver-channel.name"/>
+			<xs:enumeration value="hubspot-receiver-channel.name"/>
 			<xs:enumeration value="idoc-receiver-channel.name"/>
 			<xs:enumeration value="jdbc-receiver-channel.name"/>
+			<xs:enumeration value="jira-receiver-channel.name"/>
 			<xs:enumeration value="jms-receiver-channel.name"/>
 			<xs:enumeration value="kafka-receiver-channel.name"/>
 			<xs:enumeration value="ldap-receiver-channel.name"/>
@@ -352,6 +358,7 @@
 			<xs:enumeration value="servicenow-receiver-channel.name"/>
 			<xs:enumeration value="sftp-receiver-channel.name"/>
 			<xs:enumeration value="slack-receiver-channel.name"/>
+			<xs:enumeration value="smb-receiver-channel.name"/>
 			<xs:enumeration value="snowflake-receiver-channel.name"/>
 			<xs:enumeration value="soap-receiver-channel.name"/>
 			<xs:enumeration value="splunk-receiver-channel.name"/>

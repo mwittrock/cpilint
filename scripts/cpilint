@@ -58,4 +58,4 @@ done
 # * Launch CPILint!                                   *
 # *****************************************************
 
-"$javacmd"$asserts -classpath "$cpilint_cp" dk.mwittrock.cpilint.CliClient $*
+"$javacmd"$asserts -classpath "$cpilint_cp" org.cpilint.CliClient $*

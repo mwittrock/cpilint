@@ -50,4 +50,4 @@ rem * Launch CPILint!                                   *
 rem *****************************************************
 
 :launch
-"%JAVACMD%"%ASSERTS% -classpath "%CPILINT_CP%" dk.mwittrock.cpilint.CliClient %*
+"%JAVACMD%"%ASSERTS% -classpath "%CPILINT_CP%" org.cpilint.CliClient %*

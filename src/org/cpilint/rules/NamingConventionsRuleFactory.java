@@ -1,0 +1,218 @@
+package org.cpilint.rules;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+
+import org.dom4j.Element;
+
+import org.cpilint.RulesFileError;
+import org.cpilint.model.Nameable;
+import org.cpilint.rules.naming.ConjunctionScheme;
+import org.cpilint.rules.naming.DisjunctionScheme;
+import org.cpilint.rules.naming.EndsWithScheme;
+import org.cpilint.rules.naming.EqualsScheme;
+import org.cpilint.rules.naming.NamingScheme;
+import org.cpilint.rules.naming.NegationScheme;
+import org.cpilint.rules.naming.RegexScheme;
+import org.cpilint.rules.naming.StartsWithScheme;
+
+public final class NamingConventionsRuleFactory implements RuleFactory {
+	
+	private static final Map<String, Nameable> applyToValues;
+	
+	static {
+		applyToValues = new HashMap<>();
+		applyToValues.put("iflow.name", Nameable.IFLOW_NAME);
+		applyToValues.put("iflow.id", Nameable.IFLOW_ID);
+		applyToValues.put("channel.name", Nameable.CHANNEL_NAME);
+		applyToValues.put("sender-channel.name", Nameable.SENDER_CHANNEL_NAME);
+		applyToValues.put("advancedeventmesh-sender-channel.name", Nameable.ADVANCEDEVENTMESH_SENDER_CHANNEL_NAME);
+		applyToValues.put("amqp-sender-channel.name", Nameable.AMQP_SENDER_CHANNEL_NAME);
+		applyToValues.put("ariba-sender-channel.name", Nameable.ARIBA_SENDER_CHANNEL_NAME);
+		applyToValues.put("as2-sender-channel.name", Nameable.AS2_SENDER_CHANNEL_NAME);
+		applyToValues.put("as4-sender-channel.name", Nameable.AS4_SENDER_CHANNEL_NAME);
+		applyToValues.put("azurestorage-sender-channel.name", Nameable.AZURESTORAGE_SENDER_CHANNEL_NAME);
+		applyToValues.put("data-store-sender-channel.name", Nameable.DATA_STORE_SENDER_CHANNEL_NAME);
+		applyToValues.put("dropbox-sender-channel.name", Nameable.DROPBOX_SENDER_CHANNEL_NAME);
+		applyToValues.put("ftp-sender-channel.name", Nameable.FTP_SENDER_CHANNEL_NAME);
+		applyToValues.put("https-sender-channel.name", Nameable.HTTPS_SENDER_CHANNEL_NAME);
+		applyToValues.put("idoc-sender-channel.name", Nameable.IDOC_SENDER_CHANNEL_NAME);
+		applyToValues.put("jms-sender-channel.name", Nameable.JMS_SENDER_CHANNEL_NAME);
+		applyToValues.put("kafka-sender-channel.name", Nameable.KAFKA_SENDER_CHANNEL_NAME);
+		applyToValues.put("mail-sender-channel.name", Nameable.MAIL_SENDER_CHANNEL_NAME);
+		applyToValues.put("microsoft-sharepoint-sender-channel.name", Nameable.MICROSOFT_SHAREPOINT_SENDER_CHANNEL_NAME);
+		applyToValues.put("odata-sender-channel.name", Nameable.ODATA_SENDER_CHANNEL_NAME);
+		applyToValues.put("processdirect-sender-channel.name", Nameable.PROCESSDIRECT_SENDER_CHANNEL_NAME);
+		applyToValues.put("rabbitmq-sender-channel.name", Nameable.RABBITMQ_SENDER_CHANNEL_NAME);
+		applyToValues.put("sftp-sender-channel.name", Nameable.SFTP_SENDER_CHANNEL_NAME);
+		applyToValues.put("slack-sender-channel.name", Nameable.SLACK_SENDER_CHANNEL_NAME);
+		applyToValues.put("smb-sender-channel.name", Nameable.SMB_SENDER_CHANNEL_NAME);
+		applyToValues.put("soap-sender-channel.name", Nameable.SOAP_SENDER_CHANNEL_NAME);
+		applyToValues.put("splunk-sender-channel.name", Nameable.SPLUNK_SENDER_CHANNEL_NAME);
+		applyToValues.put("successfactors-sender-channel.name", Nameable.SUCCESSFACTORS_SENDER_CHANNEL_NAME);
+		applyToValues.put("xi-sender-channel.name", Nameable.XI_SENDER_CHANNEL_NAME);
+		applyToValues.put("receiver-channel.name", Nameable.RECEIVER_CHANNEL_NAME);
+		applyToValues.put("advancedevenmesh-receiver-channel.name", Nameable.ADVANCEDEVENTMESH_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("amazondynamodb-receiver-channel.name", Nameable.AMAZONDYNAMODB_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("amazoneventbridge-receiver-channel.name", Nameable.AMAZONEVENTBRIDGE_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("amqp-receiver-channel.name", Nameable.AMQP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("anaplan-receiver-channel.name", Nameable.ANAPLAN_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("ariba-receiver-channel.name", Nameable.ARIBA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("as2-receiver-channel.name", Nameable.AS2_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("as4-receiver-channel.name", Nameable.AS4_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("azurestorage-receiver-channel.name", Nameable.AZURESTORAGE_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("coupa-receiver-channel.name", Nameable.COUPA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("dropbox-receiver-channel.name", Nameable.DROPBOX_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("elster-receiver-channel.name", Nameable.ELSTER_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("facebook-receiver-channel.name", Nameable.FACEBOOK_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("ftp-receiver-channel.name", Nameable.FTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("odata-receiver-channel.name", Nameable.ODATA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("http-receiver-channel.name", Nameable.HTTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("hubspot-receiver-channel.name", Nameable.HUBSPOT_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("idoc-receiver-channel.name", Nameable.IDOC_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("jdbc-receiver-channel.name", Nameable.JDBC_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("jira-receiver-channel.name", Nameable.JIRA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("jms-receiver-channel.name", Nameable.JMS_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("kafka-receiver-channel.name", Nameable.KAFKA_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("ldap-receiver-channel.name", Nameable.LDAP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("mail-receiver-channel.name", Nameable.MAIL_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("mdi-receiver-channel.name", Nameable.MDI_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("microsoft-sharepoint-receiver-channel.name", Nameable.MICROSOFT_SHAREPOINT_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("netsuite-receiver-channel.name", Nameable.NETSUITE_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("odc-receiver-channel.name", Nameable.ODC_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("openconnectors-receiver-channel.name", Nameable.OPENCONNECTORS_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("processdirect-receiver-channel.name", Nameable.PROCESSDIRECT_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("rabbitmq-receiver-channel.name", Nameable.RABBITMQ_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("rfc-receiver-channel.name", Nameable.RFC_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("servicenow-receiver-channel.name", Nameable.SERVICENOW_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("sftp-receiver-channel.name", Nameable.SFTP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("slack-receiver-channel.name", Nameable.SLACK_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("smb-receiver-channel.name", Nameable.SMB_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("snowflake-receiver-channel.name", Nameable.SNOWFLAKE_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("soap-receiver-channel.name", Nameable.SOAP_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("splunk-receiver-channel.name", Nameable.SPLUNK_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("successfactors-receiver-channel.name", Nameable.SUCCESSFACTORS_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("sugarcrm-receiver-channel.name", Nameable.SUGARCRM_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("twitter-receiver-channel.name", Nameable.TWITTER_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("workday-receiver-channel.name", Nameable.WORKDAY_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("xi-receiver-channel.name", Nameable.XI_RECEIVER_CHANNEL_NAME);
+		applyToValues.put("mapping.name", Nameable.MAPPING_STEP_NAME);
+		applyToValues.put("message-mapping.name", Nameable.MESSAGE_MAPPING_STEP_NAME);
+		applyToValues.put("xslt-mapping.name", Nameable.XSLT_MAPPING_STEP_NAME);
+		applyToValues.put("operation-mapping.name", Nameable.OPERATION_MAPPING_STEP_NAME);
+		applyToValues.put("script.name", Nameable.SCRIPT_STEP_NAME);
+		applyToValues.put("groovy-script.name", Nameable.GROOVY_SCRIPT_STEP_NAME);
+		applyToValues.put("js-script.name", Nameable.JS_SCRIPT_STEP_NAME);
+		applyToValues.put("sender.name", Nameable.SENDER_NAME);
+		applyToValues.put("receiver.name", Nameable.RECEIVER_NAME);
+		applyToValues.put("content-modifier.name", Nameable.CONTENT_MODIFIER_STEP_NAME);
+		applyToValues.put("filter.name", Nameable.FILTER_STEP_NAME);
+		applyToValues.put("xml-validator.name", Nameable.XML_VALIDATOR_STEP_NAME);
+		applyToValues.put("edi-validator.name", Nameable.EDI_VALIDATOR_STEP_NAME);
+		applyToValues.put("data-store-operations.name", Nameable.DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("get-data-store-operations.name", Nameable.GET_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("select-data-store-operations.name", Nameable.SELECT_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("delete-data-store-operations.name", Nameable.DELETE_DATA_STORE_OPERATIONS_STEP_NAME);
+		applyToValues.put("write-data-store-operations.name", Nameable.WRITE_DATA_STORE_OPERATIONS_STEP_NAME);
+	}
+
+	@Override
+	public boolean canCreateFrom(Element e) {
+		Objects.requireNonNull(e, "e must not be null");
+		return e.getName().equals("naming");
+	}
+
+	@Override
+	public Rule createFrom(Element e) {
+		Objects.requireNonNull(e, "e must not be null");
+		if (!canCreateFrom(e)) {
+			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", e.getName()));
+		}
+		// In the following, assume that the rules file has been validated.
+		NamingScheme scheme = schemeFromElement(getOnlyChildElement(e.element("scheme")));
+		String message = e.element("message").getText();
+		// Determine the nameables the rule applies to.
+		Set<Nameable> applyTo = new HashSet<>();
+		for (Element a : e.elements("apply-to")) {
+			String val = a.getText();
+			assert applyToValues.containsKey(val);
+			applyTo.add(applyToValues.get(val));
+		}
+		return new NamingConventionsRule(scheme, message, applyTo);
+	}
+	
+	private static NamingScheme schemeFromElement(Element e) {
+		String name = e.getName();
+		NamingScheme scheme;
+		switch (name) {
+			case "starts-with":
+				scheme = new StartsWithScheme(e.getText());
+				break;
+			case "ends-with":
+				scheme = new EndsWithScheme(e.getText());
+				break;
+			case "equals":
+				scheme = equalsSchemeFromElement(e);
+				break;
+			case "regex":
+				scheme = regexSchemeFromElement(e);
+				break;
+			case "not":
+				scheme = new NegationScheme(schemeFromElement(getOnlyChildElement(e)));
+				break;
+			case "and":
+				scheme = new ConjunctionScheme(innerSchemesFromElement(e));
+				break;
+			case "or":
+				scheme = new DisjunctionScheme(innerSchemesFromElement(e));
+				break;
+			default:
+				throw new RulesFileError("Unknown naming scheme element: " + name);
+		}
+		return scheme;
+	}
+	
+	private static NamingScheme equalsSchemeFromElement(Element e) {
+		assert e.getName().equals("equals");
+		String attributeVal = e.attributeValue("ignore-case");
+		assert attributeVal == null || attributeVal.equals("yes") || attributeVal.equals("no");
+		boolean ignoreCase = attributeVal != null && attributeVal.equals("yes");
+		return new EqualsScheme(e.getText(), ignoreCase);
+	}
+	
+	private static NamingScheme regexSchemeFromElement(Element e) {
+		assert e.getName().equals("regex");
+		String pattern = e.getText();
+		Pattern p;
+		try {
+			p = Pattern.compile(pattern);
+		} catch (PatternSyntaxException pse) {
+			throw new RulesFileError("Invalid regular expression pattern in regex naming scheme: " + pattern, pse);
+		}
+		return new RegexScheme(p);
+	}
+
+	private static List<NamingScheme> innerSchemesFromElement(Element e) {
+		return e.elements()
+			.stream()
+			.map(NamingConventionsRuleFactory::schemeFromElement)
+			.collect(Collectors.toList());
+	}
+	
+	private static Element getOnlyChildElement(Element e) {
+		Iterator<Element> iterator = e.elementIterator();
+		assert iterator.hasNext();
+		Element child = iterator.next();
+		assert !iterator.hasNext();
+		return child;
+	}
+	
+}

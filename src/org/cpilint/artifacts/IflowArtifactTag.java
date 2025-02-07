@@ -46,10 +46,7 @@ public final class IflowArtifactTag {
 	
 	@Override
 	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + name.hashCode();
-		result = 31 * result + packageInfo.hashCode();
-		return result;
+		return Objects.hash(id, name, packageInfo);
 	}
 	
 	@Override

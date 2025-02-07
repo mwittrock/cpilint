@@ -9,6 +9,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -20,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.cpilint.artifacts.IflowArtifact;
+import org.cpilint.artifacts.PackageInfo;
 import org.cpilint.artifacts.ZipArchiveIflowArtifact;
 import org.cpilint.auth.AccessToken;
 import org.cpilint.auth.AuthMode;
@@ -53,6 +58,8 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 	private AccessToken accessToken;
 	private final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
 	private final XQueryCompiler xqueryCompiler = new Processor(false).newXQueryCompiler();
+	private final Map<String, PackageInfo> packageIdToPackageInfo = new HashMap<>();
+	private final Map<String, PackageInfo> iflowIdToPackageInfo = new HashMap<>();
 
 	public CloudIntegrationOdataApi(String hostname, String apiUsername, char[] apiPassword) {
 		logger.debug("Instantiating CloudIntegrationOdataApi in basic authentication mode");
@@ -107,22 +114,60 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		} catch (IOException | SaxonApiException e) {
 			throw new CloudIntegrationApiError("Error while processing iflow artifact response", e);
 		}
+		// If we have package info cached for this iflow, add it to the IflowArtifactTag.
+		if (iflowIdToPackageInfo.containsKey(iflowArtifactId)) {
+			PackageInfo packageInfo = iflowIdToPackageInfo.get(iflowArtifactId);
+			iflowArtifact.getTag().setPackageInfo(packageInfo);
+		}
 		return iflowArtifact;
 	}
 
 	@Override
 	public Set<String> getEditableIntegrationPackageIds(boolean skipSapPackages) {
+		/*
+		 * Note: In addition to returning package IDs, this call also caches package
+		 * info for use later.
+		 */
 		logger.info("Retrieving package IDs from tenant");
 		logger.debug(skipSapPackages ? "SAP packages will be skipped" : "SAP packages will be included");
-		XQueryEvaluator evaluator = createXqueryEvaluator("package-ids-from-api-response.xquery");
+		XQueryEvaluator evaluator = createXqueryEvaluator("package-info-from-api-response.xquery");
 		evaluator.setExternalVariable(new QName("skipSapPackages"), new XdmAtomicValue(skipSapPackages));
-		Set<String> packageIds = getApiResponseAndEvaluateXquery(integrationPackagesUri(), evaluator);
+		// Make the API call and run the XQuery query on the response.
+		HttpResponse<InputStream> apiResponse = getApiResponse(integrationPackagesUri());
+		XdmValue result = evaluateXquery(apiResponse.body(), evaluator);
+		/*
+		 * The resulting sequence must either be empty, or the number of elements
+		 * must be a multiple of two (since the sequence consists of pairs of
+		 * package ID and name).
+		 */
+		if (!(result.size() == 0 || result.size() % 2 == 0)) {
+			throw new CloudIntegrationApiError(String.format("Unexpected size (%d) of sequence returned by XQuery query", result.size()));
+		}
+		/*
+		 * Now process the sequence two elements at a time, storing the package ID in
+		 * the Set we will return and caching the package information for later.
+		 */
+		Iterator<XdmItem> itemIterator = result.iterator();
+		Set<String> packageIds = new HashSet<>();
+		while (itemIterator.hasNext()) {
+			String packageId = itemIterator.next().getStringValue();
+			String packageName = itemIterator.next().getStringValue();
+			PackageInfo packageInfo = new PackageInfo(packageId, packageName);
+			assert !packageIds.contains(packageId);
+			assert !packageIdToPackageInfo.containsKey(packageId);
+			packageIds.add(packageId);
+			packageIdToPackageInfo.put(packageId, packageInfo);
+		}
 		logger.debug("{} package IDs retrieved: {}", packageIds.size(), packageIds.stream().collect(Collectors.joining(",")));
 		return packageIds;
 	}
 
 	@Override
 	public Set<String> getIflowArtifactIdsFromPackage(String packageId, boolean skipDrafts) {
+		/*
+		 * Note: In addition to returning iflow IDs, this call also caches an iflow ID to package
+		 * info Map for use later.
+		 */
 		Objects.requireNonNull(packageId, "packageId must not be null");
 		if (packageId.isBlank()) {
 			throw new IllegalArgumentException("packageId must not be blank");
@@ -133,6 +178,11 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		evaluator.setExternalVariable(new QName("skipDrafts"), new XdmAtomicValue(skipDrafts));
 		Set<String> iflowArtifactIds = getApiResponseAndEvaluateXquery(iflowArtifactsUriFromPackageId(packageId), evaluator);
 		logger.debug("{} iflow artifact IDs retrieved from package {}: {}", iflowArtifactIds.size(), packageId, iflowArtifactIds.stream().collect(Collectors.joining(",")));
+		// Cache package info for each iflow.
+		for (String iflowArtifactId : iflowArtifactIds) {
+			assert packageIdToPackageInfo.containsKey(packageId);
+			iflowIdToPackageInfo.put(iflowArtifactId, packageIdToPackageInfo.get(packageId));
+		}
 		return iflowArtifactIds;
 	}
 
@@ -270,16 +320,25 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		return exe.load();
 	}
 
-	private Set<String> getApiResponseAndEvaluateXquery(URI uri, XQueryEvaluator evaluator) {
+	private HttpResponse<InputStream> getApiResponse(URI uri) {
 		assert uri != null;
-		assert evaluator != null;
 		HttpResponse<InputStream> apiResponse = httpGetRequest(uri);
 		final int httpStatus = apiResponse.statusCode();
-		// At this point, anything but HTTP status OK is an error.
+		/*
+		 * HTTP status codes are checked in httpGetRequest, so anything but HTTP status
+		 * OK at this point is an error.
+		 */
 		if (httpStatus != HttpUtil.HTTP_OKAY_STATUS_CODE) {
 			String message = String.format("API responded with unexpected HTTP status code %d", httpStatus);
 			throw new CloudIntegrationApiError(message);
 		}
+		return apiResponse;
+	}
+
+	private Set<String> getApiResponseAndEvaluateXquery(URI uri, XQueryEvaluator evaluator) {
+		assert uri != null;
+		assert evaluator != null;
+		HttpResponse<InputStream> apiResponse = getApiResponse(uri);
 		// Execute the XQuery query.
 		XdmValue result = evaluateXquery(apiResponse.body(), evaluator);
 		// Return a Set of the string values of every item in the result sequence.

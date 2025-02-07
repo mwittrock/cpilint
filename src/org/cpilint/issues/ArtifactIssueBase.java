@@ -8,9 +8,10 @@ abstract class ArtifactIssueBase extends IssueBase {
 	
 	protected ArtifactIssueBase(IflowArtifactTag tag, String message) {
 		super(String.format(
-	    	"In iflow '%s' (ID '%s'): %s",
+			"In iflow '%s' (ID '%s')%s: %s",
 	    	tag.getName(),
 	    	tag.getId(),
+			tag.getPackageInfo().isPresent() ? " of package '%s' (ID '%s')".formatted(tag.getPackageInfo().get().name(), tag.getPackageInfo().get().id()) : "",
 	    	message));
 		this.tag = tag;
 	}

@@ -2,6 +2,7 @@ package org.cpilint.artifacts;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Objects;
 
 public final class ArtifactResource {
 	
@@ -46,10 +47,7 @@ public final class ArtifactResource {
 
 	@Override
 	public int hashCode() {
-		int result = tag.hashCode();
-		result = 31 * result + type.hashCode();
-		result = 31 * result + name.hashCode();
-		return result;
+		return Objects.hash(tag, type, name);
 	}
 
 }

@@ -1,5 +1,7 @@
 package org.cpilint.issues;
 
+import java.util.Optional;
+
 import org.cpilint.artifacts.IflowArtifactTag;
 import org.cpilint.model.MappingType;
 
@@ -7,8 +9,8 @@ public final class DisallowedMappingTypeIssue extends StepIssueBase {
 	
 	private final MappingType mappingType;
 	
-	public DisallowedMappingTypeIssue(IflowArtifactTag tag, String stepName, String stepId, MappingType mappingType) {
-		super(tag, stepName, stepId, String.format(
+	public DisallowedMappingTypeIssue(Optional<String> ruleId, IflowArtifactTag tag, String stepName, String stepId, MappingType mappingType) {
+		super(ruleId, tag, stepName, stepId, String.format(
 			"Mapping step '%s' (ID '%s') executes %s mapping, which is not allowed.", 
 			stepName, 
 			stepId,

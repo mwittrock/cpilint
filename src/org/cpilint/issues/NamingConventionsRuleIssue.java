@@ -1,13 +1,15 @@
 package org.cpilint.issues;
 
+import java.util.Optional;
+
 import org.cpilint.artifacts.IflowArtifactTag;
 
-public final class NamingConventionsRuleIssue extends ArtifactIssueBase {
+public final class NamingConventionsRuleIssue extends IssueBase {
 	
 	private String actualName;
 	
-	public NamingConventionsRuleIssue(IflowArtifactTag tag, String message, String actualName) {
-		super(tag, message);
+	public NamingConventionsRuleIssue(Optional<String> ruleId, IflowArtifactTag tag, String message, String actualName) {
+		super(ruleId, tag, message);
 		this.actualName = actualName;
 	}
 	

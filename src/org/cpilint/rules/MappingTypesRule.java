@@ -32,7 +32,7 @@ final class MappingTypesRule extends RuleBase {
 		// We are only checking for the mapping types that are _not_ allowed.
 		Set<MappingType> disallowedTypes = allowed ? MappingType.allValuesExcept(mappingTypes) : mappingTypes;
 		Function<MappingType, String> xpathFunction = t ->  model.xpathForMappingSteps(t);
-		Function<MappingType, Function<XdmNode, Issue>> issueFunctionFunction = t -> n -> new DisallowedMappingTypeIssue(tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n), t);
+		Function<MappingType, Function<XdmNode, Issue>> issueFunctionFunction = t -> n -> new DisallowedMappingTypeIssue(ruleId, tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n), t);
 		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, disallowedTypes, xpathFunction, issueFunctionFunction, consumer::consume);
 	}
 

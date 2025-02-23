@@ -32,7 +32,7 @@ final class ReceiverAdaptersRule extends RuleBase {
 		// We are only checking for the receiver adapters that are _not_ allowed.
 		Set<ReceiverAdapter> disallowedAdapters = allowed ? ReceiverAdapter.allValuesExcept(adapters) : adapters;
 		Function<ReceiverAdapter, String> xpathFunction = a -> model.xpathForReceiverChannels(a);
-		Function<ReceiverAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new DisallowedReceiverAdapterIssue(tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
+		Function<ReceiverAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new DisallowedReceiverAdapterIssue(ruleId, tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
 		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, disallowedAdapters, xpathFunction, issueFunctionFunction, consumer::consume);
 	}
 

@@ -32,7 +32,7 @@ final class ScriptingLanguagesRule extends RuleBase {
 		// We are only checking for the scripting languages that are _not_ allowed.
 		Set<ScriptingLanguage> disallowedLanguages = allowed ? ScriptingLanguage.allValuesExcept(scriptingLanguages) : scriptingLanguages;
 		Function<ScriptingLanguage, String> xpathFunction = l -> model.xpathForScriptSteps(l);
-		Function<ScriptingLanguage, Function<XdmNode, Issue>> issueFunctionFunction = l -> n -> new DisallowedScriptingLanguageIssue(tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n), l);
+		Function<ScriptingLanguage, Function<XdmNode, Issue>> issueFunctionFunction = l -> n -> new DisallowedScriptingLanguageIssue(ruleId, tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n), l);
 		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, disallowedLanguages, xpathFunction, issueFunctionFunction, consumer::consume);
 	}
 

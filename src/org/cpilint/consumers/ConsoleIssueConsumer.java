@@ -8,7 +8,7 @@ public final class ConsoleIssueConsumer implements IssueConsumer {
 
     @Override
     public void consume(Issue issue) {
-        System.out.println(issue.getMessage());
+        System.out.println(issue);
         issuesConsumed++;
     }
 

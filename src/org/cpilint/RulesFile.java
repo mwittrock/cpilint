@@ -7,6 +7,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -52,11 +53,14 @@ import org.cpilint.rules.XsltVersionsRuleFactory;
 public final class RulesFile {
 	
 	private static final String XML_SCHEMA_RESOURCE_PATH = "resources/xml-schema/rules-file-schema.xsd";
+	private static final String RULE_ID_ATTRIBUTE_NAME = "id";
+
 	private static final Logger logger = LoggerFactory.getLogger(RulesFile.class);
 	private static final Collection<RuleFactory> ruleFactories;
 
-	// TODO: At some point, the rule factories ought to be loaded via the service provider mechanism.
-	
+	private final Collection<Rule> rules;
+	private final Set<Exemption> exemptions;
+
 	static {
 		ruleFactories = new ArrayList<>();
 		ruleFactories.add(new CsrfProtectionRequiredRuleFactory());
@@ -78,30 +82,62 @@ public final class RulesFile {
 		ruleFactories.add(new UserRolesRuleFactory());
 	}
 	
-	private RulesFile() {
-		throw new AssertionError("Never supposed to be instantiated");
-	}
-	
-	public static Collection<Rule> fromPath(Path rulesFile) {
-		Objects.requireNonNull(rulesFile, "rulesFile must not be null");
-		return fromPath(rulesFile, new HashSet<Path>());
+	private RulesFile(Collection<Rule> rules, Set<Exemption> exemptions) {
+		assert rules != null;
+		assert exemptions != null;
+		this.rules = Collections.unmodifiableCollection(rules);
+		this.exemptions = Collections.unmodifiableSet(exemptions);
 	}
 
-	private static Collection<Rule> fromPath(Path rulesFile, Set<Path> visited) {
-		assert rulesFile != null;
+	public Collection<Rule> getRules() {
+		return rules;
+	}
+
+	public Set<Exemption> getExemptions() {
+		return exemptions;
+	}
+	
+	public static RulesFile fromPath(Path rulesFilePath) {
+		Objects.requireNonNull(rulesFilePath, "rulesFilePath must not be null");
+		RulesFile rulesFile = fromPath(rulesFilePath, new HashSet<Path>());
+		/*
+		 * With the introduction of exemptions, XML Schema validation alone can no
+		 * longer guarantee, that rules will be present. Therefore we check here if
+		 * there are rules and fail if there are none.
+		 */
+		if (rulesFile.rules.isEmpty()) {
+			throw new RulesFileError("No rules present after processing rules file(s)");
+		}
+		// Make sure that rule IDs are unique.
+		Set<String> ruleIds = new HashSet<>();
+		Set<String> duplicateRuleIds = rulesFile.rules
+			.stream()
+			.filter(r -> r.getId().isPresent())
+			.map(r -> r.getId().get())
+			.filter(i -> !ruleIds.add(i))
+			.collect(Collectors.toSet());
+		if (!duplicateRuleIds.isEmpty()) {
+			throw new RulesFileError("Duplicate rule IDs in rules file(s): " + String.join(", ", duplicateRuleIds));
+		}
+		logger.debug("RulesFile created with {} rule(s) and {} exemption(s)", rulesFile.rules.size(), rulesFile.exemptions.size());
+		return rulesFile;
+	}
+
+	private static RulesFile fromPath(Path rulesFilePath, Set<Path> visited) {
+		assert rulesFilePath != null;
 		assert visited != null;
-		if (!Files.exists(rulesFile)) {
-			throw new RulesFileError("Rules file does not exist: " + rulesFile);
+		if (!Files.exists(rulesFilePath)) {
+			throw new RulesFileError("Rules file does not exist: " + rulesFilePath);
 		}
-		if (!Files.isRegularFile(rulesFile)) {
-			throw new RulesFileError("Rules file is not a file: " + rulesFile);
+		if (!Files.isRegularFile(rulesFilePath)) {
+			throw new RulesFileError("Rules file is not a file: " + rulesFilePath);
 		}
-		logger.info("Processing rules file '{}'", rulesFile);
-		Path canonicalRulesFile = toCanonicalPath(rulesFile);
-		logger.debug("Canonical rules file path: {}", canonicalRulesFile);
-		visited.add(canonicalRulesFile);
+		logger.info("Processing rules file '{}'", rulesFilePath);
+		Path canonicalRulesFilePath = toCanonicalPath(rulesFilePath);
+		logger.debug("Canonical rules file path: {}", canonicalRulesFilePath);
+		visited.add(canonicalRulesFilePath);
 		Document doc;
-		try (InputStream is = Files.newInputStream(canonicalRulesFile)) {
+		try (InputStream is = Files.newInputStream(canonicalRulesFilePath)) {
 			doc = parseRulesFile(is);
 		} catch (IOException e) {
 			throw new RulesFileError("I/O error opening rules file", e);
@@ -109,6 +145,7 @@ public final class RulesFile {
 			throw new RulesFileError("Error parsing rules file XML", e);
 		}
 		Collection<Rule> rules = new ArrayList<>();
+		Set<Exemption> exemptions = new HashSet<>();
 		/*
 		 * If the rules file contains imports, process them recursively.
 		 */
@@ -118,7 +155,7 @@ public final class RulesFile {
 			logger.debug("Rules file contains {} import(s)", importElements.size());
 			for (Element i : importElements) {
 				logger.debug("Value of src attribute: {}", i.attributeValue("src"));
-				Path importPath = canonicalRulesFile.getParent().resolve(i.attributeValue("src"));
+				Path importPath = canonicalRulesFilePath.getParent().resolve(i.attributeValue("src"));
 				if (!Files.exists(importPath)) {
 					throw new RulesFileError("Imported rules file does not exist: " + importPath);
 				}
@@ -133,49 +170,70 @@ public final class RulesFile {
 					throw new RulesFileError(message);
 				}
 				logger.info("Recursively processing import '{}'", canonicalImportPath);
-				rules.addAll(fromPath(canonicalImportPath, visited));
+				RulesFile imported = fromPath(canonicalImportPath, visited);
+				rules.addAll(imported.rules);
+				exemptions.addAll(imported.exemptions);
 			}
 		}
 		/*
-		 * If the rules file does not contain rules (i.e. it only contains imports), we can
-		 * return early.
+		 * Next, process all rules in rules file (if there are any).
 		 */
-		if (doc.getRootElement().element("rules") == null) {
-			return rules;
+		if (doc.getRootElement().element("rules") != null) {
+			/*
+			*  Get a List of all rule elements, i.e. elements below /cpilint/rules.
+			*/
+			List<Element> ruleElements = doc.getRootElement().element("rules").elements();
+			/*
+			* Now, for each rule element, get a Set of RuleFactory instances that
+			* are able to process that element. We expect exactly one RuleFactory
+			* to be able to do so. Zero factories and more than one factory is
+			* an error, and results in a RulesFileError being thrown. If exactly
+			* one factory can create a Rule object from the element, do so and
+			* add that Rule to the collection, that will be returned from this
+			* method.
+			*/
+			for (Element ruleElement : ruleElements) {
+				String ruleName = ruleElement.getName();
+				Set<RuleFactory> factories = ruleFactories
+					.stream()
+					.filter(f -> f.canCreateFrom(ruleElement))
+					.collect(Collectors.toSet());
+				if (factories.isEmpty()) {
+					throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleName));
+				}
+				if (factories.size() > 1) {
+					logger.debug("Multiple RuleFactory instances available for element {}: {}",
+						ruleName,
+						factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(",")));
+					throw new RulesFileError(String.format("More than one factory available to process rule '%s'", ruleName));
+				}
+				RuleFactory factory = factories.iterator().next();
+				Rule newRule = factory.createFrom(ruleElement);
+				// If the rule element has an ID attribute, add the rule ID to the rule.
+				String ruleId = ruleElement.attributeValue(RULE_ID_ATTRIBUTE_NAME);
+				if (ruleId != null) {
+					newRule.setId(ruleId);
+				}
+				rules.add(newRule);
+			}
 		}
 		/*
-		 *  The rules file contains rules. Get a List of all rule elements, i.e. elements below
-		 *  /cpilint/rules.
+		 * Finally, process all exemptions (if there are any).
 		 */
-		List<Element> ruleElements = doc.getRootElement().element("rules").elements();
-		/*
-		 * Now, for each rule element, get a Set of RuleFactory instances that
-		 * are able to process that element. We expect exactly one RuleFactory
-		 * to be able to do so. Zero factories and more than one factory is
-		 * an error, and results in a RulesFileError being thrown. If exactly
-		 * one factory can create a Rule object from the element, do so and
-		 * add that Rule to the collection, that will be returned from this
-		 * method.
-		 */
-		for (Element ruleElement : ruleElements) {
-			String ruleName = ruleElement.getName();
-			Set<RuleFactory> factories = ruleFactories
-				.stream()
-				.filter(f -> f.canCreateFrom(ruleElement))
-				.collect(Collectors.toSet());
-			if (factories.isEmpty()) {
-				throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleName));
+		if (doc.getRootElement().element("exemptions") != null) {
+			List<Element> exemptionElements = doc.getRootElement().element("exemptions").elements("exemption");
+			for (Element e : exemptionElements) {
+				final String ruleId = e.element("rule-id").getText();
+				List<Element> iflowIds = e.elements("iflow-id");
+				assert !iflowIds.isEmpty();
+				exemptions.addAll(iflowIds
+					.stream()
+					.map(i -> new Exemption(ruleId, i.getText()))
+					.collect(Collectors.toSet()));
+				// Why aren't we reading the exemption reason? It's for documentation only.
 			}
-			if (factories.size() > 1) {
-				logger.debug("Multiple RuleFactory instances available for element {}: {}",
-					ruleName,
-					factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(",")));
-				throw new RulesFileError(String.format("More than one factory available to process rule '%s'", ruleName));
-			}
-			RuleFactory factory = factories.iterator().next();
-			rules.add(factory.createFrom(ruleElement));
 		}
-		return rules;
+		return new RulesFile(rules, exemptions);
 	}
 
 	private static Path toCanonicalPath(Path p) {

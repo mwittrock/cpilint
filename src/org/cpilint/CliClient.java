@@ -38,8 +38,8 @@ import org.cpilint.api.CloudIntegrationApi;
 import org.cpilint.api.CloudIntegrationOdataApi;
 import org.cpilint.auth.AuthorizationServer;
 import org.cpilint.consumers.ConsoleIssueConsumer;
+import org.cpilint.consumers.ExemptionFilteringIssueConsumer;
 import org.cpilint.consumers.IssueConsumer;
-import org.cpilint.rules.Rule;
 import org.cpilint.rules.RuleFactoryError;
 import org.cpilint.suppliers.DirectoryIflowArtifactSupplier;
 import org.cpilint.suppliers.FileIflowArtifactSupplier;
@@ -132,9 +132,7 @@ public final class CliClient {
 		// Determine the run mode.
 		RunMode mode = determineRunMode(cl);
 		logger.info("Run mode detected: {}", mode);
-		/*
-		 * The help, version and version check modes are handled separately.
-		 */
+		// The help, version and version check modes are handled separately.
 		if (mode == RunMode.HELP_MODE) {
 	        printUsage();
 	        System.exit(EXIT_STATUS_SUCCESS);
@@ -152,12 +150,16 @@ public final class CliClient {
 		 * the user is not asked to needlessly type in their password, if
 		 * it turns out there's a problem with the rules file.  
 		 */
-		Collection<Rule> rules = rulesFromCommandLine(cl);
+		RulesFile rulesFile = rulesFileFromCommandLine(cl);
 		IflowArtifactSupplier supplier = supplierFromCommandLine(mode, cl);
-		IssueConsumer consumer = issueConsumerFromCommandLine(cl);
 		/*
-		 *  Now, create a CpiLint object and run the test.
+		 * If there are any exemptions, use the IssueConsumer that filters out
+		 * issues based on exemptions. Otherwise use the default IssueConsumer.
 		 */
+		IssueConsumer consumer = rulesFile.getExemptions().isEmpty() 
+			? new ConsoleIssueConsumer()
+			: new ExemptionFilteringIssueConsumer(rulesFile.getExemptions(), new ConsoleIssueConsumer());
+		// Print the version banner and ASCII art (unless we're in boring mode).
 		printVersionBanner();
 		System.out.println();
 		if (!cl.hasOption(CLI_OPTION_BORING)) {
@@ -165,13 +167,15 @@ public final class CliClient {
 			System.out.println();
 			easter();
 		}
+		// Run the version check (unless asked not to).
 		if (cl.hasOption(CLI_OPTION_SKIPVERCHECK)) {
 			logger.info("Skipping version check");
 		} else {
 			logger.info("Performing version check");
 			versionCheck(false);
 		}
-		CpiLint linter = new CpiLint(supplier, rules, consumer);
+		// Now, create a CpiLint object and run the test.
+		CpiLint linter = new CpiLint(supplier, rulesFile.getRules(), consumer);
 		try {
 			linter.run();
 		} catch (IflowArtifactSupplierError e) {
@@ -258,13 +262,13 @@ public final class CliClient {
 		return count == 1 ? "issue" : "issues";
 	}
 
-	private static Collection<Rule> rulesFromCommandLine(CommandLine cl) {
+	private static RulesFile rulesFileFromCommandLine(CommandLine cl) {
 		/*
 		 * We're assuming that the command line arguments have been validated at
 		 * this point. I.e. we can safely assume that the -rules option is present
 		 * and has exactly one argument.
 		 */
-		Collection<Rule> rules = null;
+		RulesFile rulesFile = null;
 		Path rulesPath = Paths.get(cl.getOptionValue(CLI_OPTION_RULES));
 		if (Files.notExists(rulesPath)) {
 			logger.error("Rules file does not exist: '{}'", rulesPath);
@@ -275,8 +279,7 @@ public final class CliClient {
 			exitWithErrorMessage("The provided rules file is not a file.");
 		}
 		try {
-			rules = RulesFile.fromPath(rulesPath);
-			assert !rules.isEmpty();
+			rulesFile = RulesFile.fromPath(rulesPath);
 		} catch (RulesFileError e) {
 			logger.error("Rules file error", e);
 			exitWithErrorMessage("There was a rules file error: " + e.getMessage());
@@ -284,15 +287,7 @@ public final class CliClient {
 			logger.error("Rule factory error", e);
 			exitWithErrorMessage("There was an error creating a rule: " + e.getMessage());
 		}
-		return rules;
-	}
-	
-	private static IssueConsumer issueConsumerFromCommandLine(CommandLine cl) {
-		/*
-		 *  For now, the IssueConsumer is hardcoded to be the only IssueConsumer 
-		 *  we've got (i.e. ConsoleIssueConsumer).
-		 */
-		return new ConsoleIssueConsumer();	
+		return rulesFile;
 	}
 
 	private static IflowArtifactSupplier supplierFromCommandLine(RunMode mode, CommandLine cl) {

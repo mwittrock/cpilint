@@ -37,7 +37,7 @@ final class XsltVersionsRule extends RuleBase {
 			}
 			XsltVersion version = XsltVersion.fromVersionString(versionString);
 			if (!allowedVersions.contains(version)) {
-				consumer.consume(new DisallowedXsltVersionIssue(xsltResource.getTag(), xsltResource.getName(), version));
+				consumer.consume(new DisallowedXsltVersionIssue(ruleId, xsltResource.getTag(), xsltResource.getName(), version));
 			}
 		}
 	}

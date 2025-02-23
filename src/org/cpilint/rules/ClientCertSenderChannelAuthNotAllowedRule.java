@@ -31,7 +31,7 @@ final class ClientCertSenderChannelAuthNotAllowedRule extends RuleBase {
 		XmlModel model = XmlModelFactory.getModelFor(iflowXml);
 		IflowArtifactTag tag = iflow.getTag();
 		Function<SenderAdapter, String> xpathFunction = a -> model.xpathForSenderChannels(a, model.channelPredicateForClientCertAuth(a));
-		Function<SenderAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new ClientCertSenderChannelAuthNotAllowedIssue(tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
+		Function<SenderAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new ClientCertSenderChannelAuthNotAllowedIssue(ruleId, tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
 		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, adaptersOfInterest, xpathFunction, issueFunctionFunction, consumer::consume);
 	}
 

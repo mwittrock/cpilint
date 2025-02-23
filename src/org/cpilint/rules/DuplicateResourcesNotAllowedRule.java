@@ -76,7 +76,7 @@ final class DuplicateResourcesNotAllowedRule extends RuleBase {
 			digests.values()
 				.stream()
 				.filter(s -> s.size() > 1)
-				.map(s -> new DuplicateResourcesNotAllowedIssue(type, s))
+				.map(s -> new DuplicateResourcesNotAllowedIssue(ruleId, type, s))
 				.forEach(consumer::consume);
 		}
 	}

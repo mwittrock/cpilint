@@ -20,7 +20,7 @@ final class IflowDescriptionRequiredRule extends RuleBase {
 			throw new RuleError("Unable to locate iflow description");
 		}
 		if (descriptionNodes.size() == 0) {
-			consumer.consume(new IflowDescriptionRequiredIssue(tag));
+			consumer.consume(new IflowDescriptionRequiredIssue(ruleId, tag));
 		}
 	}
 

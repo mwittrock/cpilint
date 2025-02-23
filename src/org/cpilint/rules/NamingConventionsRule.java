@@ -357,7 +357,7 @@ final class NamingConventionsRule extends RuleBase {
 				logger.debug("Checking {} name '{}'", n, iflowName);
 				if (!scheme.test(iflowName)) {
 					logger.debug("Name is not compliant ('{}')", message);
-					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage("iflow name"), iflowName));
+					consumer.consume(new NamingConventionsRuleIssue(ruleId, tag, errorMessage("iflow name"), iflowName));
 				}
 				continue;
 			}
@@ -366,7 +366,7 @@ final class NamingConventionsRule extends RuleBase {
 				logger.debug("Checking {} name '{}'", n, iflowId);
 				if (!scheme.test(iflowId)) {
 					logger.debug("Name is not compliant ('{}')", message);
-					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage("iflow ID"), iflowId));
+					consumer.consume(new NamingConventionsRuleIssue(ruleId, tag, errorMessage("iflow ID"), iflowId));
 				}
 				continue;
 			}
@@ -387,7 +387,7 @@ final class NamingConventionsRule extends RuleBase {
 					// This name does not follow the naming scheme.
 					logger.debug("Name is not compliant ('{}')", message);
 					String ident = nameableToIdentFunctionMap.get(n).apply(node, model);
-					consumer.consume(new NamingConventionsRuleIssue(tag, errorMessage(ident), name));
+					consumer.consume(new NamingConventionsRuleIssue(ruleId, tag, errorMessage(ident), name));
 				}
 			}
 		}

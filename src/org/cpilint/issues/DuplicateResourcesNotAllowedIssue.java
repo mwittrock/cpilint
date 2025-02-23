@@ -1,6 +1,7 @@
 package org.cpilint.issues;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,8 +13,10 @@ public final class DuplicateResourcesNotAllowedIssue extends IssueBase {
 	private final ArtifactResourceType type;
 	private final Set<ArtifactResource> duplicateResources;
 	
-	public DuplicateResourcesNotAllowedIssue(ArtifactResourceType type, Set<ArtifactResource> duplicateResources) {
-		super(buildMessage(type, duplicateResources));
+	public DuplicateResourcesNotAllowedIssue(Optional<String> ruleId, ArtifactResourceType type, Set<ArtifactResource> duplicateResources) {
+		super(ruleId,
+			duplicateResources.stream().map(r -> r.getTag()).collect(Collectors.toSet()),
+			buildMessage(type, duplicateResources));
 		this.type = type;
 		this.duplicateResources = duplicateResources;
 	}

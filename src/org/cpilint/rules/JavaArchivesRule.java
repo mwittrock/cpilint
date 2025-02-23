@@ -32,7 +32,7 @@ final class JavaArchivesRule extends RuleBase {
         	 * issue must be created if allowed xor anyMatch is true.
         	 */
         	if (allowed ^ globPatterns.stream().map(p -> p.matcher(archiveName)).anyMatch(Matcher::matches)) {
-        		consumer.consume(DisallowedJavaArchiveIssue.fromResource(r));
+				consumer.consume(DisallowedJavaArchiveIssue.fromResource(ruleId, r));
         	}
         }
     }

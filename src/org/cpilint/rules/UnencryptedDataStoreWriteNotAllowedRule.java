@@ -23,7 +23,7 @@ final class UnencryptedDataStoreWriteNotAllowedRule extends RuleBase {
 			model.stepPredicateForDataStoreSteps(),
 			model.stepPredicateForDataStoreOperation(DataStoreOperation.WRITE),
 			model.stepPredicateForUnencryptedWrite());
-		Function<XdmNode, Issue> issueFunction = n -> new UnencryptedDataStoreWriteNotAllowedIssue(tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n));
+		Function<XdmNode, Issue> issueFunction = n -> new UnencryptedDataStoreWriteNotAllowedIssue(ruleId, tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n));
 		XpathRulesUtil.iterateSingleXpathAndConsumeIssues(iflowXml, unencryptedWriteXpath, issueFunction, consumer::consume);
 	}
 

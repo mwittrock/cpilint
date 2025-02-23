@@ -64,6 +64,7 @@ public final class UserRolesRule extends RuleBase {
             final SenderAdapter senderAdapter = model.senderChannelComponentTypeToSenderAdapter(adapterComponentType);
             if (userRoleNotInAllowList || userRoleInDisallowList) {
                 consumer.consume(new UserRoleIssue(
+                    ruleId,
                     iflow.getTag(),
                     senderAdapter,
                     channelName,

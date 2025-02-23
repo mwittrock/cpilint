@@ -67,7 +67,7 @@ final class CleartextBasicAuthNotAllowedRule extends RuleBase {
 			String componentType = itemIterator.next().getStringValue();
 			assert componentTypeToReceiverAdapterMap.containsKey(componentType);
 			ReceiverAdapter adapter = componentTypeToReceiverAdapterMap.get(componentType);
-			consumer.consume(new CleartextBasicAuthNotAllowedIssue(tag, adapter, channelName, channelId));
+			consumer.consume(new CleartextBasicAuthNotAllowedIssue(ruleId, tag, adapter, channelName, channelId));
 		}
 
 	}

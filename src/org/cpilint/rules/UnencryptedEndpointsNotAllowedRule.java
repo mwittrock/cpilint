@@ -35,7 +35,7 @@ final class UnencryptedEndpointsNotAllowedRule extends RuleBase {
 		XmlModel model = XmlModelFactory.getModelFor(iflowXml);
 		IflowArtifactTag tag = iflow.getTag();
 		Function<ReceiverAdapter, String> xpathFunction = a -> model.xpathForReceiverChannels(a, model.channelPredicateForHttpEndpoints(a), XpathRulesUtil.negateXpathPredicate(model.channelPredicateForProxyTypeOnPremise(a)));
-		Function<ReceiverAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new UnencryptedEndpointsNotAllowedIssue(tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
+		Function<ReceiverAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new UnencryptedEndpointsNotAllowedIssue(ruleId, tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
 		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, adaptersOfInterest, xpathFunction, issueFunctionFunction, consumer::consume);
 	}
 

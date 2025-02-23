@@ -19,7 +19,7 @@ final class MultiConditionTypeRoutersNotAllowedRule extends RuleBase {
 		iflowXml.executeXquery(query)
 			.stream()
 			.map(XdmNode.class::cast)
-			.map(n -> new MultiConditionTypeRoutersNotAllowedIssue(tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n)))
+			.map(n -> new MultiConditionTypeRoutersNotAllowedIssue(ruleId, tag, model.getStepNameFromElement(n), model.getStepIdFromElement(n)))
 			.forEach(consumer::consume);
 	}
 

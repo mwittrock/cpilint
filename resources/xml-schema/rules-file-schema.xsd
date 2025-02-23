@@ -6,9 +6,10 @@
 			<xs:sequence>
 				<xs:element name="imports" type="importsType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="rules" type="rulesType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="exemptions" type="exemptionsType" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
-			<!-- The file must contain imports, rules or both. -->
-			<xs:assert test="imports or rules"/>
+			<!-- The file must contain at least one of imports, rules or exemptions. -->
+			<xs:assert test="imports or rules or exemptions"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -24,26 +25,26 @@
 
 	<xs:complexType name="rulesType">
 		<xs:all>
-			<xs:element name="cleartext-basic-auth-not-allowed" type="emptyElementType" minOccurs="0"/>
-			<xs:element name="matching-process-direct-channels-required" type="emptyElementType" minOccurs="0"/>
-			<xs:element name="multi-condition-type-routers-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="cleartext-basic-auth-not-allowed" type="baseRuleType" minOccurs="0"/>
+			<xs:element name="matching-process-direct-channels-required" type="baseRuleType" minOccurs="0"/>
+			<xs:element name="multi-condition-type-routers-not-allowed" type="baseRuleType" minOccurs="0"/>
 			<xs:element name="allowed-receiver-adapters" type="allowedReceiverAdaptersType" minOccurs="0"/>
 			<xs:element name="disallowed-receiver-adapters" type="disallowedReceiverAdaptersType" minOccurs="0"/>
 			<xs:element name="allowed-scripting-languages" type="allowedScriptingLanguagesType" minOccurs="0"/>
 			<xs:element name="disallowed-scripting-languages" type="disallowedScriptingLanguagesType" minOccurs="0"/>
 			<xs:element name="allowed-sender-adapters" type="allowedSenderAdaptersType" minOccurs="0"/>
 			<xs:element name="disallowed-sender-adapters" type="disallowedSenderAdaptersType" minOccurs="0"/>
-			<xs:element name="unencrypted-data-store-write-not-allowed" type="emptyElementType" minOccurs="0"/>
-			<xs:element name="unencrypted-endpoints-not-allowed" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="unencrypted-data-store-write-not-allowed" type="baseRuleType" minOccurs="0"/>
+			<xs:element name="unencrypted-endpoints-not-allowed" type="baseRuleType" minOccurs="0"/>
 			<xs:element name="allowed-xslt-versions" type="allowedXsltVersionsType" minOccurs="0"/>
 			<xs:element name="disallowed-xslt-versions" type="disallowedXsltVersionsType" minOccurs="0"/>
-			<xs:element name="client-cert-sender-channel-auth-not-allowed" type="emptyElementType" minOccurs="0"/>
-			<xs:element name="csrf-protection-required" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="client-cert-sender-channel-auth-not-allowed" type="baseRuleType" minOccurs="0"/>
+			<xs:element name="csrf-protection-required" type="baseRuleType" minOccurs="0"/>
 			<xs:element name="allowed-mapping-types" type="allowedMappingTypesType" minOccurs="0"/>
 			<xs:element name="disallowed-mapping-types" type="disallowedMappingTypesType" minOccurs="0"/>
 			<xs:element name="allowed-java-archives" type="allowedJavaArchivesType" minOccurs="0"/>
 			<xs:element name="disallowed-java-archives" type="disallowedJavaArchivesType" minOccurs="0"/>
-			<xs:element name="iflow-description-required" type="emptyElementType" minOccurs="0"/>
+			<xs:element name="iflow-description-required" type="baseRuleType" minOccurs="0"/>
 			<xs:element name="duplicate-resources-not-allowed" type="duplicateResourcesType" minOccurs="0"/>
 			<xs:element name="naming" type="namingType" minOccurs="0" maxOccurs="unbounded"/> <!-- Unlike the other rules, the naming rule can occur multiple times. -->
 			<xs:element name="allowed-user-roles" type="allowedUserRolesType" minOccurs="0"/>
@@ -61,9 +62,25 @@
 		<xs:assert test="not(allowed-user-roles and disallowed-user-roles)"/>
 	</xs:complexType>
 
+	<xs:complexType name="exemptionsType">
+		<xs:sequence>
+			<xs:element name="exemption" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rule-id" type="nonEmptyString"/>
+						<xs:element name="iflow-id" type="nonEmptyString" maxOccurs="unbounded"/>
+						<xs:element name="reason" type="nonEmptyString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
 	<!-- General types -->
 
-	<xs:complexType name="emptyElementType"/>
+	<xs:complexType name="baseRuleType">
+		<xs:attribute name="id" use="optional" type="nonEmptyString"/>
+	</xs:complexType>
 
 	<xs:simpleType name="nonEmptyString">
 		<xs:restriction base="xs:string">
@@ -124,15 +141,23 @@
 	</xs:simpleType>
 
 	<xs:complexType name="allowedReceiverAdaptersType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="receiverAdaptersType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="receiverAdaptersType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedReceiverAdaptersType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="receiverAdaptersType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="receiverAdaptersType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule ScriptingLanguages -->
@@ -145,15 +170,23 @@
 	</xs:simpleType>
 
 	<xs:complexType name="allowedScriptingLanguagesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="scriptingLanguagesType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="scriptingLanguagesType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedScriptingLanguagesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="scriptingLanguagesType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="scriptingLanguagesType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule SenderAdapters -->
@@ -189,15 +222,23 @@
 	</xs:simpleType>
 
 	<xs:complexType name="allowedSenderAdaptersType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="senderAdaptersType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="senderAdaptersType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedSenderAdaptersType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="senderAdaptersType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="senderAdaptersType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule XsltVersions -->
@@ -211,15 +252,23 @@
 	</xs:simpleType>
 
 	<xs:complexType name="allowedXsltVersionsType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="xsltVersionsType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="xsltVersionsType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedXsltVersionsType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="xsltVersionsType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="xsltVersionsType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule MappingTypes -->
@@ -233,29 +282,45 @@
 	</xs:simpleType>
 
 	<xs:complexType name="allowedMappingTypesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="mappingTypesType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="mappingTypesType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedMappingTypesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="mappingTypesType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="mappingTypesType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule JavaArchives -->
 
 	<xs:complexType name="allowedJavaArchivesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="xs:string"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedJavaArchivesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="xs:string"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule DuplicateResourcesNotAllowed -->
@@ -276,19 +341,27 @@
 	</xs:simpleType>
 
 	<xs:complexType name="duplicateResourcesType">
-		<xs:sequence minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="resource-type" type="resourcesType"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="resource-type" type="resourcesType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<!-- Types for rule Naming -->
 	
 	<xs:complexType name="namingType">
-		<xs:sequence>
-			<xs:element name="scheme" type="schemeTypeSingle"/>
-			<xs:element name="message" type="xs:string"/>
-			<xs:element name="apply-to" type="nameableType" maxOccurs="unbounded"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence>
+					<xs:element name="scheme" type="schemeTypeSingle"/>
+					<xs:element name="message" type="xs:string"/>
+					<xs:element name="apply-to" type="nameableType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	
 	<xs:simpleType name="nameableType">
@@ -426,15 +499,23 @@
 	<!-- Types for rule UserRoles -->
 
 	<xs:complexType name="allowedUserRolesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="allow" type="nonEmptyString"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="allow" type="nonEmptyString"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="disallowedUserRolesType">
-		<xs:sequence minOccurs="1" maxOccurs="unbounded">
-			<xs:element name="disallow" type="nonEmptyString"/>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="baseRuleType">
+				<xs:sequence minOccurs="1" maxOccurs="unbounded">
+					<xs:element name="disallow" type="nonEmptyString"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 </xs:schema>

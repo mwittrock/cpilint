@@ -20,7 +20,7 @@ final class CsrfProtectionRequiredRule extends RuleBase {
 		XmlModel model = XmlModelFactory.getModelFor(iflowXml);
 		IflowArtifactTag tag = iflow.getTag();
 		String noCsrfChannelsXpath = model.xpathForSenderChannels(SenderAdapter.HTTPS, model.channelPredicateForNoCsrfProtection());
-		Function<XdmNode, Issue> issueFunction = n -> new CsrfProtectionRequiredIssue(tag, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
+		Function<XdmNode, Issue> issueFunction = n -> new CsrfProtectionRequiredIssue(ruleId, tag, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
 		XpathRulesUtil.iterateSingleXpathAndConsumeIssues(iflowXml, noCsrfChannelsXpath, issueFunction, consumer::consume);
 	}
 

@@ -83,7 +83,7 @@ final class MatchingProcessDirectChannelsRequiredRule extends RuleBase {
 				logger.debug("Skipping channel '{}' (ID '{}') because it is dynamically configured", channelName, channelId);
 				continue;
 			}
-			issues.add(new MatchingProcessDirectChannelsRequiredIssue(tag, channelName, channelId, address));
+			issues.add(new MatchingProcessDirectChannelsRequiredIssue(ruleId, tag, channelName, channelId, address));
 		}
 	}
 	

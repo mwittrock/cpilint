@@ -290,10 +290,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 			 * we retry the HTTP request once with a new access token. In all other cases,
 			 * nothing further can be done so we throw an exception.
 			 */
-			final boolean oauthMode = (authMode == AuthMode.OAUTH_CLIENT_CREDENTIALS);
-			final boolean tokenHasExpired = !accessToken.isValid();
-			final boolean notAlreadyRecursing = !tokenExpired;
-			if (oauthMode && tokenHasExpired && notAlreadyRecursing) {
+			if (authMode == AuthMode.OAUTH_CLIENT_CREDENTIALS && !accessToken.isValid() && !tokenExpired) {
 				logger.info("API call failed on authentication and access token has expired; retrying once with a new token");
 				return httpGetRequest(uri, true);
 			} else {

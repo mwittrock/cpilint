@@ -2,6 +2,7 @@ package org.cpilint.artifacts;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -91,17 +93,41 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		return tag;
 	}
 
-	public static IflowArtifact from(Path p) throws IOException, SaxonApiException {
-		return from(Files.newInputStream(p));
+	public static IflowArtifact fromArchiveFile(Path file) throws IOException, SaxonApiException {
+		if (Files.notExists(file)) {
+			throw new IllegalArgumentException("Provided file does not exist: " + file.toString());
+		}
+		if (!Files.isRegularFile(file)) {
+			throw new IllegalArgumentException("Provided file is not a file: " + file.toString());
+		}
+		Map<String, byte[]> contents;
+		try (InputStream is = Files.newInputStream(file)) {
+			contents = contentsFromArchive(is);
+		}
+		return fromContents(contents);
 	}
 
-	public static IflowArtifact from(InputStream is) throws IOException, SaxonApiException {
-		// Extract all contents of the archive.
-		Map<String, byte[]> contents = extractArchiveContents(is);
+	public static IflowArtifact fromArchiveStream(InputStream is) throws IOException, SaxonApiException {
+		Map<String, byte[]> contents = contentsFromArchive(is);
+		return fromContents(contents);
+	}
+
+	public static IflowArtifact fromDirectory(Path dir) throws IOException, SaxonApiException {
+		if (Files.notExists(dir)) {
+			throw new IllegalArgumentException("Provided directory does not exist: " + dir.toString());
+		}
+		if (!Files.isDirectory(dir)) {
+			throw new IllegalArgumentException("Provided directory is not a directory: " + dir.toString());
+		}
+		Map<String, byte[]> contents = contentsFromDirectory(dir);
+		return fromContents(contents);
+	}
+
+	private static IflowArtifact fromContents(Map<String, byte[]> contents) throws IOException, SaxonApiException {
 		// Extract the iflow's name and ID from the manifest.
 		if (!contents.containsKey(MANIFEST_PATH)) {
 			// No manifest means that this is not a valid iflow artifact.
-			throw new IflowArtifactError("No manifest in archive");
+			throw new IflowArtifactError("No manifest found");
 		}
 		IflowArtifactTag tag = createTag(contents.get(MANIFEST_PATH));
 		// Replace external parameters in the iflow XML, if this iflow artifact
@@ -164,7 +190,8 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		return Collections.unmodifiableMap(parametersMap);
 	}
 	
-	private static Map<String, byte[]> extractArchiveContents(InputStream is) throws IOException {
+	private static Map<String, byte[]> contentsFromArchive(InputStream is) {
+		assert is != null;
 		Map<String, byte[]> contents = new HashMap<>();
 		try (ZipInputStream zis = new ZipInputStream(is)) {
 			ZipEntry entry = null;
@@ -173,6 +200,8 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 				byte[] bytes = zis.readAllBytes();
 				contents.put(path, bytes);
 			}
+		} catch (IOException e) {
+			throw new IflowArtifactError("Error accessing archive contents", e);
 		}
 		/*
 		 * If the Map is empty, there were no entries, meaning that the
@@ -181,6 +210,51 @@ public final class ZipArchiveIflowArtifact implements IflowArtifact {
 		 */
 		if (contents.isEmpty()) {
 			throw new IflowArtifactError("Not a valid iflow artifact");
+		}
+		return contents;
+	}
+
+	private static Map<String, byte[]> contentsFromDirectory(Path dir) {
+		assert dir != null;
+		assert Files.exists(dir);
+		assert Files.isDirectory(dir);
+        // First off, walk the folder structure to gather the files we will be adding.
+        List<Path> filesToAdd;
+        try (Stream<Path> walker = Files.walk(dir)) {
+            filesToAdd = walker
+                .filter(Files::isRegularFile)
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new IflowArtifactError("Error walking iflow folder structure", e);
+        }
+        /*
+         * Next, add all the files to the contents. Couldn't this be done in the Stream
+		 * returned by Files.walk, you might ask. It could, but handling the checked
+		 * exceptions thrown by the I/O inside the lambda really hurts the readability.
+         */
+		Map<String, byte[]> contents = new HashMap<>();
+		for (Path p : filesToAdd) {
+			String path = dir.relativize(p).toString();
+			/*
+			 * We expect the path separator to be a forward slash, which it isn't on Windows.
+			 * For that reason, we replace backslashes with forward slashes.
+			 */
+			if (File.separatorChar == '\\') {
+				path = path.replace('\\', '/');
+			}
+			try (InputStream is = Files.newInputStream(p)) {
+				byte[] bytes = is.readAllBytes();
+				contents.put(path, bytes);
+			} catch (IOException e) {
+				throw new IflowArtifactError("Error accessing folder contents", e);
+			}
+		}
+		/*
+		 * If the Map is empty, there were no files in the directory,
+		 * meaning that it did not contain an unpacked iflow artifact.
+		 */
+		if (contents.isEmpty()) {
+			throw new IflowArtifactError("Directory did not contain an unpacked iflow artifact");
 		}
 		return contents;
 	}

@@ -48,6 +48,7 @@ import org.cpilint.suppliers.IflowArtifactSupplierError;
 import org.cpilint.suppliers.TenantAllArtifactsSupplier;
 import org.cpilint.suppliers.TenantIndividualPackagesSupplier;
 import org.cpilint.suppliers.TenantSingleArtifactsSupplier;
+import org.cpilint.suppliers.UnpackedFileIflowArtifactSupplier;
 import org.cpilint.util.HttpUtil;
 
 public final class CliClient {
@@ -72,6 +73,7 @@ public final class CliClient {
 	private static final String CLI_OPTION_USERNAME = "username";
 	private static final String CLI_OPTION_HOST = "host";
 	private static final String CLI_OPTION_FILES = "files";
+	private static final String CLI_OPTION_UNPACKED_FILES = "unpacked-files";
 	private static final String CLI_OPTION_DIRECTORY = "directory";
 	private static final String CLI_OPTION_RULES = "rules";
 	private static final String CLI_OPTION_BORING = "boring";
@@ -93,6 +95,7 @@ public final class CliClient {
 		VERSION_CHECK_MODE,
 		HELP_MODE,
 		FILE_SUPPLIER_MODE,
+		UNPACKED_FILE_SUPPLIER_MODE,
 		DIRECTORY_SUPPLIER_MODE,
 		TENANT_SUPPLIER_SINGLE_MODE,
 		TENANT_SUPPLIER_MULTI_MODE,
@@ -223,6 +226,8 @@ public final class CliClient {
 			mode = RunMode.HELP_MODE;
 		} else if (fileSupplierMode(cl)) {
 			mode = RunMode.FILE_SUPPLIER_MODE;
+		} else if (unpackedFileSupplierMode(cl)) {
+			mode = RunMode.UNPACKED_FILE_SUPPLIER_MODE;
 		} else if (directorySupplierMode(cl)) {
 			mode = RunMode.DIRECTORY_SUPPLIER_MODE;
 		} else if (tenantSupplierSingleMode(cl)) {
@@ -302,6 +307,8 @@ public final class CliClient {
 			supplier = directorySupplierFromCommandLine(cl);
 		} else if (mode == RunMode.FILE_SUPPLIER_MODE) {
 			supplier = fileSupplierFromCommandLine(cl);
+		} else if (mode == RunMode.UNPACKED_FILE_SUPPLIER_MODE) {
+			supplier = unpackedFileSupplierFromCommandLine(cl);
 		} else if (mode == RunMode.TENANT_SUPPLIER_SINGLE_MODE) {
 			supplier = tenantSupplierSingleFromCommandLine(cl);
 		} else if (mode == RunMode.TENANT_SUPPLIER_MULTI_MODE) {
@@ -354,6 +361,34 @@ public final class CliClient {
 		}
 		// All files are alright.
 		return new FileIflowArtifactSupplier(filePaths);
+	}
+
+	private static IflowArtifactSupplier unpackedFileSupplierFromCommandLine(CommandLine cl) {
+		Set<Path> dirPaths = Stream.of(cl.getOptionValues(CLI_OPTION_UNPACKED_FILES))
+			.map(Path::of)
+			.collect(Collectors.toSet());
+		// Make sure that all directories exist.
+		Set<String> nonexistingDirectories = dirPaths
+			.stream()
+			.filter(Files::notExists)
+			.map(Path::toString)
+			.collect(Collectors.toSet());
+		if (!nonexistingDirectories.isEmpty()) {
+			exitWithErrorMessage("The following unpacked iflow artifact directories do not exist: %s"
+				.formatted(String.join(", ", nonexistingDirectories)));
+		}
+		// Make sure that all directories are actually directories.
+		Set<String> notDirectories = dirPaths
+			.stream()
+			.filter(p -> !Files.isDirectory(p))
+			.map(Path::toString)
+			.collect(Collectors.toSet());
+		if (!notDirectories.isEmpty()) {
+			exitWithErrorMessage("The following unpacked iflow artifact directories are not actually directories: %s"
+				.formatted(String.join(", ", notDirectories)));
+		}
+		// All directories are alright.
+		return new UnpackedFileIflowArtifactSupplier(dirPaths);
 	}
 	
 	private static IflowArtifactSupplier tenantSupplierSingleFromCommandLine(CommandLine cl) {
@@ -532,6 +567,9 @@ public final class CliClient {
 		System.out.println("To inspect all iflow files in a directory on the local machine:");
 		System.out.println(">cpilint -rules <file> -directory <dir>");
 		System.out.println();
+		System.out.println("To inspect individual iflows unpacked into separate directories on the local machine:");
+		System.out.println(">cpilint -rules <file> -unpacked-files <dir> ...");
+		System.out.println();
 		System.out.println("To inspect all iflows in your tenant using OAuth 2.0:");
 		System.out.println(">cpilint -rules <file> -key <file>");
 		System.out.println();
@@ -624,7 +662,15 @@ public final class CliClient {
             .argName("file")
             .desc("Process these iflow artifact files")
             .build());
-        // Add the directory iflow artifact supplier option.
+        // Add the unpacked file iflow artifact supplier option.
+        options.addOption(Option.builder()
+            .longOpt(CLI_OPTION_UNPACKED_FILES)
+            .required(false)
+            .hasArgs()
+            .argName("dir")
+            .desc("Process these unpacked iflow artifacts")
+            .build());
+		// Add the directory iflow artifact supplier option.
         options.addOption(Option.builder()
         	.longOpt(CLI_OPTION_DIRECTORY)
             .required(false)
@@ -782,6 +828,26 @@ public final class CliClient {
     	Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_FILES);
     	Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
     	return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_FILES).length >= 1;
+    }
+
+    private static boolean unpackedFileSupplierMode(CommandLine cl) {
+        /*
+         * The following options are mandatory in this mode:
+         *
+         * + rules
+         * + unpacked-files
+         *
+         * The following options are optional in this mode:
+         *
+         * + boring
+         * + debug
+         * + skipvercheck
+         *
+         * The -unpacked-files option must have at least one argument.
+         */
+        Collection<String> mandatory = List.of(CLI_OPTION_RULES, CLI_OPTION_UNPACKED_FILES);
+        Collection<String> optional = List.of(CLI_OPTION_BORING, CLI_OPTION_DEBUG, CLI_OPTION_SKIPVERCHECK);
+        return checkOptions(cl, mandatory, optional) && cl.getOptionValues(CLI_OPTION_UNPACKED_FILES).length >= 1;
     }
 
     private static boolean directorySupplierMode(CommandLine cl) {

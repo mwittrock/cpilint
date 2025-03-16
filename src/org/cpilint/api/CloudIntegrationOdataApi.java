@@ -110,7 +110,7 @@ public final class CloudIntegrationOdataApi implements CloudIntegrationApi {
 		}
 		IflowArtifact iflowArtifact;
 		try {
-			iflowArtifact = ZipArchiveIflowArtifact.from(apiResponse.body());
+			iflowArtifact = ZipArchiveIflowArtifact.fromArchiveStream(apiResponse.body());
 		} catch (IOException | SaxonApiException e) {
 			throw new CloudIntegrationApiError("Error while processing iflow artifact response", e);
 		}

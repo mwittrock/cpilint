@@ -1,9 +1,9 @@
 package org.cpilint.suppliers;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
-
 import org.cpilint.artifacts.IflowArtifact;
 import org.cpilint.artifacts.ZipArchiveIflowArtifact;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -23,9 +23,19 @@ abstract class IteratorIflowArtifactSupplierBase implements IflowArtifactSupplie
 		if (!canSupply()) {
 			throw new IllegalStateException("Cannot supply further iflow artifacts");
 		}
-		IflowArtifact iflow = null;
+		Path p = iterator.next();
+		assert Files.exists(p);
+		IflowArtifact iflow;
 		try {
-			iflow = ZipArchiveIflowArtifact.from(iterator.next());
+			// The current Path can be either a file or a directory and they are processed differently.
+			if (Files.isRegularFile(p)) {
+				iflow = ZipArchiveIflowArtifact.fromArchiveFile(p);
+			} else if (Files.isDirectory(p)) {
+				iflow = ZipArchiveIflowArtifact.fromDirectory(p);
+			} else {
+				// This should never happen.
+				throw new AssertionError("Current Path is neither a file nor a directory: " + p.toString());
+			}
 		} catch (IOException | SaxonApiException e) {
 			throw new IflowArtifactSupplierError("Error while processing iflow artifact", e);
 		}

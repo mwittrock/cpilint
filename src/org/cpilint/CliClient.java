@@ -302,28 +302,15 @@ public final class CliClient {
 		 * exactly one IflowArtifactSupplier fully, and that the mode correctly
 		 * identifies that supplier.
 		 */
-		IflowArtifactSupplier supplier = null;
-		if (mode == RunMode.DIRECTORY_SUPPLIER_MODE) {
-			supplier = directorySupplierFromCommandLine(cl);
-		} else if (mode == RunMode.FILE_SUPPLIER_MODE) {
-			supplier = fileSupplierFromCommandLine(cl);
-		} else if (mode == RunMode.UNPACKED_FILE_SUPPLIER_MODE) {
-			supplier = unpackedFileSupplierFromCommandLine(cl);
-		} else if (mode == RunMode.TENANT_SUPPLIER_SINGLE_MODE) {
-			supplier = tenantSupplierSingleFromCommandLine(cl);
-		} else if (mode == RunMode.TENANT_SUPPLIER_MULTI_MODE) {
-			supplier = tenantSupplierMultiFromCommandLine(cl);
-		} else if (mode == RunMode.TENANT_SUPPLIER_PACKAGES_MODE) {
-			supplier = tenantSupplierPackagesFromCommandLine(cl);
-		} else {
-			/*
-			 * Given that the command line arguments ought to be valid,
-			 * this should never happen.
-			 */
-			logger.error("Method supplierFromCommandLine called with unexpected RunMode {}", mode);
-			exitWithErrorMessage("Internal CPILint error.");
-		}
-		return supplier;
+		return switch (mode) {
+			case DIRECTORY_SUPPLIER_MODE -> directorySupplierFromCommandLine(cl);
+			case FILE_SUPPLIER_MODE -> fileSupplierFromCommandLine(cl);
+			case UNPACKED_FILE_SUPPLIER_MODE -> unpackedFileSupplierFromCommandLine(cl);
+			case TENANT_SUPPLIER_SINGLE_MODE -> tenantSupplierSingleFromCommandLine(cl);
+			case TENANT_SUPPLIER_MULTI_MODE ->tenantSupplierMultiFromCommandLine(cl);
+			case TENANT_SUPPLIER_PACKAGES_MODE -> tenantSupplierPackagesFromCommandLine(cl);
+			default -> throw new AssertionError("Unexpected RunMode: " + mode);
+		};
 	}
 	
 	private static IflowArtifactSupplier directorySupplierFromCommandLine(CommandLine cl) {

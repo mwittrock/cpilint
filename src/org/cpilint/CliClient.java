@@ -1009,6 +1009,42 @@ public final class CliClient {
 		 * errors that might occur are logged but not reported. In this mode,
 		 * if anything fails we'll just return from the method.
 		 */
+		String currentVersion = null;
+		try {
+			currentVersion = retrieveCurrentVersion();
+		} catch (VersionCheckError e) {
+			logger.error("Exception retrieving current version number", e);
+			if (userInitiated) {
+				exitWithErrorMessage("There was a problem retrieving the current version number.");
+			} else {
+				return;
+			}
+		}
+		logger.debug("The current version is {}", currentVersion);
+		// Assumption: If the current version is different from the locally installed version, the locally installed version is older.
+		if (VERSION.equals(currentVersion)) {
+			logger.info("CPILint is up to date");
+			if (userInitiated) {
+				printVersionBanner();
+				System.out.println();
+				System.out.println("Congratulations! You are running the latest version of CPILint.");
+			}
+		} else {
+			logger.info("CPILint is not up to date");
+			if (userInitiated) {
+				String message = "You are running version %s of CPILint. Version %s is available and can be downloaded here: %s".formatted(VERSION, currentVersion, LATEST_RELEASE_DOWNLOAD_URL);
+				printVersionBanner();
+				System.out.println();
+				System.out.println(message);
+			} else {
+				String message = "Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s".formatted(currentVersion, LATEST_RELEASE_DOWNLOAD_URL);
+				System.out.println(message);
+				System.out.println();
+			}
+		}
+	}
+
+	private static String retrieveCurrentVersion() {
 		final String apiEndpoint = "https://api.github.com/repos/mwittrock/cpilint/releases/latest";
 		final String tagRegex = "^v\\d+(?:\\.\\d+)+$";
 		// Fetch the GitHub API response.
@@ -1017,12 +1053,7 @@ public final class CliClient {
 			apiUri = new URI(apiEndpoint);
 		} catch (URISyntaxException e) {
 			// This should never happen!
-			logger.error("Unexpected GitHub API URI issue", e);
-			if (userInitiated) {
-				exitWithErrorMessage("There was a problem with the GitHub API endpoint URI.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("Unexpected GitHub API URI issue", e);
 		}
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
         HttpRequest request = HttpRequest.newBuilder()
@@ -1034,22 +1065,12 @@ public final class CliClient {
 			logger.debug("Calling GitHub API at {}", apiEndpoint);
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		} catch (IOException | InterruptedException e) {
-			logger.error("Exception calling GitHub API", e);
-			if (userInitiated) {
-				exitWithErrorMessage("There was a problem calling the GitHub API.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("Exception calling GitHub API", e);
 		}
 		// Only proceed if we received HTTP status OK.
 		final int status = response.statusCode();
 		if (status != HttpUtil.HTTP_OKAY_STATUS_CODE) {
-			logger.error("Unexpected HTTP status code returned by GitHub API: {}", status);
-			if (userInitiated) {
-				exitWithErrorMessage("Received a non-success response from the GitHub API.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("Unexpected HTTP status code returned by GitHub API: %d".formatted(status));
 		}
 		// Parse the JSON response.
 		JSONObject parsed = null;
@@ -1057,59 +1078,23 @@ public final class CliClient {
 			logger.debug("Parsing GitHub API response");
 			parsed = new JSONObject(response.body());
 		} catch (JSONException e) {
-			logger.error("Exception parsing GitHub API response", e);
-			if (userInitiated) {
-				exitWithErrorMessage("There was a problem parsing the GitHub API response.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("Exception parsing GitHub API response", e);
 		}
 		// Extract the release tag.
 		String tag = null;
 		try {
 			tag = parsed.getString("tag_name");
 		} catch (JSONException e) {
-			logger.debug("JSONException retrieving tag_name", e);
-			if (userInitiated) {
-				exitWithErrorMessage("There was a problem with the GitHub API response.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("JSONException retrieving tag_name", e);
 		}
 		logger.debug("Extracted tag '{}' from GitHub API response", tag);
 		// Check that the tag has the expected format.
 		if (!tag.matches(tagRegex)) {
-			logger.error("Extracted tag does not have the expected format");
-			if (userInitiated) {
-				exitWithErrorMessage("GitHub API response did not have the expected format.");
-			} else {
-				return;
-			}
+			throw new VersionCheckError("Extracted tag does not have the expected format");
 		}
-		// Now compare the version numbers.
+		// The version number is everything following the initial 'v'.
 		String latestVersion = tag.substring(1);
-		logger.debug("The latest version on GitHub is {}", latestVersion);
-		// Assumption: If the version on GitHub is different from the local version, the version on GitHub is newer.
-		if (VERSION.equals(latestVersion)) {
-			logger.info("CPILint version matches latest version on GitHub");
-			if (userInitiated) {
-				printVersionBanner();
-				System.out.println();
-				System.out.println("Congratulations! You are running the latest version of CPILint.");
-			}
-		} else {
-			logger.info("CPILint version does not match latest version on GitHub");
-			if (userInitiated) {
-				String message = String.format("You are running version %s of CPILint. Version %s is available and can be downloaded here: %s", VERSION, latestVersion, LATEST_RELEASE_DOWNLOAD_URL);
-				printVersionBanner();
-				System.out.println();
-				System.out.println(message);
-			} else {
-				String message = String.format("Please note that you are not running the latest version of CPILint. You can download the latest version (%s) here: %s", latestVersion, LATEST_RELEASE_DOWNLOAD_URL);
-				System.out.println(message);
-				System.out.println();
-			}
-		}
+		return latestVersion;
 	}
 
 	private static void easter() {

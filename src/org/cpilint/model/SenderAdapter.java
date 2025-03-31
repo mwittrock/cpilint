@@ -14,6 +14,7 @@ public enum SenderAdapter {
 	DROPBOX("Dropbox"),
 	FTP("FTP"),
 	HTTPS("HTTPS"),
+	IBMMQ("IBMMQ"),
 	IDOC("IDoc"),
 	JMS("JMS"),
 	KAFKA("Kafka"),

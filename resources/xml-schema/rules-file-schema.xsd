@@ -110,6 +110,7 @@
 			<xs:enumeration value="hubspot"/>
 			<xs:enumeration value="odata"/>
 			<xs:enumeration value="http"/>
+			<xs:enumeration value="ibmmq"/>
 			<xs:enumeration value="idoc"/>
 			<xs:enumeration value="jdbc"/>
 			<xs:enumeration value="jira"/>
@@ -203,6 +204,7 @@
 			<xs:enumeration value="dropbox"/>
 			<xs:enumeration value="ftp"/>
 			<xs:enumeration value="https"/>
+			<xs:enumeration value="ibmmq"/>
 			<xs:enumeration value="idoc"/>
 			<xs:enumeration value="jms"/>
 			<xs:enumeration value="kafka"/>

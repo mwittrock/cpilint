@@ -21,6 +21,7 @@ public final class SenderAdaptersRuleFactory extends AllowDisallowRuleFactoryBas
 		senderAdapters.put("dropbox", SenderAdapter.DROPBOX);
 		senderAdapters.put("ftp", SenderAdapter.FTP);
 		senderAdapters.put("https", SenderAdapter.HTTPS);
+		senderAdapters.put("ibmmq", SenderAdapter.IBMMQ);
 		senderAdapters.put("idoc", SenderAdapter.IDOC);
 		senderAdapters.put("jms", SenderAdapter.JMS);
 		senderAdapters.put("kafka", SenderAdapter.KAFKA);

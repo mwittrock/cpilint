@@ -22,6 +22,7 @@ public enum ReceiverAdapter {
 	HUBSPOT("HubSpot"),
 	ODATA("OData"),
 	HTTP("HTTP"),
+	IBMMQ("IBMMQ"),
 	IDOC("IDoc"),
 	JDBC("JDBC"),
 	JIRA("Jira"),

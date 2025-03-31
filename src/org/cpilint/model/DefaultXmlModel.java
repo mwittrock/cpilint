@@ -59,6 +59,7 @@ final class DefaultXmlModel implements XmlModel {
 		receiverAdapterComponentTypes.put(ReceiverAdapter.HUBSPOT, "HubSpot");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.ODATA, "HCIOData");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.HTTP, "HTTP");
+		receiverAdapterComponentTypes.put(ReceiverAdapter.IBMMQ, "IBMMQ");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.IDOC, "IDOC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.JDBC, "JDBC");
 		receiverAdapterComponentTypes.put(ReceiverAdapter.JIRA, "Jira");
@@ -98,6 +99,7 @@ final class DefaultXmlModel implements XmlModel {
 		senderAdapterComponentTypes.put(SenderAdapter.DROPBOX, "Dropbox");
 		senderAdapterComponentTypes.put(SenderAdapter.FTP, "FTP");
 		senderAdapterComponentTypes.put(SenderAdapter.HTTPS, "HTTPS");
+		senderAdapterComponentTypes.put(SenderAdapter.IBMMQ, "IBMMQ");
 		senderAdapterComponentTypes.put(SenderAdapter.IDOC, "IDOC");
 		senderAdapterComponentTypes.put(SenderAdapter.JMS, "JMS");
 		senderAdapterComponentTypes.put(SenderAdapter.KAFKA, "Kafka");

@@ -29,6 +29,7 @@ public final class ReceiverAdaptersRuleFactory extends AllowDisallowRuleFactoryB
 		receiverAdapters.put("hubspot", ReceiverAdapter.HUBSPOT);
 		receiverAdapters.put("odata", ReceiverAdapter.ODATA);
 		receiverAdapters.put("http", ReceiverAdapter.HTTP);
+		receiverAdapters.put("ibmmq", ReceiverAdapter.IBMMQ);
 		receiverAdapters.put("idoc", ReceiverAdapter.IDOC);
 		receiverAdapters.put("jdbc", ReceiverAdapter.JDBC);
 		receiverAdapters.put("jira", ReceiverAdapter.JIRA);

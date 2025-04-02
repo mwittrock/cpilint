@@ -15,7 +15,7 @@ import net.sf.saxon.s9api.XdmNode;
 
 final class UnencryptedEndpointsNotAllowedRule extends RuleBase {
 	
-	private static final Set<ReceiverAdapter> adaptersOfInterest = Set.of(
+	private static final Set<ReceiverAdapter> receiverAdaptersOfInterest = Set.of(
 		ReceiverAdapter.AS4,
 		ReceiverAdapter.ODATA,
 		ReceiverAdapter.HTTP,
@@ -26,17 +26,24 @@ final class UnencryptedEndpointsNotAllowedRule extends RuleBase {
 		ReceiverAdapter.ANAPLAN,
 		ReceiverAdapter.HUBSPOT,
 		ReceiverAdapter.AZURECOSMOSDB,
-		ReceiverAdapter.JIRA
+		ReceiverAdapter.JIRA,
+		ReceiverAdapter.IBMMQ
 	);
-	
+
 	@Override
 	public void inspect(IflowArtifact iflow) {
+		// TODO: This currently only handles receiver adapters. However, since the IBMMQ sender adapter polls an HTTP endpoint, this rule also needs to check sender adapters.
 		IflowXml iflowXml = iflow.getIflowXml();
 		XmlModel model = XmlModelFactory.getModelFor(iflowXml);
 		IflowArtifactTag tag = iflow.getTag();
 		Function<ReceiverAdapter, String> xpathFunction = a -> model.xpathForReceiverChannels(a, model.channelPredicateForHttpEndpoints(a), XpathRulesUtil.negateXpathPredicate(model.channelPredicateForProxyTypeOnPremise(a)));
 		Function<ReceiverAdapter, Function<XdmNode, Issue>> issueFunctionFunction = a -> n -> new UnencryptedEndpointsNotAllowedIssue(ruleId, tag, a, model.getChannelNameFromElement(n), model.getChannelIdFromElement(n));
-		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(iflowXml, adaptersOfInterest, xpathFunction, issueFunctionFunction, consumer::consume);
+		XpathRulesUtil.iterateMultipleXpathsAndConsumeIssues(
+			iflowXml,
+			receiverAdaptersOfInterest,
+			xpathFunction,
+			issueFunctionFunction,
+			consumer::consume);
 	}
 
 }

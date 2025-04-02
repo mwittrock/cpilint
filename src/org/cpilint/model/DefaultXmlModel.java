@@ -128,6 +128,7 @@ final class DefaultXmlModel implements XmlModel {
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.HUBSPOT, List.of("addressURL"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.AZURECOSMOSDB, List.of("hostUrl"));
 		httpEndpointPropertyKeyNames.put(ReceiverAdapter.JIRA, List.of("address"));
+		httpEndpointPropertyKeyNames.put(ReceiverAdapter.IBMMQ, List.of("address"));
 		// Initialize the mappingTypePropertyKeys map.
 		mappingTypePropertyKeys = new HashMap<>();
 		mappingTypePropertyKeys.put(MappingType.MESSAGE_MAPPING, "mappingType");
@@ -287,6 +288,8 @@ final class DefaultXmlModel implements XmlModel {
 		    predicate = propertyKeyValuePredicate("ldapProxyType", "ldapProxyTypeOnPremise");
 		} else if (onPremReceiverAdapters.contains(receiverAdapter)) {
 		    predicate = propertyKeyValuePredicate("proxyType", "sapcc");
+		} else if (receiverAdapter == ReceiverAdapter.IBMMQ) {
+			predicate = propertyKeyValuePredicate("proxyType", "onPremise");
 		} else {
 		    // Not on-premise enabled.
 		    predicate = ModelUtil.xpathFalsePredicate();

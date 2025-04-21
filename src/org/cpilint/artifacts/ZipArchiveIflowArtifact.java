@@ -25,6 +25,8 @@ import java.util.zip.ZipInputStream;
 import javax.xml.transform.stream.StreamSource;
 
 import org.cpilint.IflowXml;
+import org.cpilint.util.JarResourceUtil;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -36,7 +38,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 public final class ZipArchiveIflowArtifact implements IflowArtifact {
 	
 	private static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
-	private static final String EXT_PARAMS_REPLACE_XSLT_PATH = "resources/xslt/ReplaceExternalParameters.xsl";
+	private static final String EXT_PARAMS_REPLACE_XSLT_PATH = JarResourceUtil.RESOURCE_BASE_PATH + "/xslt/ReplaceExternalParameters.xsl";
 	private static final String NAME_MANIFEST_HEADER = "Bundle-Name";
 	private static final String ID_MANIFEST_HEADER = "Bundle-SymbolicName";
 	private static final String IFLOW_RESOURCES_BASE_PATH = "src/main/resources/";

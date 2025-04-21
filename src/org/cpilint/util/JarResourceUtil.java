@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 
 public final class JarResourceUtil {
 	
-	private static final String RESOURCE_BASE_PATH = "resources";
+	public static final String RESOURCE_BASE_PATH = "resources/org.cpilint";
 	
 	private JarResourceUtil() {
 		throw new AssertionError("Never supposed to be instantiated");

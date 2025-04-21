@@ -51,10 +51,11 @@ import org.cpilint.rules.UnencryptedDataStoreWriteNotAllowedRuleFactory;
 import org.cpilint.rules.UnencryptedEndpointsNotAllowedRuleFactory;
 import org.cpilint.rules.UserRolesRuleFactory;
 import org.cpilint.rules.XsltVersionsRuleFactory;
+import org.cpilint.util.JarResourceUtil;
 
 public final class RulesFile {
 	
-	private static final String XML_SCHEMA_RESOURCE_PATH = "resources/xml-schema/rules-file-schema.xsd";
+	private static final String XML_SCHEMA_RESOURCE_PATH = JarResourceUtil.RESOURCE_BASE_PATH + "/xml-schema/rules-file-schema.xsd";
 	private static final String RULE_ID_ATTRIBUTE_NAME = "id";
 	private static final String IMPORT_ELEMENT = "import";
 	private static final String IMPORTS_ELEMENT = "imports";

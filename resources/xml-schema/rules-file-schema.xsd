@@ -6,10 +6,11 @@
 			<xs:sequence>
 				<xs:element name="imports" type="importsType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="rules" type="rulesType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="extension-rules" type="extensionRulesType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="exemptions" type="exemptionsType" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
-			<!-- The file must contain at least one of imports, rules or exemptions. -->
-			<xs:assert test="imports or rules or exemptions"/>
+			<!-- The document can contain any combination of imports, rules, extension rules and exemptions, but at least one of them must be present. -->
+			<xs:assert test="imports or rules or extension-rules or exemptions"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -60,6 +61,14 @@
 		<xs:assert test="not(allowed-mapping-types and disallowed-mapping-types)"/>
 		<xs:assert test="not(allowed-java-archives and disallowed-java-archives)"/>
 		<xs:assert test="not(allowed-user-roles and disallowed-user-roles)"/>
+	</xs:complexType>
+
+	<!-- If the extension-rules element is present, it must contain at least one element. However, these child elements are not validated further; hence the <xs:any> with processContents="skip". -->
+	<xs:complexType name="extensionRulesType">
+		<xs:sequence>
+			<!-- All extension rule elements must belong to a namespace; hence the namespace="##other". -->
+			<xs:any minOccurs="1" maxOccurs="unbounded" processContents="skip" namespace="##other"/>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="exemptionsType">

@@ -81,6 +81,8 @@
 			<fileset dir="." includes="build.xml"/>
 			<fileset dir="." includes="ivy.xml"/>
 		</zip>
+		<!-- Create the empty extensions directory to be included in the release. -->
+		<mkdir dir="${temp.dir}/extensions"/>
 		<!-- Create a release archive. -->
 		<zip destfile="${release.dir}/${release.archive}">
 			<zipfileset dir="${build.lib}" includes="${jar}" prefix="${release.root}/lib"/>
@@ -93,6 +95,7 @@
 			<zipfileset dir="${3rd.party.licenses.dir}" prefix="${release.root}/3rd-party-licenses"/>
 			<zipfileset dir="${dist.files.dir}" includes="README.txt" prefix="${release.root}/"/>
 			<zipfileset dir="${samples.dir}" prefix="${release.root}/samples"/>
+			<zipfileset dir="${temp.dir}/extensions" prefix="${release.root}/extensions"/>
 		</zip>
 		<!-- Clean up. -->
 		<delete dir="${temp.dir}"/>

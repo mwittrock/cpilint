@@ -13,11 +13,13 @@ if defined CPILINT_HOME set HOME=%CPILINT_HOME%
 
 rem *****************************************************
 rem * Build CPILint's class path. All required library  *
-rem * files are in the lib directory, and the Logback   *
-rem * configuration file is in the logback directory.   *
+rem * files are in the lib directory, the Logback con-  *
+rem * figuration file is in the logback directory and   *
+rem * all extension rules and their dependencies are in *
+rem * the extensions directory.                         *
 rem *****************************************************
 
-set CPILINT_CP=%HOME%\lib\*;%HOME%\logback
+set CPILINT_CP=%HOME%\lib\*;%HOME%\logback;%HOME%\extensions\*
 
 rem *****************************************************
 rem * Use the CPILINT_JAVA_HOME environment variable to *

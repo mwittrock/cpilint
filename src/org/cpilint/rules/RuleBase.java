@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.cpilint.consumers.IssueConsumer;
 
-abstract class RuleBase implements Rule {
+public abstract class RuleBase implements Rule {
 	
 	protected IssueConsumer consumer;
 	protected Optional<String> ruleId = Optional.empty();

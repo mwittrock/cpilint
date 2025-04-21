@@ -4,7 +4,7 @@ import org.dom4j.Element;
 
 public interface RuleFactory {
 	
-	public boolean canCreateFrom(Element e);
+	public boolean isFactoryFor(String ruleElementName);
 	
 	public Rule createFrom(Element e);
 

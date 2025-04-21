@@ -125,15 +125,15 @@ public final class NamingConventionsRuleFactory implements RuleFactory {
 	}
 
 	@Override
-	public boolean canCreateFrom(Element e) {
-		Objects.requireNonNull(e, "e must not be null");
-		return e.getName().equals("naming");
+	public boolean isFactoryFor(String ruleElementName) {
+		Objects.requireNonNull(ruleElementName, "ruleElementName must not be null");
+		return ruleElementName.equals("naming");
 	}
 
 	@Override
 	public Rule createFrom(Element e) {
 		Objects.requireNonNull(e, "e must not be null");
-		if (!canCreateFrom(e)) {
+		if (!isFactoryFor(e.getName())) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", e.getName()));
 		}
 		// In the following, assume that the rules file has been validated.

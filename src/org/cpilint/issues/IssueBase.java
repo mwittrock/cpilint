@@ -8,7 +8,7 @@ import java.util.Set;
 import org.cpilint.artifacts.IflowArtifactTag;
 import org.cpilint.artifacts.PackageInfo;
 
-abstract class IssueBase implements Issue {
+public abstract class IssueBase implements Issue {
 	
 	private final Optional<String> ruleId;
 	private final Set<IflowArtifactTag> tags;

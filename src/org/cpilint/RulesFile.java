@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import org.cpilint.rules.CleartextBasicAuthNotAllowedRuleFactory;
 import org.cpilint.rules.ClientCertSenderChannelAuthNotAllowedRuleFactory;
 import org.cpilint.rules.CsrfProtectionRequiredRuleFactory;
 import org.cpilint.rules.DuplicateResourcesNotAllowedRuleFactory;
+import org.cpilint.rules.ExtensionRuleFactory;
 import org.cpilint.rules.IflowDescriptionRequiredRuleFactory;
 import org.cpilint.rules.JavaArchivesRuleFactory;
 import org.cpilint.rules.MappingTypesRuleFactory;
@@ -54,9 +56,14 @@ public final class RulesFile {
 	
 	private static final String XML_SCHEMA_RESOURCE_PATH = "resources/xml-schema/rules-file-schema.xsd";
 	private static final String RULE_ID_ATTRIBUTE_NAME = "id";
+	private static final String IMPORT_ELEMENT = "import";
+	private static final String IMPORTS_ELEMENT = "imports";
+	private static final String RULES_ELEMENT = "rules";
+	private static final String EXTENSION_RULES_ELEMENT = "extension-rules";
 
 	private static final Logger logger = LoggerFactory.getLogger(RulesFile.class);
 	private static final Collection<RuleFactory> ruleFactories;
+	private static final Collection<ExtensionRuleFactory> extensionRuleFactories;
 
 	private final Collection<Rule> rules;
 	private final Set<Exemption> exemptions;
@@ -80,6 +87,14 @@ public final class RulesFile {
 		ruleFactories.add(new DuplicateResourcesNotAllowedRuleFactory());
 		ruleFactories.add(new NamingConventionsRuleFactory());
 		ruleFactories.add(new UserRolesRuleFactory());
+		// Load extension rule factories via Service Provider Interface (if any are present).
+		extensionRuleFactories = new ArrayList<>();
+		ServiceLoader<ExtensionRuleFactory> spiLoader = ServiceLoader.load(ExtensionRuleFactory.class);
+		for (ExtensionRuleFactory e : spiLoader) {
+			logger.info("Loaded extension rule factory {}", e.getClass().getName());
+			extensionRuleFactories.add(e);
+		}
+		logger.info("Extension rule factories loaded: {}", extensionRuleFactories.size());
 	}
 	
 	private RulesFile(Collection<Rule> rules, Set<Exemption> exemptions) {
@@ -149,9 +164,9 @@ public final class RulesFile {
 		/*
 		 * If the rules file contains imports, process them recursively.
 		 */
-		Element imports = doc.getRootElement().element("imports");
+		Element imports = doc.getRootElement().element(IMPORTS_ELEMENT);
 		if (imports != null) {
-			List<Element> importElements = imports.elements("import");
+			List<Element> importElements = imports.elements(IMPORT_ELEMENT);
 			logger.debug("Rules file contains {} import(s)", importElements.size());
 			for (Element i : importElements) {
 				logger.debug("Value of src attribute: {}", i.attributeValue("src"));
@@ -176,41 +191,84 @@ public final class RulesFile {
 			}
 		}
 		/*
-		 * Next, process all rules in rules file (if there are any).
+		 * Please note that rules and extension rules are processed slightly differently, since
+		 * the latter must be validated by the extension rule factory, whereas the former are
+		 * validated by the rules file XML Schema. First, we process the rules (if any are present).
 		 */
-		if (doc.getRootElement().element("rules") != null) {
+		if (doc.getRootElement().element(RULES_ELEMENT) != null) {
 			/*
 			*  Get a List of all rule elements, i.e. elements below /cpilint/rules.
 			*/
-			List<Element> ruleElements = doc.getRootElement().element("rules").elements();
+			List<Element> ruleElements = doc.getRootElement().element(RULES_ELEMENT).elements();
 			/*
 			* Now, for each rule element, get a Set of RuleFactory instances that
 			* are able to process that element. We expect exactly one RuleFactory
 			* to be able to do so. Zero factories and more than one factory is
 			* an error, and results in a RulesFileError being thrown. If exactly
-			* one factory can create a Rule object from the element, do so and
-			* add that Rule to the collection, that will be returned from this
-			* method.
+			* one factory can create a Rule object from the element, do so.
 			*/
 			for (Element ruleElement : ruleElements) {
+				assert "".equals(ruleElement.getNamespaceURI());
 				String ruleName = ruleElement.getName();
 				Set<RuleFactory> factories = ruleFactories
 					.stream()
-					.filter(f -> f.canCreateFrom(ruleElement))
+					.filter(f -> f.isFactoryFor(ruleName))
 					.collect(Collectors.toSet());
 				if (factories.isEmpty()) {
-					throw new RulesFileError(String.format("No factory available to process rule '%s'", ruleName));
+					throw new RulesFileError("No factory available to process built-in rule '%s'".formatted(ruleName));
 				}
 				if (factories.size() > 1) {
-					logger.debug("Multiple RuleFactory instances available for element {}: {}",
+					logger.debug("Multiple RuleFactory instances available for element '{}': {}",
 						ruleName,
 						factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(",")));
-					throw new RulesFileError(String.format("More than one factory available to process rule '%s'", ruleName));
+					throw new RulesFileError("More than one factory available to process rule '%s'".formatted(ruleName));
 				}
 				RuleFactory factory = factories.iterator().next();
 				Rule newRule = factory.createFrom(ruleElement);
 				// If the rule element has an ID attribute, add the rule ID to the rule.
 				String ruleId = ruleElement.attributeValue(RULE_ID_ATTRIBUTE_NAME);
+				if (ruleId != null) {
+					newRule.setId(ruleId);
+				}
+				rules.add(newRule);
+			}
+		}
+		/*
+		 * Next, we process the extension rules (if any are present).
+		 */
+		if (doc.getRootElement().element(EXTENSION_RULES_ELEMENT) != null) {
+			List<Element> extensionRuleElements = doc.getRootElement().element(EXTENSION_RULES_ELEMENT).elements();
+			/*
+			 * Processed like the built-in rules, only using the ExtensionRuleFactory instances
+			 * loaded via SPI and validating the extension rule elements. Please also note that
+			 * all extension rule elements must belong to a namespace to avoid clashing names.
+			 * The namespace URI must be passed to the isFactoryFor method.
+			 */
+			for (Element extensionRuleElement : extensionRuleElements) {
+				String extensionRuleName = extensionRuleElement.getName();
+				String extensionRuleNamespaceUri = extensionRuleElement.getNamespaceURI();
+				assert !"".equals(extensionRuleNamespaceUri);
+				Set<ExtensionRuleFactory> extensionFactories = extensionRuleFactories
+					.stream()
+					.filter(f -> f.isFactoryFor(extensionRuleName, extensionRuleNamespaceUri))
+					.collect(Collectors.toSet());
+				if (extensionFactories.isEmpty()) {
+					throw new RulesFileError("No extension factory available to process extension rule '%s' in namespace '%s'".formatted(extensionRuleName, extensionRuleNamespaceUri));
+				}
+				if (extensionFactories.size() > 1) {
+					logger.debug("Multiple ExtensionRuleFactory instances available for element '{}'' in namespace '{}'': {}",
+						extensionRuleName,
+						extensionRuleNamespaceUri,
+						extensionFactories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(",")));
+					throw new RulesFileError("More than one extension factory available to process extension rule '%s' in namespace '%s'".formatted(extensionRuleName, extensionRuleNamespaceUri));
+				}
+				ExtensionRuleFactory extensionFactory = extensionFactories.iterator().next();
+				logger.debug("ExtensionRuleFactory '{}' will be used to create a Rule from extension rule element '{}' in namespace '{}'", extensionFactory.getClass().getName(), extensionRuleName, extensionRuleNamespaceUri);
+				// Validate that the extension rule element contains all required configuration.
+				extensionFactory.validateConfiguration(extensionRuleElement);
+				Rule newRule = extensionFactory.createFrom(extensionRuleElement);
+				// If the rule element has an ID attribute, add the rule ID to the rule.
+				String ruleId = extensionRuleElement.attributeValue(RULE_ID_ATTRIBUTE_NAME);
 				if (ruleId != null) {
 					newRule.setId(ruleId);
 				}

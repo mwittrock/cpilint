@@ -19,11 +19,13 @@ fi
 
 # *****************************************************
 # * Build CPILint's class path. All required library  *
-# * files are in the lib directory, and the Logback   *
-# * configuration file is in the logback directory.   *
+# * files are in the lib directory, the Logback con-  *
+# * figuration file is in the logback directory and   *
+# * all extension rules and their dependencies are in *
+# * the extensions directory.                         *
 # *****************************************************
 
-cpilint_cp="$home/lib/*:$home/logback"
+cpilint_cp="$home/lib/*:$home/logback:$home/extensions/*"
 
 # *****************************************************
 # * Use the CPILINT_JAVA_HOME variable to locate the  *

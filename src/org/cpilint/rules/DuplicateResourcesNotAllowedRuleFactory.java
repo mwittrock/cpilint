@@ -29,13 +29,13 @@ public final class DuplicateResourcesNotAllowedRuleFactory implements RuleFactor
 	}
 
 	@Override
-	public boolean canCreateFrom(Element e) {
-		return e.getName().equals("duplicate-resources-not-allowed");
+	public boolean isFactoryFor(String ruleElementName) {
+		return ruleElementName.equals("duplicate-resources-not-allowed");
 	}
 
 	@Override
 	public Rule createFrom(Element e) {
-		if (!canCreateFrom(e)) {
+		if (!isFactoryFor(e.getName())) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", e.getName()));
 		}
 		Set<String> specifiedTypeNames = e.elements("resource-type")

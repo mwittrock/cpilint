@@ -34,17 +34,16 @@ abstract class AllowDisallowRuleFactoryBase<T, U extends Rule> implements RuleFa
 	} 
 
 	@Override
-	public boolean canCreateFrom(Element e) {
-		Objects.requireNonNull(e, "e must not be null");
-		String elementName = e.getName();
-		return elementName.equals(allowElementName) || elementName.equals(disallowElementName);
+	public boolean isFactoryFor(String ruleElementName) {
+		Objects.requireNonNull(ruleElementName, "ruleElementName must not be null");
+		return ruleElementName.equals(allowElementName) || ruleElementName.equals(disallowElementName);
 	}
 
 	@Override
 	public U createFrom(Element e) {
 		Objects.requireNonNull(e, "e must not be null");
 		String ruleElementName = e.getName();
-		if (!canCreateFrom(e)) {
+		if (!isFactoryFor(ruleElementName)) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", ruleElementName));
 		}
 		boolean allowed = ruleElementName.equals(allowElementName);

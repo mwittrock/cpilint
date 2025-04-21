@@ -21,15 +21,14 @@ public final class JavaArchivesRuleFactory implements RuleFactory {
     private static final Logger logger = LoggerFactory.getLogger(JavaArchivesRuleFactory.class);
 	
 	@Override
-	public boolean canCreateFrom(Element e) {
-		String elementName = e.getName();
-		return elementName.equals(ALLOW_ELEMENT_NAME) || elementName.equals(DISALLOW_ELEMENT_NAME);
+	public boolean isFactoryFor(String ruleElementName) {
+		return ruleElementName.equals(ALLOW_ELEMENT_NAME) || ruleElementName.equals(DISALLOW_ELEMENT_NAME);
 	}
 
 	@Override
 	public Rule createFrom(Element e) {
 		String ruleElementName = e.getName();
-		if (!canCreateFrom(e)) {
+		if (!isFactoryFor(e.getName())) {
 			throw new RuleFactoryError(String.format("Cannot create Rule object from element '%s'", ruleElementName));
 		}
 		boolean allowed = ruleElementName.equals(ALLOW_ELEMENT_NAME);

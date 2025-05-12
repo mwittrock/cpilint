@@ -69,7 +69,7 @@
 		<!-- Create an archive containing the source. -->
 		<zip destfile="${temp.dir}/${source.archive}">
 			<fileset dir="." includes="${3rd.party.licenses.dir}/*"/>
-			<fileset dir="." includes="${dist.files.dir}/*"/>
+			<fileset dir="." includes="${dist.files.dir}/**"/>
 			<fileset dir="." includes="${graphics.dir}/*"/>
 			<fileset dir="." includes="${logback.dir}/*"/>
 			<fileset dir="." includes="${resources.dir}/**"/>
